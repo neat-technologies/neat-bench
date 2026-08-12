@@ -7,43 +7,56 @@
 #     [N]       trials per arm (default 5) — average over model nondeterminism [arms.md §protocol step 6]
 #
 # Pipeline:
-#   1. provision the target if it has not been provisioned (no results/<target>.graph.json)
-#   2. for N trials: run BOTH arms (with-NEAT, without-NEAT) on the wall,
-#      randomizing arm order per trial [arms.md §protocol step 2]
-#   3. score each arm run with the scorers (by path — they are authored separately):
-#        harness/grounded-evidence.mjs   — grades asserted claims against the graph
-#        harness/wall-certificate.mjs    — objective PASS/FAIL oracle for the wall
-#        harness/claim-classifier.mjs    — graph-level static-blindness classification (exists)
-#   4. aggregate into results/<target>/<wall>/summary.json
+#   1. provision the target if not already provisioned (no results/<target>.graph.json)
+#   2. classify the graph once (claim-classifier.mjs) — static-blindness context
+#   3. CERTIFY the wall once (wall-certificate.mjs) — is it a genuine wall (answer
+#      absent from source, present as a BLIND observed edge)? A loud gate, not a hard stop.
+#   4. for N trials: run BOTH arms (with-NEAT, without-NEAT), randomizing arm order
+#      per trial [arms.md §protocol step 2]
+#   5. score each arm with grounded-evidence.mjs (the keystone metric — % of the
+#      agent's load-bearing claims that trace to something real, + sufficiency)
+#   6. aggregate into results/<target>/<wall>/summary.json
 #
-# Fails LOUD (never fakes a result) if: NEAT_REPO is unset/missing, a required
-# scorer is missing, the target descriptor is missing, or the agent is not wired.
+# Scorers are called BY PATH under harness/ (claim-classifier.mjs ships here;
+# grounded-evidence.mjs + wall-certificate.mjs are authored separately). Their real
+# CLIs (confirmed from the files):
+#   claim-classifier.mjs   <graph.json>
+#   wall-certificate.mjs   <wall.json> <graph.json> [--source-dir <dir>]
+#   grounded-evidence.mjs  <graph.json> <claims.json> [--require <wall.json>]
+# These emit human-readable text + an exit code (they are library-first: the JSON
+# lives in their exported functions). We capture full output to files, use exit
+# codes, and parse the one headline line for the summary.
+#   TODO(live): for richer machine aggregation, import the exported functions
+#   (certifyWall / scoreGroundedEvidence) via a small node evaluator to get JSON.
+#
+# Fails LOUD (never fakes a result) if: NEAT_REPO unset/missing, a scorer missing,
+# the descriptor missing, or the agent is not wired (run_agent stub → sentinel 42).
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HARNESS="$REPO_ROOT/harness"
-RESULTS="${RESULTS:-$REPO_ROOT/results}"
 
-die() { echo "ERROR: $*" >&2; exit 1; }
+die()  { echo "ERROR: $*" >&2; exit 1; }
 step() { echo; echo "▶ $*"; }
 
-TARGET="${1:-}"; WALL="${2:-}"; N="${3:-5}"
-[ -n "$TARGET" ] && [ -n "$WALL" ] || die "usage: ./run.sh <target> <wall> [N]"
+TGT="${1:-}"; WALL="${2:-}"; N="${3:-5}"
+[ -n "$TGT" ] && [ -n "$WALL" ] || die "usage: ./run.sh <target> <wall> [N]"
+for bin in node jq curl git; do command -v "$bin" >/dev/null || die "missing required binary: $bin"; done
 
-DESCRIPTOR="$REPO_ROOT/targets/$TARGET.json"
+DESCRIPTOR="$REPO_ROOT/targets/$TGT.json"
 [ -f "$DESCRIPTOR" ] || die "no target descriptor at $DESCRIPTOR"
+WALL_FILE="$REPO_ROOT/walls/$WALL.json"
+[ -f "$WALL_FILE" ] || die "no wall at $WALL_FILE (walls are authored outside this scaffold)"
 
 # ── fail loud: NEAT checkout under test ──────────────────────────────────────
 # The version under test is a LOCAL Neat checkout (published npm under-instruments).
 NEAT_REPO="${NEAT_REPO:-}"
-[ -n "$NEAT_REPO" ] || die "\$NEAT_REPO is unset. neat-bench measures a LOCAL Neat checkout at HEAD (the published npm build under-instruments — no file:line OBSERVED edges). Re-run with:  NEAT_REPO=/path/to/Neat ./run.sh $TARGET $WALL ${N}"
+[ -n "$NEAT_REPO" ] || die "\$NEAT_REPO is unset. neat-bench measures a LOCAL Neat checkout at HEAD (the published npm build under-instruments — no file:line OBSERVED edges). Re-run with:  NEAT_REPO=/path/to/Neat ./run.sh $TGT $WALL ${N}"
 [ -d "$NEAT_REPO" ] || die "\$NEAT_REPO ($NEAT_REPO) is not a directory."
 export NEAT_REPO
 
-# ── fail loud: scorers must exist (they are authored separately) ──────────────
-# Called by path per the task. claim-classifier.mjs exists in this repo already;
-# grounded-evidence.mjs + wall-certificate.mjs are being written by someone else.
+# ── fail loud: scorers must exist (called by path; authored separately) ───────
 GROUNDED="$HARNESS/grounded-evidence.mjs"
 CERTIFICATE="$HARNESS/wall-certificate.mjs"
 CLASSIFIER="$HARNESS/claim-classifier.mjs"
@@ -54,25 +67,42 @@ for s in "$GROUNDED" "$CERTIFICATE" "$CLASSIFIER"; do
        separately. Add them (or symlink them) before running trials."
 done
 
+# Reuse the provisioner's descriptor loader for the single source of truth on
+# paths (APP_DIR, GRAPH_OUT, SVC, D). It defines its own die/step (same semantics).
+source "$HARNESS/provision/lib.sh"
+load_descriptor "$DESCRIPTOR"
+GRAPH="$GRAPH_OUT"
+
 # ── 1. provision if needed ───────────────────────────────────────────────────
-GRAPH="$RESULTS/$TARGET.graph.json"
 if [ ! -f "$GRAPH" ]; then
-  step "provisioning $TARGET (no snapshot at $GRAPH yet)"
+  step "provisioning $TGT (no snapshot at $GRAPH yet)"
   "$HARNESS/provision/provision.sh" "$DESCRIPTOR"
 else
   echo "▶ reusing existing snapshot $GRAPH (delete it to force re-provision)"
 fi
 [ -f "$GRAPH" ] || die "provisioning did not produce $GRAPH"
 
-# graph-level static-blindness classification (context for the whole run) [exists]
-step "graph-level classification (claim-classifier.mjs)"
-node "$CLASSIFIER" "$GRAPH" | sed 's/^/    /'
-
-# ── 2+3. trials × arms, scored ───────────────────────────────────────────────
-WALL_DIR="$RESULTS/$TARGET/$WALL"
+WALL_DIR="$RESULTS/$TGT/$WALL"
 mkdir -p "$WALL_DIR"
-ARM_JSONS=()   # collect arm.json paths for aggregation
 
+# ── 2. graph-level static-blindness classification (context) [exists] ─────────
+step "graph-level classification (claim-classifier.mjs)"
+node "$CLASSIFIER" "$GRAPH" | tee "$WALL_DIR/classification.txt" | sed 's/^/    /'
+
+# ── 3. certify the wall once (is it a genuine wall?) ─────────────────────────
+step "certifying the wall (wall-certificate.mjs) against the graph + pinned source"
+set +e
+node "$CERTIFICATE" "$WALL_FILE" "$GRAPH" --source-dir "$APP_DIR" | tee "$WALL_DIR/certificate.txt"
+CERT_RC=${PIPESTATUS[0]}
+set -e
+CERTIFIED=$([ "$CERT_RC" = 0 ] && echo true || echo false)
+if [ "$CERTIFIED" != true ]; then
+  echo "  WARNING: wall '$WALL' is NOT certified as a genuine wall (see above)." >&2
+  echo "           Trials will still run, but the arms may not separate on it." >&2
+fi
+
+# ── 4+5. trials × arms, each scored with grounded-evidence ───────────────────
+: > "$WALL_DIR/.rows.jsonl"
 for (( t=1; t<=N; t++ )); do
   step "trial $t/$N"
   # randomize arm order per trial (coin flip) [arms.md §protocol step 2]
@@ -82,66 +112,58 @@ for (( t=1; t<=N; t++ )); do
   for arm in "${ORDER[@]}"; do
     OUT="$WALL_DIR/trial-$t/$arm"
     # run-arm.sh resets the tree, builds the identical prompt, runs the agent
-    # (TODO(live) stub today), and captures edit.diff + transcript.
+    # (TODO(live) stub today), and captures transcript.jsonl, claims.json, edit.diff.
     set +e
-    "$HARNESS/arms/run-arm.sh" "$TARGET" "$WALL" "$arm" "$t" "$OUT"
+    "$HARNESS/arms/run-arm.sh" "$TGT" "$WALL" "$arm" "$t" "$OUT"
     rc=$?
     set -e
     if [ "$rc" = 42 ]; then
       die "agent is not wired (run_agent is a TODO(live) stub in harness/arms/run-arm.sh).
        No trial can be scored until run_agent invokes a real model and writes
-       transcript.jsonl + edit.diff. Implement it, then re-run. (Refusing to
-       fabricate a result — see the task's 'do not fake outputs' rule.)"
+       transcript.jsonl + claims.json + edit.diff. Implement it, then re-run.
+       (Refusing to fabricate a result — see the task's 'do not fake outputs' rule.)"
     fi
-    [ "$rc" = 0 ] || die "run-arm.sh ($TARGET/$WALL/$arm trial $t) exited $rc"
+    [ "$rc" = 0 ] || die "run-arm.sh ($TGT/$WALL/$arm trial $t) exited $rc"
 
-    # ── score this arm run ───────────────────────────────────────────────────
-    # NOTE: arg order below is the ASSUMED contract for the two not-yet-present
-    # scorers. TODO(live): confirm/adjust once grounded-evidence.mjs and
-    # wall-certificate.mjs land — align these calls with their real CLIs.
-    #
-    # wall-certificate.mjs — objective PASS/FAIL oracle. Assumed:
-    #   node wall-certificate.mjs <walls/<wall>.json> <edit.diff> <target-app-dir>
-    node "$CERTIFICATE" "$REPO_ROOT/walls/$WALL.json" "$OUT/edit.diff" "$TARGET" \
-      > "$OUT/certificate.json" 2>"$OUT/certificate.err" \
-      || echo "    (wall-certificate.mjs nonzero for $arm — see $OUT/certificate.err)"
+    # grounded-evidence: % of the arm's load-bearing claims that trace to something
+    # real, plus sufficiency against the wall's required facts. [keystone metric]
+    set +e
+    node "$GROUNDED" "$GRAPH" "$OUT/claims.json" --require "$WALL_FILE" \
+      | tee "$OUT/grounded.txt"
+    GRD_RC=${PIPESTATUS[0]}
+    set -e
+    [ "$GRD_RC" = 0 ] || echo "    (grounded-evidence.mjs exited $GRD_RC for $arm — see $OUT/grounded.txt)"
 
-    # grounded-evidence.mjs — grades the agent's asserted claims against the graph. Assumed:
-    #   node grounded-evidence.mjs <graph.json> <transcript.jsonl>
-    node "$GROUNDED" "$GRAPH" "$OUT/transcript.jsonl" \
-      > "$OUT/grounded.json" 2>"$OUT/grounded.err" \
-      || echo "    (grounded-evidence.mjs nonzero for $arm — see $OUT/grounded.err)"
+    # parse the two headline facts from the scorer's text output (documented above).
+    RATE="$(grep -o 'GROUNDED-EVIDENCE RATE (headline): [0-9.]*' "$OUT/grounded.txt" 2>/dev/null | grep -o '[0-9.]*$' | head -1)"; RATE="${RATE:-0}"
+    if   grep -q 'SUFFICIENCY: PASS' "$OUT/grounded.txt" 2>/dev/null; then SUFF=true
+    elif grep -q 'SUFFICIENCY: FAIL' "$OUT/grounded.txt" 2>/dev/null; then SUFF=false
+    else SUFF=null; fi
 
-    ARM_JSONS+=("$OUT/arm.json")
+    NEAT_CALLS="$(jq -r '.tool_calls.neat // 0' "$OUT/arm.json")"
+    WIRED="$(jq -r '.agent_wired' "$OUT/arm.json")"
+    jq -n --arg arm "$arm" --argjson trial "$t" --argjson rate "$RATE" \
+          --argjson suff "$SUFF" --argjson neat "$NEAT_CALLS" --argjson wired "$WIRED" \
+      '{arm:$arm, trial:$trial, grounded_rate:$rate, sufficient:$suff, neat_calls:$neat, agent_wired:$wired}' \
+      >> "$WALL_DIR/.rows.jsonl"
   done
 done
 
-# ── 4. aggregate ─────────────────────────────────────────────────────────────
+# ── 6. aggregate ─────────────────────────────────────────────────────────────
 step "aggregating $N trials → $WALL_DIR/summary.json"
-# Merge each arm.json with its certificate/grounded scores, then group by arm.
-: > "$WALL_DIR/.rows.jsonl"
-for aj in "${ARM_JSONS[@]}"; do
-  d="$(dirname "$aj")"
-  cert="$d/certificate.json"; grd="$d/grounded.json"
-  jq -s '.[0] + {certificate: (.[1] // null), grounded: (.[2] // null)}' \
-     "$aj" \
-     <([ -f "$cert" ] && cat "$cert" || echo null) \
-     <([ -f "$grd" ]  && cat "$grd"  || echo null) \
-     >> "$WALL_DIR/.rows.jsonl"
-done
-
-jq -s '{
-  target: (.[0].target // null),
-  wall:   (.[0].wall // null),
+jq -s --arg target "$TGT" --arg wall "$WALL" --argjson certified "$CERTIFIED" '{
+  target: $target,
+  wall: $wall,
+  wall_certified: $certified,
   trials: (map(.trial) | unique | length),
   runs: .,
   by_arm: (group_by(.arm) | map({
     key: .[0].arm,
     value: {
       n: length,
-      passed: (map(select(.certificate.pass == true)) | length),
-      neat_calls_mean: ((map(.tool_calls.neat) | add // 0) / (length)),
-      grounded_scores: (map(.grounded))
+      grounded_rate_mean: ((map(.grounded_rate) | add // 0) / length),
+      sufficiency_pass: (map(select(.sufficient == true)) | length),
+      neat_calls_mean: ((map(.neat_calls) | add // 0) / length)
     }
   }) | from_entries)
 }' "$WALL_DIR/.rows.jsonl" > "$WALL_DIR/summary.json"
@@ -149,7 +171,7 @@ rm -f "$WALL_DIR/.rows.jsonl"
 
 echo
 echo "════════════════════════════════════════════════════════════════════"
-echo " Done: $TARGET / $WALL, $N trials × 2 arms"
+echo " Done: $TGT / $WALL, $N trials × 2 arms   (wall_certified=$CERTIFIED)"
 echo " Summary: $WALL_DIR/summary.json"
 echo "════════════════════════════════════════════════════════════════════"
-jq '.by_arm' "$WALL_DIR/summary.json" 2>/dev/null || true
+jq '{wall_certified, by_arm}' "$WALL_DIR/summary.json" 2>/dev/null || true

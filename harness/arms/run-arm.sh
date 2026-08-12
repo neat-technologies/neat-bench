@@ -143,8 +143,28 @@ set -e
 step "[$ARM] capturing final edit → edit.diff"
 git -C "$TARGET" add -A >/dev/null 2>&1 || true
 # diff against the committed instrumented-clean tree (HEAD), excluding vendored dirs.
-git -C "$TARGET" diff --cached -- . ':(exclude)node_modules' > "$OUT_DIR/edit.diff" || true
+git -C "$TARGET" diff --cached -- . ':(exclude)node_modules' > "$OUT_DIR/edit.diff" 2>/dev/null || true
 git -C "$TARGET" reset -q >/dev/null 2>&1 || true   # unstage; leave working edits for the oracle
+
+# ── extract the CLAIMS the agent leaned on → claims.json ─────────────────────
+# grounded-evidence.mjs (the keystone scorer) takes claims as DATA: its own header
+# says "Extracting claims from a transcript is the arms-runner's job; this scorer
+# takes them as data so it stays model-free." A claim is a {source,target,type}
+# graph edge the agent relied on. run.sh feeds this file to grounded-evidence.mjs.
+#
+# TODO(live): implement real claim extraction from transcript.jsonl — map each
+#   mcp__neat__* result the agent cited, and every edge it asserted in prose, to a
+#   {source,target,type} using node/edge ids from the graph. CONTRACT: emit a JSON
+#   array of {source,target,type}. Empty until run_agent + this extractor are wired.
+# Passthrough today: if the transcript already carries {"type":"claim","claim":{…}}
+# lines, forward them; otherwise emit [].
+CLAIMS="$OUT_DIR/claims.json"
+if [ -s "$OUT_DIR/transcript.jsonl" ]; then
+  jq -s '[ .[] | select(.type=="claim") | .claim | {source,target,type} ]' \
+     "$OUT_DIR/transcript.jsonl" > "$CLAIMS" 2>/dev/null || echo '[]' > "$CLAIMS"
+else
+  echo '[]' > "$CLAIMS"
+fi
 
 # ── tally tool calls [arms.md §what to log: neat/* vs read/grep] ──────────────
 NEAT_CALLS=0; OTHER_CALLS=0
