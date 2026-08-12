@@ -1,0 +1,11 @@
+{
+  "_note": "TEMPLATE. run-arm.sh regenerates this per-run into the trial's results dir, substituting the absolute path to YOUR local Neat checkout's MCP bin ($NEAT_REPO/packages/mcp/dist/index.cjs) and the scoped daemon's REST port. Pattern lifted verbatim from neat-agent-bench/harness/with-neat.mcp.json + reproduce.sh's on-the-fly regeneration: the WITH-arm MCP server ships from a LOCAL Neat build, not npm. This file is only given to the WITH-NEAT arm; the control (WITHOUT) arm gets no MCP server at all.",
+  "mcpServers": {
+    "neat": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["<NEAT_MCP_BIN>"],
+      "env": { "NEAT_CORE_URL": "http://127.0.0.1:<REST>" }
+    }
+  }
+}

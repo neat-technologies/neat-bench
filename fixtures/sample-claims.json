@@ -1,0 +1,7 @@
+[
+  { "_note": "tier3 — observed edge, real trace", "type": "CONNECTS_TO", "source": "file:create-nodejs-express-app:src/services/user.service.js", "target": "database:127.0.0.1" },
+  { "_note": "tier3 — observed edge, real trace", "type": "CONNECTS_TO", "source": "file:create-nodejs-express-app:src/services/auth.service.js", "target": "database:127.0.0.1" },
+  { "_note": "tier2 — EXTRACTED only, no observed twin (may be diverged)", "type": "CONNECTS_TO", "source": "file:create-nodejs-express-app:docker-compose.yml", "target": "database:mongodb" },
+  { "_note": "tier1 — both nodes real, but no such edge in the graph (asserted)", "type": "CALLS", "source": "service:create-nodejs-express-app", "target": "database:127.0.0.1" },
+  { "_note": "tier1 — nodes do not exist (fabricated)", "type": "CALLS", "source": "file:ghost:src/made-up.js", "target": "file:ghost:also-fake.js" }
+]

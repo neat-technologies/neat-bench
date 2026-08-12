@@ -1,0 +1,15 @@
+{
+  "name": "neat-bench",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Agents that scale the coding bubble — the NEAT benchmark. One rig (same-model agent, ±NEAT, at certified walls), a dashboard of metrics anchored on a model-free keystone.",
+  "scripts": {
+    "classify": "node harness/claim-classifier.mjs",
+    "grounded": "node harness/grounded-evidence.mjs",
+    "certify": "node harness/wall-certificate.mjs",
+    "aggregate": "node harness/aggregate.mjs",
+    "selftest": "bash scripts/selftest.sh"
+  },
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,91 @@
+{
+  "_schema": "neat-bench target descriptor v1. Consumed by harness/provision/lib.sh (jq). Underscore-prefixed keys are notes and are ignored by the loader.",
+  "_status": "PLACEHOLDER — repo is REAL, but the pinned commit and every run-specific field (install/test/entrypoint/env) are UNVERIFIED in this environment. See _verified and the TODO(live) notes. Do not treat this as known-runnable until a human pins a green commit and confirms the suite drives real Redis+Postgres traffic.",
+  "_verified": false,
+
+  "id": "queue-app",
+  "description": "an image/media service with a BullMQ (Redis-backed) job queue and a Postgres database",
+
+  "_repo_note": "immich — a self-hosted photo/video service. Chosen because it is a REAL, widely-used OSS product (not a teaching boilerplate — the RUNBOOK.md trap), it is large and messy (the kind of target where NEAT's OBSERVED layer separates from static reading), and its job queue is central: the NestJS server uses BullMQ over Redis for thumbnail/transcode/ML jobs, plus a Postgres database. That async queue seam is exactly the non-local causality NEAT is meant to make visible.",
+  "repo": "https://github.com/immich-app/immich",
+
+  "_commit_note": "TODO(live): PIN A KNOWN-GREEN COMMIT. This is a placeholder, not a verified SHA. Pick a tagged release commit, check it out, and confirm `install_cmd` + `traffic.test_cmd` run green against the datastores below before trusting any number. Contract: an exact 40-char SHA that `git checkout` accepts.",
+  "commit": "REPLACE_ME_WITH_A_PINNED_SHA",
+
+  "_subdir_note": "immich is a monorepo; the instrumented + run package is the NestJS server. TODO(live): verify the server package path for your pinned commit (historically `server/`).",
+  "subdir": "server",
+
+  "language": "typescript",
+
+  "_node_note": "TODO(live): verify against the pinned commit's server/.nvmrc / package.json engines. The daemon runs on default node; this is the Node that runs the TARGET (app + tests). Override at runtime with NODE_TARGET=/path/to/nodeXX.",
+  "node_version": "20",
+
+  "_service_id_note": "Becomes the graph node id `service:immich-server` and the /graph/observed-dependencies/<svc> key. TODO(live): confirm the service name NEAT extracts for this package (it derives from package.json name / dir); set this to match so observed-dependencies resolves.",
+  "service_id": "immich-server",
+
+  "_datastores_note": "Generic containers, namespaced <target-id>-<name> by the provisioner. NO CONNECTORS anywhere — these are the app's real datastores that its own traffic hits, and NEAT sees them via OTel client spans only.",
+  "datastores": [
+    {
+      "name": "redis",
+      "image": "redis:7",
+      "ports": ["6379:6379"],
+      "ready_cmd": "redis-cli ping",
+      "ready_expect": "PONG"
+    },
+    {
+      "_image_note": "TODO(live): immich needs a Postgres with its vector extension, NOT stock postgres. Use immich's documented database image for the pinned commit (historically a pgvecto.rs / VectorChord image, e.g. `ghcr.io/immich-app/postgres:14-vectorchord...` or `tensorchord/pgvecto-rs`). Stock `postgres:16` will fail immich's migrations. Fill the exact image + tag your commit expects.",
+      "name": "postgres",
+      "image": "REPLACE_ME_WITH_IMMICH_POSTGRES_IMAGE",
+      "ports": ["5432:5432"],
+      "env": {
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "postgres",
+        "POSTGRES_DB": "immich"
+      },
+      "ready_cmd": "pg_isready -U postgres",
+      "ready_expect": ""
+    }
+  ],
+
+  "_env_note": "TODO(live): verify the exact env keys immich's server reads for your pinned commit (they change across releases). These point the app at the two containers above on localhost. Written verbatim to <subdir>/.env by the provisioner.",
+  "env": {
+    "DB_HOSTNAME": "127.0.0.1",
+    "DB_PORT": "5432",
+    "DB_USERNAME": "postgres",
+    "DB_PASSWORD": "postgres",
+    "DB_DATABASE_NAME": "immich",
+    "REDIS_HOSTNAME": "127.0.0.1",
+    "REDIS_PORT": "6379",
+    "IMMICH_MEDIA_LOCATION": "./upload",
+    "NODE_ENV": "development"
+  },
+
+  "_install_note": "TODO(live): verify. Runs in <subdir> (server) by default; set install_cwd to the repo root if the pinned commit uses npm workspaces that must install from the top. Runs under node_version via a PATH shim.",
+  "install_cmd": "npm ci",
+
+  "_instrument_note": "`node $NEAT_CLI init --apply .` runs in <subdir>, writes the otel-init preload (with NEAT's call-site span processor) + a require() in the entrypoint, and adds OTel deps (we reinstall after). Leave otel_init empty to let the provisioner discover the generated preload; set it if discovery fails.",
+  "instrument": {
+    "cmd": "init --apply",
+    "otel_init": ""
+  },
+
+  "_entrypoint_note": "TODO(live): OPTIONAL. Only needed if a wall requires the LIVE app for HTTP probes; default traffic is the test suite, which does not need the app running. Verify immich's built entrypoint + start command + ping route for your commit.",
+  "entrypoint": "dist/main.js",
+  "start_cmd": "node dist/main.js",
+  "healthcheck": {
+    "path": "/api/server/ping",
+    "port": 2283,
+    "expect_status": 200
+  },
+
+  "_traffic_note": "DELIBERATE: traffic = the target's OWN test suite (span-driven), preloaded with otel-init via NODE_OPTIONS so runner-spawned processes emit spans to the scoped daemon. NO bespoke HTTP driver, NO connectors.",
+  "traffic": {
+    "mode": "test-suite",
+    "_test_cmd_note": "TODO(live): CRITICAL — this MUST be the suite that exercises REAL Redis + Postgres (so BullMQ enqueue/process + DB query spans actually fire), NOT the mocked unit tests (which mock ioredis/the repo layer and produce ZERO OBSERVED edges). For immich, candidates are the medium/integration tests (historically `npm run test:medium`) or the `e2e/` package. Verify which script hits the live containers above and set it here.",
+    "test_cmd": "npm run test:medium",
+    "preload_otel": true,
+    "settle_seconds": 8,
+    "_probes_note": "OPTIONAL per-wall HTTP supplements for a wall path the suite misses. Requires start_cmd/app up. Each: {method, path, port?, body?, headers{}}.",
+    "probes": []
+  }
+}

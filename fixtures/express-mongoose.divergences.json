@@ -1,0 +1,159 @@
+{
+  "divergences": [
+    {
+      "type": "missing-extracted",
+      "source": "file:create-nodejs-express-app:src/app.js",
+      "target": "database:127.0.0.1",
+      "confidence": 0.957,
+      "reason": "Production observed file:create-nodejs-express-app:src/app.js → database:127.0.0.1 (CONNECTS_TO) but static analysis did not surface this edge.",
+      "recommendation": "Likely dynamic dispatch, reflection, or a coverage gap in tree-sitter extraction. Consider an `aliases` entry on the source service or file an extractor issue.",
+      "edgeType": "CONNECTS_TO",
+      "observed": {
+        "id": "CONNECTS_TO:OBSERVED:file:create-nodejs-express-app:src/app.js->database:127.0.0.1",
+        "source": "file:create-nodejs-express-app:src/app.js",
+        "target": "database:127.0.0.1",
+        "type": "CONNECTS_TO",
+        "provenance": "OBSERVED",
+        "confidence": 0.957,
+        "lastObserved": "2026-07-20T11:44:23.113Z",
+        "callCount": 224,
+        "evidence": {
+          "file": "src/app.js",
+          "line": 54
+        },
+        "signal": {
+          "spanCount": 224,
+          "errorCount": 0,
+          "lastObservedAgeMs": 0
+        }
+      }
+    },
+    {
+      "type": "missing-observed",
+      "source": "file:create-nodejs-express-app:docker-compose.yml",
+      "target": "database:mongodb",
+      "confidence": 0.85,
+      "reason": "Code declares file:create-nodejs-express-app:docker-compose.yml → database:mongodb (CONNECTS_TO) but no production traffic has been observed for this edge.",
+      "recommendation": "Verify the code path is exercised in production; check feature flags or conditional branches that might gate the call.",
+      "edgeType": "CONNECTS_TO",
+      "extracted": {
+        "id": "CONNECTS_TO:file:create-nodejs-express-app:docker-compose.yml->database:mongodb",
+        "source": "file:create-nodejs-express-app:docker-compose.yml",
+        "target": "database:mongodb",
+        "type": "CONNECTS_TO",
+        "provenance": "EXTRACTED",
+        "confidence": 0.85,
+        "evidence": {
+          "file": "docker-compose.yml"
+        }
+      }
+    },
+    {
+      "type": "missing-observed",
+      "source": "file:create-nodejs-express-app:Dockerfile",
+      "target": "infra:port:3000",
+      "confidence": 0.85,
+      "reason": "Code declares file:create-nodejs-express-app:Dockerfile → infra:port:3000 (CONNECTS_TO) but no production traffic has been observed for this edge.",
+      "recommendation": "Verify the code path is exercised in production; check feature flags or conditional branches that might gate the call.",
+      "edgeType": "CONNECTS_TO",
+      "extracted": {
+        "id": "CONNECTS_TO:file:create-nodejs-express-app:Dockerfile->infra:port:3000",
+        "source": "file:create-nodejs-express-app:Dockerfile",
+        "target": "infra:port:3000",
+        "type": "CONNECTS_TO",
+        "provenance": "EXTRACTED",
+        "confidence": 0.85,
+        "evidence": {
+          "file": "Dockerfile",
+          "snippet": "EXPOSE 3000"
+        }
+      }
+    },
+    {
+      "type": "missing-extracted",
+      "source": "file:create-nodejs-express-app:src/models/plugins/paginate.plugin.js",
+      "target": "database:127.0.0.1",
+      "confidence": 0.556,
+      "reason": "Production observed file:create-nodejs-express-app:src/models/plugins/paginate.plugin.js → database:127.0.0.1 (CONNECTS_TO) but static analysis did not surface this edge.",
+      "recommendation": "Likely dynamic dispatch, reflection, or a coverage gap in tree-sitter extraction. Consider an `aliases` entry on the source service or file an extractor issue.",
+      "edgeType": "CONNECTS_TO",
+      "observed": {
+        "id": "CONNECTS_TO:OBSERVED:file:create-nodejs-express-app:src/models/plugins/paginate.plugin.js->database:127.0.0.1",
+        "source": "file:create-nodejs-express-app:src/models/plugins/paginate.plugin.js",
+        "target": "database:127.0.0.1",
+        "type": "CONNECTS_TO",
+        "provenance": "OBSERVED",
+        "confidence": 0.556,
+        "lastObserved": "2026-07-20T11:44:22.968Z",
+        "callCount": 8,
+        "evidence": {
+          "file": "src/models/plugins/paginate.plugin.js",
+          "line": 39
+        },
+        "signal": {
+          "spanCount": 8,
+          "errorCount": 0,
+          "lastObservedAgeMs": 0
+        }
+      }
+    },
+    {
+      "type": "missing-extracted",
+      "source": "file:create-nodejs-express-app:src/services/auth.service.js",
+      "target": "database:127.0.0.1",
+      "confidence": 0.556,
+      "reason": "Production observed file:create-nodejs-express-app:src/services/auth.service.js → database:127.0.0.1 (CONNECTS_TO) but static analysis did not surface this edge.",
+      "recommendation": "Likely dynamic dispatch, reflection, or a coverage gap in tree-sitter extraction. Consider an `aliases` entry on the source service or file an extractor issue.",
+      "edgeType": "CONNECTS_TO",
+      "observed": {
+        "id": "CONNECTS_TO:OBSERVED:file:create-nodejs-express-app:src/services/auth.service.js->database:127.0.0.1",
+        "source": "file:create-nodejs-express-app:src/services/auth.service.js",
+        "target": "database:127.0.0.1",
+        "type": "CONNECTS_TO",
+        "provenance": "OBSERVED",
+        "confidence": 0.556,
+        "lastObserved": "2026-07-20T11:44:23.115Z",
+        "callCount": 8,
+        "evidence": {
+          "file": "src/services/auth.service.js",
+          "line": 47
+        },
+        "signal": {
+          "spanCount": 8,
+          "errorCount": 0,
+          "lastObservedAgeMs": 0
+        }
+      }
+    },
+    {
+      "type": "missing-extracted",
+      "source": "file:create-nodejs-express-app:src/services/user.service.js",
+      "target": "database:127.0.0.1",
+      "confidence": 0.556,
+      "reason": "Production observed file:create-nodejs-express-app:src/services/user.service.js → database:127.0.0.1 (CONNECTS_TO) but static analysis did not surface this edge.",
+      "recommendation": "Likely dynamic dispatch, reflection, or a coverage gap in tree-sitter extraction. Consider an `aliases` entry on the source service or file an extractor issue.",
+      "edgeType": "CONNECTS_TO",
+      "observed": {
+        "id": "CONNECTS_TO:OBSERVED:file:create-nodejs-express-app:src/services/user.service.js->database:127.0.0.1",
+        "source": "file:create-nodejs-express-app:src/services/user.service.js",
+        "target": "database:127.0.0.1",
+        "type": "CONNECTS_TO",
+        "provenance": "OBSERVED",
+        "confidence": 0.556,
+        "lastObserved": "2026-07-20T11:44:23.047Z",
+        "callCount": 8,
+        "evidence": {
+          "file": "src/services/user.service.js",
+          "line": 64
+        },
+        "signal": {
+          "spanCount": 8,
+          "errorCount": 0,
+          "lastObservedAgeMs": 0
+        }
+      }
+    }
+  ],
+  "totalAffected": 6,
+  "computedAt": "2026-07-20T11:44:58.454Z"
+}

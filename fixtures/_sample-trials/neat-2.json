@@ -1,0 +1,1 @@
+{ "_synthetic": "unit-test fixture for aggregate.mjs — NOT a benchmark result", "wall": "sample", "arm": "neat", "trial": 2, "metrics": { "fixed": true, "root_cause_hit": true, "tokens": 9000, "detours": 1, "grounded_rate": 88, "walls_cleared": true } }

@@ -1,0 +1,6 @@
+node_modules/
+work/
+results/*.json
+!results/.gitkeep
+*.log
+.DS_Store

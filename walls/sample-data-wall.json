@@ -1,0 +1,15 @@
+{
+  "id": "sample-data-wall",
+  "axis": "data",
+  "_status": "ILLUSTRATIVE — a real wall needs a non-legible target; this one rides the Express fixture only to exercise the scorers.",
+  "symptom": "user reads intermittently return stale rows",
+  "required_facts": [
+    { "type": "CONNECTS_TO", "source": "file:create-nodejs-express-app:src/services/user.service.js", "target": "database:127.0.0.1" }
+  ],
+  "carrying_edge": { "type": "CONNECTS_TO", "source": "file:create-nodejs-express-app:src/services/user.service.js", "target": "database:127.0.0.1" },
+  "absence_predicate": {
+    "_doc": "MUST return empty over the pinned source tree — proves the answer is not readable from code. Runs in provision against the real checkout; skipped when --source-dir is absent.",
+    "cmd": "grep -rn \"127.0.0.1\" src/ || true",
+    "expect": "empty"
+  }
+}
