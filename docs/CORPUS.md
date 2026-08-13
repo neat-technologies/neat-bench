@@ -39,7 +39,7 @@ Nothing here is "cool infra"; each component exists to manufacture a class of ta
 | staging **and** prod | config/env drift, migration-declared-never-applied, dead deps | **wall** (divergence) |
 | Papermark / Twenty (real OSS) | found + injectable service-level bugs on real messy code | runtime-rooted |
 | several tiny Supabase→Vercel apps | small, legible CRUD | **control** + the reproducible core |
-| Expo app + EAS build | mobile→backend seam (polyglot), build-pipeline failure | wall / runtime-rooted |
+| Expo app + EAS build | EAS build-failure incidents — which commit/phase broke the native build (connector-observed); + the mobile→backend seam | runtime-rooted (incident) |
 
 ## What NEAT can see today — the honest coverage map (and the roadmap)
 
@@ -49,9 +49,13 @@ Nothing here is "cool infra"; each component exists to manufacture a class of ta
 |---|---|---|
 | JS/TS (Papermark, Twenty, Node engine, Node Lambdas, Vercel) | **full** — symbol grain + recognizers + connectors | the strong, ready strata |
 | Python (a Py Lambda / Cloud Run) | **partial** — routes + ORM, no symbol layer | Python symbol grain |
-| Go (a Go Cloud Run) | **OBSERVED-only** — no static extractor | Go language expansion |
-| Mobile RN/Swift (Expo app) | **OBSERVED-only** at best | mobile extraction (later) |
-| managed infra (Supabase/CF/Vercel) | **connector-observed** — weaker provenance, not span-traced | connector-vs-trace distinguishability (sibling of neat#979) |
+| Go (a Go Cloud Run) | **partial** — raw-SQL data recognizer (database/sql + sqlx) landed; no call graph / routes yet | Go routes + call graph |
+| Ruby / PHP (a service) | **OTel-instrumentable** — auto-instrumentation installers landed (service-grain OBSERVED) | Ruby/PHP static recognizers |
+| Mobile **build** (EAS) | **connector-observed** — the EAS build-failure connector mints OBSERVED incidents (commit + build-phase attrs) on the resolved node | done (first incident-emitting connector) |
+| Mobile **app code** (RN/Swift) | **no static extractor** — the EAS connector sees builds, not the app's symbol graph | mobile app extraction (later) |
+| managed infra (Supabase/CF/Vercel) | **connector-observed** — weaker provenance, not span-traced | connector-vs-trace distinguishability |
+
+_Synced against NEAT 0.7.10. The gradient moves fast (Go raw-SQL, Ruby/PHP installers, and the EAS connector all landed recently) — recheck this table per NEAT release; it's a roadmap that closes itself._
 
 This is honest and strategic: the corpus surfaces exactly where NEAT is blind, and each gap is a filed hardening/language-expansion item, not a hidden weakness.
 
@@ -77,7 +81,7 @@ Do **not** stand up the whole company at once. Each phase is a standing subsyste
 - **P2 — multi-cloud serverless:** add an AWS Lambda + a GCP Cloud Run in the path. Provider-divergence + polyglot (surfaces the Go/Python gaps).
 - **P3 — edge + drift:** Cloudflare Pages/Worker + staging/prod. Edge + config-divergence walls.
 - **P4 — async engine + CRM:** the BullMQ/Redis engine + Twenty. Producer→consumer walls + more found-bug surface.
-- **P5 — mobile/build:** Expo app + EAS. Mobile→backend seam.
+- **P5 — mobile/build:** Expo app + EAS. The EAS build-failure connector already lands OBSERVED build incidents (commit + build-phase), so the first mobile task is **incident-rooted** — "a build started ERRORing after a change; which one?" — answered from the build incident, not the RN source. Then the mobile→backend seam.
 
 ## Cost reality
 

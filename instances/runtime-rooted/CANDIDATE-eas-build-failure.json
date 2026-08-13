@@ -1,0 +1,20 @@
+{
+  "id": "eas-build-failure-which-commit",
+  "origin": "found",
+  "source": "TODO(live): a real ERRORED EAS build on an Expo app in the corpus (P5)",
+  "stratum": "runtime-rooted",
+  "repo": "REPLACE_ME_WITH_AN_EXPO_APP",
+  "base_commit": "REPLACE_ME_WITH_THE_COMMIT_THAT_BROKE_THE_BUILD",
+  "problem_statement": "EAS builds started ERRORing after a recent change. The app code looks fine locally; the native build fails in a specific build phase. Which change broke it, and fix it.",
+  "gold_patch": "TODO(live): the real fix for the failing build phase.",
+  "oracle": { "type": "probe", "probe": { "request": "trigger an EAS build for the app", "healthy": "FINISHED", "buggy": "ERRORED at the failing build phase" } },
+  "runtime_workload": {
+    "mode": "connector",
+    "cmd": "EAS build-failure connector polls ERRORED builds (ADR-185)",
+    "_provenance": "CONNECTOR-observed, not span-traced — scored at connector provenance per docs/HONESTY.md and docs/CORPUS.md. This is the infra/build layer, where connectors are the legitimate source."
+  },
+  "runtime_dependence": "Which commit/build-phase broke the native build lives in the EAS build INCIDENT (connector-observed, commit + build-phase attributes), not readable from the RN/JS source — no static tool runs the EAS build. NEAT surfaces it via get_incident_history on the resolved node. Honest guardrail (from the connector): on a dirty working tree the attributed commit may not represent what actually built.",
+  "root_cause": { "file": "TODO(live)", "line": 0, "function": "TODO(live)", "detail": "TODO(live): the change that broke the failing build phase." },
+  "validated": { "symptom_reproduced": false, "oracle_runs": false, "_note": "CANDIDATE — needs a real Expo app in the corpus (P5) with a real ERRORED build. First incident-rooted (not edge-wall) instance: the answer is an OBSERVED incident, so it does not use wall-certificate (which is edge-based)." },
+  "neat_signal": { "decisiveness": "HIGH", "note": "The build failure + its commit/phase are OBSERVED via the EAS connector; a without-NEAT agent reading the RN source cannot attribute a native-build failure to a commit." }
+}
