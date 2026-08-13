@@ -1,0 +1,5 @@
+claims scored: 2
+  observation-grounded (tier 3): 0
+  declared-only        (tier 2): 0
+  unbacked             (tier 1): 2
+GROUNDED-EVIDENCE RATE (headline): 0%   backed-any: 0%

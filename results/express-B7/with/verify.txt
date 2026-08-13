@@ -1,0 +1,2 @@
+PASS  B7  — login 200 (no CastError)
+verify_rc=0

@@ -1,0 +1,7 @@
+**File changed:** `src/models/plugins/toJSON.plugin.js:31`
+
+**Why:** The `toJSON` transform used by all Mongoose schemas (via this shared plugin) called `ret._id.toStrng()` — a typo for `toString()`. Since `toStrng` doesn't exist on `ObjectId`, every call throws a `TypeError` whenever a document (e.g. a `User`) is serialized to JSON. That's why register, login, and both user-fetching endpoints all 500: each one creates or reads a user and then serializes it in the response, triggering this transform.
+
+```neat-evidence
+[{"from":"src/models/plugins/toJSON.plugin.js","to":"src/models/user.model.js","kind":"used-by"},{"from":"src/controllers/auth.controller.js","to":"src/models/user.model.js","kind":"calls"},{"from":"src/controllers/user.controller.js","to":"src/models/user.model.js","kind":"calls"},{"from":"src/models/user.model.js","to":"database","kind":"connects"}]
+```

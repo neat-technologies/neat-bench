@@ -1,0 +1,9 @@
+That test failure is an unrelated environment issue (Node v26 vs. an old `jwa`/`buffer-equal-constant-time` dependency incompatibility) that occurs at module-load time, before any test code runs — not something caused by or fixable via my one-line change.
+
+**Fix:** `src/services/auth.service.js:15` — changed `userService.getUserById(email)` back to `userService.getUserByEmail(email)`.
+
+**Root cause:** `getUserById` (src/services/user.service.js:36) calls `User.findById(id)`, which makes Mongoose cast `id` to an `ObjectId`. Passing an email string there throws a Mongoose `CastError` for any valid login attempt, which propagates as an uncaught error → Express error handler returns 500 instead of the intended 401 for bad credentials.
+
+```neat-evidence
+[{"from":"src/services/auth.service.js","to":"src/services/user.service.js","kind":"calls"},{"from":"src/services/user.service.js","to":"database","kind":"connects"}]
+```

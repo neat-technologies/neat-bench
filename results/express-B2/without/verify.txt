@@ -1,0 +1,2 @@
+PASS  B2  — register 201 (serializer ok)
+verify_rc=0

@@ -1,0 +1,12 @@
+[
+  {
+    "source": "file:create-nodejs-express-app:src/services/auth.service.js",
+    "target": "file:create-nodejs-express-app:src/services/user.service.js",
+    "type": "CALLS"
+  },
+  {
+    "source": "file:create-nodejs-express-app:src/services/user.service.js",
+    "target": "database",
+    "type": "CONNECTS_TO"
+  }
+]

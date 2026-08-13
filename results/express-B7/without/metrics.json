@@ -1,0 +1,31 @@
+{
+  "model": "claude-sonnet-5",
+  "mcp_loaded": false,
+  "subtype": "success",
+  "success": true,
+  "tokens": {
+    "input": 14,
+    "output": 1945,
+    "cache_read": 311591,
+    "cache_creation": 23080,
+    "input_total": 334685
+  },
+  "total_cost_usd": 0.26117429999999997,
+  "num_turns": 8,
+  "tool_calls_total": 7,
+  "neat_calls": 0,
+  "other_calls": 7,
+  "files_opened": [
+    "/Users/cem/Documents/GitHub/neat-agent-bench/work/target/src/services/auth.service.js"
+  ],
+  "tool_names": [
+    "Bash",
+    "Glob",
+    "Grep",
+    "Read",
+    "Edit",
+    "Bash",
+    "Bash"
+  ],
+  "answer": "That confirms the file now matches the original (pre-bug) `getUserByEmail` call — the diff is empty, meaning this reverted the injected bug exactly.\n\nNote: I attempted to run the integration tests to verify, but the suite fails to load due to an unrelated environment issue (`buffer-equal-constant-time`/`jwa` incompatibility with the current Node version) — this is pre-existing and unrelated to the fix, so I left it alone per \"do not change tests.\"\n\n**File changed:** `src/services/auth.service.js:15`\n**Why:** `loginUserWithEmailAndPassword` was calling `userService.getUserById(email)`, which runs `User.findById(id)` (a Mongoose `_id` lookup). Passing an email string there throws a Mongoose `CastError` (invalid ObjectId), which isn't handled as a 401 and propagates to the global error handler as a 500. Changed it to `userService.getUserByEmail(email)`, which does the intended `User.findOne({ email })` lookup, restoring correct 401-on-bad-credentials / 200-on-valid-credentials behavior.\n\n```neat-evidence\n[{\"from\":\"src/services/auth.service.js\",\"to\":\"src/services/user.service.js\",\"kind\":\"calls\"},{\"from\":\"src/services/user.service.js\",\"to\":\"database\",\"kind\":\"connects\"}]\n```"
+}

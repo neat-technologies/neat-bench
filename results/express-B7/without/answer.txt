@@ -1,0 +1,10 @@
+That confirms the file now matches the original (pre-bug) `getUserByEmail` call — the diff is empty, meaning this reverted the injected bug exactly.
+
+Note: I attempted to run the integration tests to verify, but the suite fails to load due to an unrelated environment issue (`buffer-equal-constant-time`/`jwa` incompatibility with the current Node version) — this is pre-existing and unrelated to the fix, so I left it alone per "do not change tests."
+
+**File changed:** `src/services/auth.service.js:15`
+**Why:** `loginUserWithEmailAndPassword` was calling `userService.getUserById(email)`, which runs `User.findById(id)` (a Mongoose `_id` lookup). Passing an email string there throws a Mongoose `CastError` (invalid ObjectId), which isn't handled as a 401 and propagates to the global error handler as a 500. Changed it to `userService.getUserByEmail(email)`, which does the intended `User.findOne({ email })` lookup, restoring correct 401-on-bad-credentials / 200-on-valid-credentials behavior.
+
+```neat-evidence
+[{"from":"src/services/auth.service.js","to":"src/services/user.service.js","kind":"calls"},{"from":"src/services/user.service.js","to":"database","kind":"connects"}]
+```

@@ -1,0 +1,9 @@
+The fix is confirmed clean (diff now empty vs HEAD).
+
+**File changed:** `src/models/plugins/toJSON.plugin.js:31`
+
+**Why:** This `toJSON` Mongoose plugin is applied to the User schema (and likely others) and runs on every document serialization — i.e. whenever a user document is converted to JSON for an HTTP response. The transform called `ret._id.toStrng()` (typo, missing an `i`), which is not a function on an ObjectId, throwing a `TypeError` inside the `toJSON` transform. That transform fires for register/login (which return the created/authenticated user) and for the users list/detail endpoints (which return user documents), producing 500s on all four routes even though they're otherwise unrelated. Restored the correct `toString()` call.
+
+```neat-evidence
+[{"from":"src/models/plugins/toJSON.plugin.js","to":"src/models/user.model.js","kind":"plugin-applied-to"},{"from":"src/controllers/auth.controller.js","to":"src/models/user.model.js","kind":"uses"},{"from":"src/controllers/user.controller.js","to":"src/models/user.model.js","kind":"uses"}]
+```

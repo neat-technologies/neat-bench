@@ -48,7 +48,10 @@ for (const line of lines) {
   let o; try { o = JSON.parse(line) } catch { continue }
   if (o.type === 'system' && o.subtype === 'init') {
     model = o.model ?? model
-    mcpLoaded = Array.isArray(o.mcp_servers) && o.mcp_servers.some((s) => s.status === 'ready')
+    // real init status is "connected" (not "ready"); check the NEAT server specifically
+    // so ambient user MCP servers don't read as "NEAT loaded".
+    mcpLoaded = Array.isArray(o.mcp_servers) &&
+      o.mcp_servers.some((s) => s.name === 'neat' && (s.status === 'connected' || s.status === 'ready'))
   } else if (o.type === 'stream_event') {
     const ev = o.event ?? {}
     if (ev.type === 'content_block_start' && ev.content_block?.type === 'tool_use')

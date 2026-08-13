@@ -1,0 +1,22 @@
+[
+  {
+    "source": "file:create-nodejs-express-app:src/models/plugins/toJSON.plugin.js",
+    "target": "file:create-nodejs-express-app:src/models/user.model.js",
+    "type": "CALLS"
+  },
+  {
+    "source": "file:create-nodejs-express-app:src/controllers/auth.controller.js",
+    "target": "file:create-nodejs-express-app:src/models/user.model.js",
+    "type": "CALLS"
+  },
+  {
+    "source": "file:create-nodejs-express-app:src/controllers/user.controller.js",
+    "target": "file:create-nodejs-express-app:src/models/user.model.js",
+    "type": "CALLS"
+  },
+  {
+    "source": "file:create-nodejs-express-app:src/models/user.model.js",
+    "target": "infra:mongodb-collection:users",
+    "type": "CALLS"
+  }
+]

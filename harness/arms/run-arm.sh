@@ -144,12 +144,25 @@ run_agent() {
   # the NEAT MCP server. NB: under --dangerously-skip-permissions the allowlist does
   # not hard-restrict built-ins, so the real ablation variable is the --mcp-config.
   local allow="Read,Grep,Glob,Edit,Bash"
-  local mcp_args=()
-  if [ -n "$mcp_config" ]; then allow="$allow,$NEAT_TOOLS_ALLOW"; mcp_args=(--mcp-config "$mcp_config"); fi
+  # The WITH arm gets FULL NEAT — everything `neat hooks --apply` ships to a real
+  # user: the MCP tools + the graph-first guidance (GRAPH_FIRST.md, via
+  # --append-system-prompt) + the search-nudge PreToolUse hook (via --settings).
+  # Tools alone don't change behaviour; the guidance+hook are how NEAT gets used.
+  local neat_extra=()
+  if [ -n "$mcp_config" ]; then
+    allow="$allow,$NEAT_TOOLS_ALLOW"
+    local skill="${NEAT_REPO:-$HOME/Documents/GitHub/Untitled/Neat}/packages/claude-skill"
+    local hook_json='{"hooks":{"PreToolUse":[{"matcher":"Grep|Glob|Bash","hooks":[{"type":"command","command":"node '"$skill"'/hooks/neat-search-nudge.mjs"}]}]}}'
+    neat_extra=(--mcp-config "$mcp_config"
+                --append-system-prompt "$(cat "$skill/GRAPH_FIRST.md" 2>/dev/null)"
+                --settings "$hook_json")
+  fi
   local prompt; prompt="$(cat "$prompt_file")"
+  # --strict-mcp-config: use ONLY --mcp-config (the WITH arm's neat, or nothing for
+  # the control) — never the operator's ambient user/project MCP servers.
   ( cd "$cwd" && claude -p "$prompt" \
       --model "$BENCH_MODEL" --max-turns "$BENCH_MAX_TURNS" \
-      --allowedTools "$allow" "${mcp_args[@]}" \
+      --allowedTools "$allow" "${neat_extra[@]}" --strict-mcp-config \
       --dangerously-skip-permissions \
       --output-format stream-json --verbose --include-partial-messages \
   ) > "$out_dir/claude-stream.jsonl" 2> "$out_dir/claude.err" || true
