@@ -101,7 +101,7 @@ else
 fi
 
 # ── the one environment-specific seam ────────────────────────────────────────
-# TODO(live): implement run_agent to invoke your actual coding agent.
+# run_agent — drives Claude Code headless (claude -p --output-format stream-json).
 #   CONTRACT
 #     inputs:
 #       $1 prompt_file  — path to prompt.txt (identical for both arms)
@@ -120,17 +120,36 @@ fi
 #       afterwards, so run_agent must NOT reset the tree itself.
 #   The control arm MUST NOT be able to reach the daemon or any neat tool — pass
 #   mcp_config="" and ensure your runner adds no NEAT server in that case.
+# Same model both arms; the ONLY difference is the NEAT MCP server (WITH arm) and
+# its tools in the allowlist. [verified Claude Code headless contract]
+NEAT_TOOLS_ALLOW="get_graph,get_divergences,get_root_cause,get_blast_radius,get_observed_dependencies,get_dependencies,get_incident_history,get_graph_diff,get_recent_stale_edges,semantic_search,check_policies"
+BENCH_MODEL="${NEAT_BENCH_MODEL:-sonnet}"
+BENCH_MAX_TURNS="${NEAT_BENCH_MAX_TURNS:-25}"
+HERE_ARM="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 run_agent() {
   local prompt_file="$1" cwd="$2" mcp_config="$3" out_dir="$4"
-  echo "  TODO(live): run_agent is a stub — no model was invoked." >&2
-  echo "  Wire your agent runner here (e.g. \`claude -p\`, an SDK loop, aider, etc.)." >&2
-  echo "  It must consume: prompt=$prompt_file cwd=$cwd mcp=${mcp_config:-<none>}" >&2
-  echo "  and produce: $out_dir/transcript.jsonl and $out_dir/tool-calls.log" >&2
-  # Write empty, well-formed artifacts so downstream steps have real (not faked)
-  # files to operate on. These are EMPTY BY DESIGN until run_agent is implemented.
-  : > "$out_dir/transcript.jsonl"
-  : > "$out_dir/tool-calls.log"
-  return 42   # sentinel: "agent not wired" — run.sh treats this as a skip, not a pass
+  if ! command -v claude >/dev/null 2>&1; then
+    echo "  claude CLI not found — cannot run the arm. Install Claude Code." >&2
+    : > "$out_dir/transcript.jsonl"; : > "$out_dir/tool-calls.log"
+    return 42   # not-wired / skip, honestly
+  fi
+  # arms.md base toolset: file-read + grep + editor. Treatment adds the NEAT tools.
+  local allow="Read,Grep,Glob,Edit"
+  local mcp_args=()
+  if [ -n "$mcp_config" ]; then allow="$allow,$NEAT_TOOLS_ALLOW"; mcp_args=(--mcp-config "$mcp_config"); fi
+  local prompt; prompt="$(cat "$prompt_file")"
+  ( cd "$cwd" && claude -p "$prompt" \
+      --model "$BENCH_MODEL" --max-turns "$BENCH_MAX_TURNS" \
+      --allowedTools "$allow" "${mcp_args[@]}" \
+      --dangerously-skip-permissions \
+      --output-format stream-json --verbose --include-partial-messages \
+  ) > "$out_dir/claude-stream.jsonl" 2> "$out_dir/claude.err" || true
+  cp "$out_dir/claude-stream.jsonl" "$out_dir/transcript.jsonl"   # raw stream = the transcript of record
+  node "$HERE_ARM/parse-claude-stream.mjs" "$out_dir/claude-stream.jsonl" --neat-tools "$NEAT_TOOLS_ALLOW" \
+      > "$out_dir/metrics.json" 2>/dev/null || echo '{}' > "$out_dir/metrics.json"
+  jq -r '.answer // ""' "$out_dir/metrics.json" > "$out_dir/answer.txt"
+  jq -r '.tool_names[]? // empty' "$out_dir/metrics.json" > "$out_dir/tool-calls.log"
+  return 0
 }
 
 step "[$ARM] running agent (trial $TRIAL, wall $WALL_ID)"
@@ -152,41 +171,40 @@ git -C "$TARGET" reset -q >/dev/null 2>&1 || true   # unstage; leave working edi
 # takes them as data so it stays model-free." A claim is a {source,target,type}
 # graph edge the agent relied on. run.sh feeds this file to grounded-evidence.mjs.
 #
-# TODO(live): implement real claim extraction from transcript.jsonl — map each
-#   mcp__neat__* result the agent cited, and every edge it asserted in prose, to a
-#   {source,target,type} using node/edge ids from the graph. CONTRACT: emit a JSON
-#   array of {source,target,type}. Empty until run_agent + this extractor are wired.
-# Passthrough today: if the transcript already carries {"type":"claim","claim":{…}}
-# lines, forward them; otherwise emit [].
+# Claims come from the agent's neutral ```neat-evidence block, resolved edge-aware
+# to graph node-ids by extract-claims.mjs (fair to both arms — file paths, not NEAT
+# ids; unresolvable facts score FABRICATED). grounded-evidence.mjs grades them.
 CLAIMS="$OUT_DIR/claims.json"
-if [ -s "$OUT_DIR/transcript.jsonl" ]; then
-  jq -s '[ .[] | select(.type=="claim") | .claim | {source,target,type} ]' \
-     "$OUT_DIR/transcript.jsonl" > "$CLAIMS" 2>/dev/null || echo '[]' > "$CLAIMS"
+GRAPH_SNAPSHOT="${GRAPH:-$RESULTS/$TARGET_ID.graph.json}"
+if [ -s "$OUT_DIR/answer.txt" ] && [ -f "$GRAPH_SNAPSHOT" ]; then
+  node "$HERE_ARM/extract-claims.mjs" "$GRAPH_SNAPSHOT" "$OUT_DIR/answer.txt" > "$CLAIMS" 2>/dev/null || echo '[]' > "$CLAIMS"
 else
   echo '[]' > "$CLAIMS"
 fi
 
 # ── tally tool calls [arms.md §what to log: neat/* vs read/grep] ──────────────
-NEAT_CALLS=0; OTHER_CALLS=0
-if [ -s "$OUT_DIR/transcript.jsonl" ]; then
-  NEAT_CALLS="$(jq -r 'select(.type=="tool_call") | .name' "$OUT_DIR/transcript.jsonl" 2>/dev/null | grep -c 'neat' || true)"
-  OTHER_CALLS="$(jq -r 'select(.type=="tool_call") | .name' "$OUT_DIR/transcript.jsonl" 2>/dev/null | grep -cv 'neat' || true)"
-fi
+NEAT_CALLS="$(jq -r '.neat_calls // 0' "$OUT_DIR/metrics.json" 2>/dev/null || echo 0)"
+OTHER_CALLS="$(jq -r '.other_calls // 0' "$OUT_DIR/metrics.json" 2>/dev/null || echo 0)"
 
 # ── machine-readable arm summary ─────────────────────────────────────────────
 DIFF_LINES="$(wc -l < "$OUT_DIR/edit.diff" | tr -d ' ')"
 AGENT_WIRED=$([ "$AGENT_RC" = 42 ] && echo false || echo true)
+[ -f "$OUT_DIR/metrics.json" ] || echo '{}' > "$OUT_DIR/metrics.json"
 jq -n \
   --arg target "$TARGET_ID" --arg wall "$WALL_ID" --arg arm "$ARM" \
   --argjson trial "$TRIAL" --argjson rc "$AGENT_RC" \
   --argjson agent_wired "$AGENT_WIRED" \
-  --argjson neat_calls "${NEAT_CALLS:-0}" --argjson other_calls "${OTHER_CALLS:-0}" \
   --argjson diff_lines "${DIFF_LINES:-0}" \
   --arg mcp "${MCP_CONFIG:-none}" \
+  --slurpfile m "$OUT_DIR/metrics.json" \
   '{target:$target, wall:$wall, arm:$arm, trial:$trial,
     agent_wired:$agent_wired, agent_rc:$rc, mcp_config:$mcp,
-    tool_calls:{neat:$neat_calls, other:$other_calls},
-    edit_diff_lines:$diff_lines}' > "$OUT_DIR/arm.json"
+    edit_diff_lines:$diff_lines,
+    model:($m[0].model), success:($m[0].success),
+    tokens:{input:($m[0].input_tokens), output:($m[0].output_tokens)},
+    cost_usd:($m[0].total_cost_usd), turns:($m[0].num_turns),
+    files_opened:($m[0].files_opened),
+    tool_calls:{neat:($m[0].neat_calls // 0), other:($m[0].other_calls // 0)}}' > "$OUT_DIR/arm.json"
 
 echo "  [$ARM] done → $OUT_DIR   (agent_wired=$AGENT_WIRED, edit.diff ${DIFF_LINES} lines, neat_calls=$NEAT_CALLS)"
 # Propagate the not-wired sentinel so run.sh can distinguish "agent skipped" from a real run.

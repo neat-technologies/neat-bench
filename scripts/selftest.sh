@@ -27,6 +27,14 @@ echo "== aggregate (should roll up the synthetic trials into a delta) =="
 node harness/aggregate.mjs fixtures/_sample-trials/*.json || fail=1
 
 echo ""
+echo "== arm pipeline (claude stream -> metrics -> claims -> grounded) =="
+node harness/arms/parse-claude-stream.mjs fixtures/_sample-claude-stream.jsonl > /tmp/_nb_m.json 2>/dev/null \
+  && jq -r '.answer' /tmp/_nb_m.json > /tmp/_nb_a.txt \
+  && node harness/arms/extract-claims.mjs fixtures/express-mongoose.graph.json /tmp/_nb_a.txt > /tmp/_nb_c.json \
+  && node harness/grounded-evidence.mjs fixtures/express-mongoose.graph.json /tmp/_nb_c.json | tail -1 \
+  || fail=1
+
+echo ""
 echo "== instance-validate (seed suite should be valid and stratified) =="
 node harness/instance-validate.mjs instances/ || fail=1
 

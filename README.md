@@ -38,7 +38,7 @@ It grades the agent's **context, not its outcome**, so it's nearly model-free �
 **Scaffolded, needs a live target** — marked `TODO(live)` in the code, no results faked:
 
 - `harness/provision/` — target-descriptor-driven provisioner (clone→instrument with a **local NEAT checkout**→daemon→**drive the target's own test suite**→snapshot). Span-driven, **no connectors** (connector-pulled OBSERVED is not a real trace).
-- `harness/arms/` — the ±NEAT agent-arm runner (same model, with/without the NEAT MCP server, transcript + tool-log capture).
+- `harness/arms/` — the ±NEAT agent-arm runner, **wired to Claude Code headless** (`claude -p --output-format stream-json`, MCP via `--mcp-config`, `--allowedTools` arm split). The metrics + claims pipeline (`parse-claude-stream` → `extract-claims` → `grounded-evidence`) is proven on fixtures; a live run needs a provisioned target + the `claude` CLI.
 - `run.sh` — one-command orchestration.
 
 ## Quickstart

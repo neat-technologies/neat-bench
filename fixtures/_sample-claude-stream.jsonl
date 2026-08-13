@@ -1,0 +1,9 @@
+{"type":"system","subtype":"init","model":"claude-sonnet-5","mcp_servers":[{"name":"neat","status":"ready"}]}
+{"type":"stream_event","event":{"type":"message_start","message":{"id":"msg_1"}}}
+{"type":"stream_event","event":{"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"t1","name":"Read"}}}
+{"type":"stream_event","event":{"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"file_path\":\"src/services/auth.service.js\"}"}}}
+{"type":"stream_event","event":{"type":"content_block_stop","index":0}}
+{"type":"stream_event","event":{"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"t2","name":"get_divergences"}}}
+{"type":"stream_event","event":{"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{}"}}}
+{"type":"stream_event","event":{"type":"content_block_stop","index":1}}
+{"type":"result","subtype":"success","result":"Root cause: src/services/auth.service.js:15 calls getUserById(email).\n\n```neat-evidence\n[{\"from\":\"src/services/auth.service.js\",\"to\":\"database\",\"kind\":\"connects\"}]\n```","usage":{"input_tokens":1200,"output_tokens":300},"total_cost_usd":0.004}

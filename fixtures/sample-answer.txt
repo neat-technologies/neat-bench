@@ -1,0 +1,13 @@
+The root cause is in src/services/auth.service.js:15 — loginUserWithEmailAndPassword
+calls getUserById(email) instead of getUserByEmail(email). findById casts the email
+string to an ObjectId and throws a CastError, surfacing as a 500.
+
+I changed src/services/auth.service.js line 15 to call getUserByEmail(email).
+
+```neat-evidence
+[
+  {"from": "src/services/auth.service.js", "to": "database", "kind": "connects"},
+  {"from": "src/services/user.service.js", "to": "database", "kind": "reads"},
+  {"from": "src/made-up.js", "to": "src/ghost.js", "kind": "calls"}
+]
+```
