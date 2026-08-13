@@ -1,18 +1,20 @@
 #!/usr/bin/env node
 // parse-claude-stream — normalize `claude -p --output-format stream-json` output
-// into the objective metrics the arm needs. Built to the verified schema
-// (system/init, stream_event{content_block_start|delta|stop, message_start},
-// final result{subtype,result,usage,total_cost_usd}).
+// into objective metrics. Validated against REAL Claude Code 2.1.231 output, which
+// differs from the docs summary in three ways this handles:
+//   1. tool_use appears in BOTH `assistant` message events AND `stream_event`
+//      content blocks — so we DEDUPE by tool_use id (else every call double-counts).
+//   2. the result event carries `num_turns` directly (don't count message events).
+//   3. `usage.input_tokens` is only the final uncached turn; the real input is
+//      input + cache_read + cache_creation — we report the full breakdown.
 //
-//   node harness/arms/parse-claude-stream.mjs <claude-stream.jsonl> [--neat-tools a,b,c]
-//     -> prints a metrics JSON object to stdout.
+//   node harness/arms/parse-claude-stream.mjs <claude-stream.jsonl> [--neat-tools a,b]
 //
-// MCP tool names appear PLAIN in the stream (e.g. get_divergences, not
-// mcp__neat__...), so we tally "neat" calls by membership in the NEAT tool set.
+// MCP tool names appear PLAIN (get_divergences, not mcp__neat__...), tallied by
+// membership in the NEAT tool set.
 
 import { readFileSync } from 'node:fs'
 
-// Known NEAT MCP tools (plain names). Extendable via --neat-tools.
 const NEAT_TOOLS = new Set([
   'get_graph', 'get_divergences', 'get_root_cause', 'get_blast_radius',
   'get_observed_dependencies', 'get_dependencies', 'get_incident_history',
@@ -30,17 +32,16 @@ if (nt !== -1) for (const t of (args[nt + 1] ?? '').split(',')) if (t) NEAT_TOOL
 if (!streamPath) { console.error('usage: node parse-claude-stream.mjs <claude-stream.jsonl> [--neat-tools a,b]'); process.exit(1) }
 
 const lines = readFileSync(streamPath, 'utf8').split('\n').filter((l) => l.trim())
-const blocks = new Map()      // content-block index -> {name,id,input}
-const toolCalls = []
-let model = null, mcpLoaded = false, subtype = null, answer = ''
-let inTok = 0, outTok = 0, cost = 0, turns = 0
+const openBlocks = new Map()   // stream content-block index -> {id,name,input}
+const toolById = new Map()     // tool_use id -> {name, input}  (dedup across both event shapes)
+let model = null, mcpLoaded = false, subtype = null, isError = false, answer = ''
+let usage = {}, cost = 0, numTurns
 
-const finalizeBlock = (idx) => {
-  const b = blocks.get(idx); if (!b) return
-  let input = {}
-  try { input = b.input ? JSON.parse(b.input) : {} } catch {}
-  toolCalls.push({ name: b.name, input })
-  blocks.delete(idx)
+const mergeTool = (id, name, input) => {
+  if (!id) { toolById.set(`anon-${toolById.size}`, { name, input: input ?? {} }); return }
+  const cur = toolById.get(id)
+  if (!cur) toolById.set(id, { name, input: input ?? {} })
+  else if ((!cur.input || Object.keys(cur.input).length === 0) && input) cur.input = input
 }
 
 for (const line of lines) {
@@ -50,36 +51,40 @@ for (const line of lines) {
     mcpLoaded = Array.isArray(o.mcp_servers) && o.mcp_servers.some((s) => s.status === 'ready')
   } else if (o.type === 'stream_event') {
     const ev = o.event ?? {}
-    if (ev.type === 'message_start') turns++
-    else if (ev.type === 'content_block_start' && ev.content_block?.type === 'tool_use')
-      blocks.set(ev.index, { name: ev.content_block.name, id: ev.content_block.id, input: '' })
+    if (ev.type === 'content_block_start' && ev.content_block?.type === 'tool_use')
+      openBlocks.set(ev.index, { id: ev.content_block.id, name: ev.content_block.name, input: '' })
     else if (ev.type === 'content_block_delta' && ev.delta?.type === 'input_json_delta') {
-      const b = blocks.get(ev.index); if (b) b.input += ev.delta.partial_json ?? ''
-    } else if (ev.type === 'content_block_stop') finalizeBlock(ev.index)
+      const b = openBlocks.get(ev.index); if (b) b.input += ev.delta.partial_json ?? ''
+    } else if (ev.type === 'content_block_stop') {
+      const b = openBlocks.get(ev.index)
+      if (b) { let inp = {}; try { inp = b.input ? JSON.parse(b.input) : {} } catch {} ; mergeTool(b.id, b.name, inp); openBlocks.delete(ev.index) }
+    }
   } else if (o.type === 'assistant' && o.message?.content) {
-    // fallback for bundled (non-partial) mode
-    turns++
-    for (const c of o.message.content) if (c.type === 'tool_use') toolCalls.push({ name: c.name, input: c.input ?? {} })
+    for (const c of o.message.content) if (c.type === 'tool_use') mergeTool(c.id, c.name, c.input ?? {})
   } else if (o.type === 'result') {
     subtype = o.subtype ?? subtype
+    isError = Boolean(o.is_error)
     answer = typeof o.result === 'string' ? o.result : answer
-    inTok = o.usage?.input_tokens ?? inTok
-    outTok = o.usage?.output_tokens ?? outTok
+    usage = o.usage ?? usage
     cost = o.total_cost_usd ?? cost
+    numTurns = o.num_turns ?? numTurns
   }
 }
-for (const idx of [...blocks.keys()]) finalizeBlock(idx)
 
+const toolCalls = [...toolById.values()]
 const neat = toolCalls.filter((t) => NEAT_TOOLS.has(t.name))
 const other = toolCalls.filter((t) => !NEAT_TOOLS.has(t.name))
 const filesOpened = [...new Set(
   toolCalls.filter((t) => FILE_TOOLS.has(t.name) && t.input?.file_path).map((t) => t.input.file_path),
 )]
+const inp = usage.input_tokens ?? 0
+const cacheR = usage.cache_read_input_tokens ?? 0
+const cacheC = usage.cache_creation_input_tokens ?? 0
 
 console.log(JSON.stringify({
-  model, mcp_loaded: mcpLoaded, subtype, success: subtype === 'success',
-  input_tokens: inTok, output_tokens: outTok, total_cost_usd: cost,
-  num_turns: turns || undefined,
+  model, mcp_loaded: mcpLoaded, subtype, success: subtype === 'success' && !isError,
+  tokens: { input: inp, output: usage.output_tokens ?? 0, cache_read: cacheR, cache_creation: cacheC, input_total: inp + cacheR + cacheC },
+  total_cost_usd: cost, num_turns: numTurns,
   tool_calls_total: toolCalls.length, neat_calls: neat.length, other_calls: other.length,
   files_opened: filesOpened,
   tool_names: toolCalls.map((t) => t.name),

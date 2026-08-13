@@ -69,7 +69,13 @@ The service in ./ ($desc) has a bug.
 Symptom: $symptom
 
 Find the root cause and fix it. Change as little as possible. Do not change tests.
-When done, state the file and line you changed and why.
+When done, state the file and line you changed and why. Then end your answer with a
+fenced block of the dependency facts you relied on — neutral terms only (file paths
+and coarse targets like "database" or "queue"), one object per fact:
+
+\`\`\`neat-evidence
+[{"from":"src/a.js","to":"database","kind":"connects"},{"from":"src/a.js","to":"src/b.js","kind":"calls"}]
+\`\`\`
 PROMPT
 }
 build_prompt > "$OUT_DIR/prompt.txt"
@@ -133,8 +139,11 @@ run_agent() {
     : > "$out_dir/transcript.jsonl"; : > "$out_dir/tool-calls.log"
     return 42   # not-wired / skip, honestly
   fi
-  # arms.md base toolset: file-read + grep + editor. Treatment adds the NEAT tools.
-  local allow="Read,Grep,Glob,Edit"
+  # Both arms get the SAME built-in toolset (incl. Bash — a tougher, fairer control
+  # that can run/probe the app itself; bench pilot caveat #4). The ONLY difference is
+  # the NEAT MCP server. NB: under --dangerously-skip-permissions the allowlist does
+  # not hard-restrict built-ins, so the real ablation variable is the --mcp-config.
+  local allow="Read,Grep,Glob,Edit,Bash"
   local mcp_args=()
   if [ -n "$mcp_config" ]; then allow="$allow,$NEAT_TOOLS_ALLOW"; mcp_args=(--mcp-config "$mcp_config"); fi
   local prompt; prompt="$(cat "$prompt_file")"
@@ -201,7 +210,7 @@ jq -n \
     agent_wired:$agent_wired, agent_rc:$rc, mcp_config:$mcp,
     edit_diff_lines:$diff_lines,
     model:($m[0].model), success:($m[0].success),
-    tokens:{input:($m[0].input_tokens), output:($m[0].output_tokens)},
+    tokens:($m[0].tokens),
     cost_usd:($m[0].total_cost_usd), turns:($m[0].num_turns),
     files_opened:($m[0].files_opened),
     tool_calls:{neat:($m[0].neat_calls // 0), other:($m[0].other_calls // 0)}}' > "$OUT_DIR/arm.json"

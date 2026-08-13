@@ -35,6 +35,12 @@ node harness/arms/parse-claude-stream.mjs fixtures/_sample-claude-stream.jsonl >
   || fail=1
 
 echo ""
+echo "== parser vs REAL claude output (regression: 5 deduped tools, 6 turns) =="
+node harness/arms/parse-claude-stream.mjs fixtures/real-claude-stream.jsonl \
+  | jq -e '.tool_calls_total==5 and .num_turns==6 and .success==true' >/dev/null \
+  && echo "OK — real-output parse holds" || { echo "FAIL real-output parse"; fail=1; }
+
+echo ""
 echo "== instance-validate (seed suite should be valid and stratified) =="
 node harness/instance-validate.mjs instances/ || fail=1
 
