@@ -1,0 +1,17 @@
+{
+  "id": "express-a4-objectid-400",
+  "origin": "constructed",
+  "source": "neat-agent-bench task A4",
+  "stratum": "static-solvable",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "bug_patch": "neat-agent-bench/patches/A4.patch",
+  "problem_statement": "GET /v1/users/:id returns 400 'userId must be a valid mongo id' for ids that are valid 24-character Mongo ObjectIds.",
+  "gold_patch": "Change the ObjectId regex quantifier from {12} to {24} at src/validations/custom.validation.js:2 (revert of bug_patch).",
+  "oracle": { "type": "probe", "probe": { "request": "GET /v1/users/:validObjectId as admin", "healthy": "200", "buggy": "400" } },
+  "runtime_workload": { "mode": "traffic", "cmd": "GET user probe against the instrumented app", "preload_otel": true },
+  "runtime_dependence": "Request is rejected at the validate middleware before any DB call, so there is no service-level OBSERVED change — the regex is a pure static read. Control — NEAT should TIE.",
+  "root_cause": { "file": "src/validations/custom.validation.js", "line": 2, "function": "objectId", "detail": "Regex length wrong: /^[0-9a-fA-F]{12}$/ should be {24}." },
+  "validated": { "symptom_reproduced": true, "oracle_runs": false },
+  "neat_signal": { "decisiveness": "LOW", "note": "Rejected before any DB call; no runtime signal distinguishes it." }
+}

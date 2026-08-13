@@ -1,0 +1,24 @@
+{
+  "id": "wall-CANDIDATE-queue-payload-drift",
+  "origin": "found",
+  "source": "TODO(live): a real issue+PR in a light BullMQ/Redis service repo (see neat-bench#1)",
+  "stratum": "wall",
+  "repo": "REPLACE_ME_WITH_A_LIGHT_QUEUE_SERVICE",
+  "base_commit": "REPLACE_ME_WITH_A_PINNED_SHA",
+  "problem_statement": "A queue consumer intermittently fails to process jobs after the producer changed the job payload shape. Nothing in the consumer's source references the producer; the two are linked only by a queue/topic string.",
+  "gold_patch": "TODO(live): the real fixing PR diff.",
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": ["TODO(live)::identify_the_failing_consumer_integration_test"],
+    "pass_to_pass": ["TODO(live)::the_suite_s_already_green_tests_as_a_regression_guard"]
+  },
+  "runtime_workload": { "mode": "test-suite", "cmd": "TODO(live): the integration suite that runs against REAL Redis+DB so BullMQ spans fire", "preload_otel": true },
+  "runtime_dependence": "The producer->consumer link is a queue topic string, not a static reference — no static tool (NEAT's recognizer or a full call-graph indexer) can follow it. Which producer wrote the payload the failing consumer reads exists only in the trace.",
+  "wall_certificate": {
+    "absence_predicate": { "cmd": "grep -rn \"<producer-file-or-symbol>\" <consumer-dir>/ || true", "expect": "empty" },
+    "carrying_edge": { "type": "PUBLISHES_TO", "source": "<producer symbol>", "target": "<queue/topic infra node>" }
+  },
+  "root_cause": { "file": "TODO(live)", "line": 0, "function": "TODO(live)", "detail": "TODO(live): the producer symbol that changed the payload." },
+  "validated": { "symptom_reproduced": false, "oracle_runs": false, "_note": "CANDIDATE — not yet curated. Runs through the curation pipeline (docs/INSTANCES.md) and must CERTIFY via wall-certificate.mjs before it counts." },
+  "neat_signal": { "decisiveness": "HIGH", "note": "Producer->consumer is fundamentally absent from source; this is the sharpest stratum." }
+}

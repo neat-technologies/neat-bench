@@ -1,0 +1,17 @@
+{
+  "id": "express-b2-fanin-500",
+  "origin": "constructed",
+  "source": "neat-agent-bench task B2",
+  "stratum": "runtime-rooted",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "bug_patch": "neat-agent-bench/patches/B2.patch",
+  "problem_statement": "Multiple unrelated endpoints (POST /v1/auth/register, POST /v1/auth/login, GET /v1/users, GET /v1/users/:id) all return 500. Creating and reading users both fail.",
+  "gold_patch": "Correct `.toStrng()` to `.toString()` at src/models/plugins/toJSON.plugin.js:31 (revert of bug_patch).",
+  "oracle": { "type": "probe", "probe": { "request": "POST /v1/auth/register {valid}", "healthy": "201", "buggy": "500" } },
+  "runtime_workload": { "mode": "traffic", "cmd": "register/login/getUser probes against the instrumented app", "preload_otel": true },
+  "runtime_dependence": "The cause is in source (a typo in the shared serializer) but NON-LOCAL: the symptom is 'register AND login AND getUser all 500', a fan-in a reader must discover by finding the common denominator across many routes. NEAT's incident stack trace collapses the multi-route symptom to toJSON.plugin.js:31 immediately. Runtime-rooted — NEAT wins on search cost, not on possibility.",
+  "root_cause": { "file": "src/models/plugins/toJSON.plugin.js", "line": 31, "function": "toJSON transform", "detail": "Method typo `.toStrng()` in the shared serializer applied to every model, so every response that serializes a document throws." },
+  "validated": { "symptom_reproduced": true, "oracle_runs": false },
+  "neat_signal": { "decisiveness": "HIGH", "note": "Incidents point exactly at toJSON.plugin.js:31:24 (5 captured occurrences); grep_suffices=false in the source bench data." }
+}

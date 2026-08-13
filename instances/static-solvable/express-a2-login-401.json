@@ -1,0 +1,17 @@
+{
+  "id": "express-a2-login-401",
+  "origin": "constructed",
+  "source": "neat-agent-bench task A2",
+  "stratum": "static-solvable",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "bug_patch": "neat-agent-bench/patches/A2.patch",
+  "problem_statement": "Login with correct credentials that just registered successfully always returns 401 'Incorrect email or password'.",
+  "gold_patch": "Correct the query field from `emails` to `email` at src/services/user.service.js:46 (revert of bug_patch).",
+  "oracle": { "type": "probe", "probe": { "request": "register user, then POST /v1/auth/login {same creds}", "healthy": "200", "buggy": "401" } },
+  "runtime_workload": { "mode": "traffic", "cmd": "register+login probe against the instrumented app", "preload_otel": true },
+  "runtime_dependence": "The typo `{ emails: email }` is one grep away. NEAT sees the DB read run and return nothing but does not name the field, so a static read is as fast. Control — NEAT should TIE.",
+  "root_cause": { "file": "src/services/user.service.js", "line": 46, "function": "getUserByEmail", "detail": "Query field typo: findOne({ emails: email }) should be { email }." },
+  "validated": { "symptom_reproduced": true, "oracle_runs": false },
+  "neat_signal": { "decisiveness": "LOW", "note": "OBSERVED does not name the query field; read-the-query bug." }
+}

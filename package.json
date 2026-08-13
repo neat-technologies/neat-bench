@@ -9,6 +9,7 @@
     "grounded": "node harness/grounded-evidence.mjs",
     "certify": "node harness/wall-certificate.mjs",
     "aggregate": "node harness/aggregate.mjs",
+    "validate": "node harness/instance-validate.mjs instances/",
     "selftest": "bash scripts/selftest.sh"
   },
   "license": "UNLICENSED"

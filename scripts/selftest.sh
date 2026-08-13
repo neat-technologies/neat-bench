@@ -27,5 +27,9 @@ echo "== aggregate (should roll up the synthetic trials into a delta) =="
 node harness/aggregate.mjs fixtures/_sample-trials/*.json || fail=1
 
 echo ""
+echo "== instance-validate (seed suite should be valid and stratified) =="
+node harness/instance-validate.mjs instances/ || fail=1
+
+echo ""
 if [ "$fail" -eq 0 ]; then echo "SELFTEST: all bricks behave."; else echo "SELFTEST: FAILURES above."; fi
 exit "$fail"

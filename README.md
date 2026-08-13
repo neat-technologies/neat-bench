@@ -8,6 +8,16 @@ It is **one rig, a dashboard of numbers** — not a single score. The rig: a sam
 
 An earlier fixture ([`neat-agent-bench`](../neat-agent-bench)) tied on correctness because its target was *legible* — a strong agent read its way through. The lesson: NEAT's edge only appears where reading the source **cannot** get you there. So this benchmark measures exactly that boundary, and refuses to count anything that isn't on it.
 
+## The suite (SWE-bench-shaped, stratified)
+
+Found tasks on runnable services, scored by a judge-free test oracle (FAIL_TO_PASS + PASS_TO_PASS), run ±NEAT, and **reported per runtime-dependence stratum** so a tie and a blowout don't average into "modest":
+
+- **static-solvable** — the answer is in the source; NEAT should **tie** (honest control).
+- **runtime-rooted** — reachable only via runtime behaviour; NEAT **wins**.
+- **wall** — provably absent from source (certified); the without-NEAT arm **can't finish**.
+
+Schema, strata, and the curation pipeline: [`docs/INSTANCES.md`](docs/INSTANCES.md). Seed in `instances/` (2 controls + 2 runtime-rooted ported from validated bugs + 1 wall candidate) — `npm run validate`.
+
 ## The keystone: Grounded-Evidence Rate (model-free)
 
 > Of the load-bearing facts the agent leaned on, what % trace back to something **real** (an observed trace) vs. invented or merely *declared by code that may be lying*?

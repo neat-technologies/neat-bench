@@ -1,0 +1,18 @@
+{
+  "id": "express-b7-casterror-500",
+  "origin": "constructed",
+  "source": "neat-agent-bench task B7",
+  "stratum": "runtime-rooted",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "bug_patch": "neat-agent-bench/patches/B7.patch",
+  "problem_statement": "POST /v1/auth/login returns 500 for valid credentials (not the expected 401 for bad ones).",
+  "gold_patch": "Call getUserByEmail(email) instead of getUserById(email) at src/services/auth.service.js:15 (revert of bug_patch).",
+  "oracle": { "type": "probe", "probe": { "request": "register user, POST /v1/auth/login {same creds}", "healthy": "200", "buggy": "500" } },
+  "runtime_workload": { "mode": "traffic", "cmd": "register+login probe against the instrumented app", "preload_otel": true },
+  "runtime_dependence": "Static cannot know getUserById(email) throws — the call looks type-valid in source. Only at runtime does findById try to cast an email string to an ObjectId and raise a CastError; NEAT's incident message ('Cast to ObjectId failed for value \"...@e.com\" ... path _id') names the misuse. Genuinely runtime-only signal — NEAT wins.",
+  "root_cause": { "file": "src/services/auth.service.js", "line": 15, "function": "loginUserWithEmailAndPassword", "detail": "Calls getUserById(email) instead of getUserByEmail(email); findById casts email->ObjectId -> CastError -> 500." },
+  "required_facts": [ { "type": "CONNECTS_TO", "source": "file:node-express-boilerplate:src/services/auth.service.js", "target": "database" } ],
+  "validated": { "symptom_reproduced": true, "oracle_runs": false },
+  "neat_signal": { "decisiveness": "MEDIUM", "note": "Runtime CastError message directly reveals email-used-as-id; static cannot know findById(email) throws." }
+}
