@@ -60,6 +60,8 @@ Seven groups of metrics, one rig. Full definitions + oracle + *model-free-vs-abl
 - [`docs/METRICS.md`](docs/METRICS.md) — the full metric catalog.
 - [`docs/WALLS.md`](docs/WALLS.md) — the three axes and the model-free wall certificate.
 - [`docs/HONESTY.md`](docs/HONESTY.md) — the guards that keep a number unbreakable.
+- [`docs/INSTANCES.md`](docs/INSTANCES.md) — the instance schema, the three strata, and the curation pipeline.
+- [`docs/CORPUS.md`](docs/CORPUS.md) — the realistic multi-cloud startup system the suite runs on, and its phased buildout.
 - [`docs/NEAT-FINDINGS.md`](docs/NEAT-FINDINGS.md) — NEAT bugs the meter surfaced, linked to filed issues.
 
 ## The rule
