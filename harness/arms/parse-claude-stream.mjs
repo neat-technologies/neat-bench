@@ -75,8 +75,18 @@ for (const line of lines) {
 }
 
 const toolCalls = [...toolById.values()]
-const neat = toolCalls.filter((t) => NEAT_TOOLS.has(t.name))
-const other = toolCalls.filter((t) => !NEAT_TOOLS.has(t.name))
+// MCP tools surface as `mcp__neat__<tool>` in the stream — the plain NEAT_TOOLS set
+// won't match them, so treat the mcp__neat__ prefix as authoritative (and keep the
+// plain-name check for any run that reports unprefixed).
+const NEAT_PREFIX = 'mcp__neat__'
+const isNeat = (t) => (t.name ?? '').startsWith(NEAT_PREFIX) || NEAT_TOOLS.has(t.name)
+const neat = toolCalls.filter(isNeat)
+const other = toolCalls.filter((t) => !isNeat(t))
+const neatBreakdown = {}
+for (const t of neat) {
+  const n = t.name.startsWith(NEAT_PREFIX) ? t.name.slice(NEAT_PREFIX.length) : t.name
+  neatBreakdown[n] = (neatBreakdown[n] ?? 0) + 1
+}
 const filesOpened = [...new Set(
   toolCalls.filter((t) => FILE_TOOLS.has(t.name) && t.input?.file_path).map((t) => t.input.file_path),
 )]
@@ -88,7 +98,7 @@ console.log(JSON.stringify({
   model, mcp_loaded: mcpLoaded, subtype, success: subtype === 'success' && !isError,
   tokens: { input: inp, output: usage.output_tokens ?? 0, cache_read: cacheR, cache_creation: cacheC, input_total: inp + cacheR + cacheC },
   total_cost_usd: cost, num_turns: numTurns,
-  tool_calls_total: toolCalls.length, neat_calls: neat.length, other_calls: other.length,
+  tool_calls_total: toolCalls.length, neat_calls: neat.length, neat_tools: neatBreakdown, other_calls: other.length,
   files_opened: filesOpened,
   tool_names: toolCalls.map((t) => t.name),
   answer,

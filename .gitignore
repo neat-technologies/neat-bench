@@ -4,3 +4,5 @@ results/*.json
 !results/.gitkeep
 *.log
 .DS_Store
+results/itbench-*/
+results/express-*/
