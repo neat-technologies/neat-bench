@@ -1,46 +1,45 @@
-# Scoring — find + fix, graded together
+# Scoring — determinism of find **and** fix
 
-The headline metric is **RESOLVED**: the agent must both **localize** the root cause AND ship a **fix that makes the fault go away**. Localization alone is not a pass. This is what turns "agents fix bugs faster with NEAT" from a slogan into a measurement.
+The headline is **`RESOLVED@k` — how reliably the agent lands a correct, regression-free fix across independent runs.** Not steps, not speed. NEAT's thesis is *determinism*: the answer is a graph lookup, not an LLM hunt, so the agent resolves the bug run after run. Command/tool count is **NOT a metric** (§5).
 
 ## 1. FIND (localization) — model-free
-Graded against the PRAXIS ground truth at two grains:
-- **RCI** — faulty *service* named. Exact string match to the scenario's ground-truth service.
-- **RCR** — faulty *statement / function / config key* named. Match to the ground-truth code location (file + function/symbol, or the config key). AST/string match, canonicalized, test files excluded. No LLM judge for the headline.
+Per run, against PRAXIS ground truth:
+- **RCI** — faulty *service* named. Exact match to the `root_cause:true` entity.
+- **RCR** — faulty *statement/function/config* named. Match to the ground-truth code location (file + function/symbol, or config key). AST/string match, canonicalized, test files excluded. No LLM judge for the headline.
 
-Record `find_RCI ∈ {0,1}`, `find_RCR ∈ {0,1}`.
+`find_RCI ∈ {0,1}`, `find_RCR ∈ {0,1}`.
 
-## 2. FIX (resolution) — verified by the app recovering, not by opinion
-The agent emits a **patch** (unified diff against the repo, or a config/manifest change). Verification oracle, most-rigorous-feasible first:
+## 2. FIX (resolution + no regression) — verified by the app recovering
+The agent emits a patch to an isolated source copy. Verify (gold path):
+1. Apply → rebuild the affected image → `kind load` → redeploy.
+2. Drive the same user-flow load that reproduced the fault.
+3. **Symptom cleared:** the scenario's fault-signal (its Prometheus alert / the recommendation error signature) returns to the fixed-baseline and stays down for a full window. `symptom_cleared ∈ {0,1}`.
+4. **No regression:** the *other* core flows (frontend, cart, checkout, product-catalog) introduce **no new errors**, and the fix doesn't retain artificial behaviour absent from the faultfree reference. `no_regression ∈ {0,1}`. (Guards the "clears-the-symptom-but-subtly-wrong" fix — e.g. keeping an injected validation the reference removes.)
+5. Anti-cheat: deployment runs a *newly built* image digest, replicas≥1; no scale-to-0, no revert-to-stock-image.
 
-**(A) Apply → redeploy → symptom-clears (gold; default).**
-1. Apply the agent's patch to the buggy source/config.
-2. Rebuild the affected service image (or `kubectl apply` for config/manifest fixes) and redeploy on the KinD box.
-3. Drive the same user-flow load that reproduced the fault.
-4. Assert the **symptom is gone**: the error/latency/behaviour that defined the scenario returns to the fixed-baseline signature in the traces/health checks. Use the scenario's own check if the artifact ships one; else a pre-registered per-scenario oracle (the specific span/error/SLI that the fault broke).
-5. Assert **no new breakage**: the rest of the app's core flows still pass (guards against "fix by breaking everything else").
+`fix_ok = symptom_cleared AND no_regression`.
 
-`fix_resolved ∈ {0,1}` = symptom cleared AND no new breakage.
+## 3. RESOLVED (per run)
+`RESOLVED = find_RCR AND fix_ok` — correct code-grain localization AND a verified, regression-free fix. (Also track `RESOLVED_service = find_RCI AND fix_ok`.) Record `SYMPTOM_CLEARED` separately so a "cleared but dirty/mislocalized" run is visible, never silently credited.
 
-**(B) Reference-patch equivalence (fallback, labeled).** Only when (A) is infeasible for a scenario (e.g., rebuild not reproducible). Compare the agent patch to the PRAXIS reference fix for semantic equivalence (touches the same location, same corrective change). Weaker; flag every instance that used it.
+## 4. DETERMINISM protocol (the point)
+Run **each arm k≥5 times per scenario, independently** (fresh agent, identical injected state, same model + budget). Then per arm per scenario:
+- **`RESOLVED@k`** = (# runs RESOLVED) / k. The headline.
+- **consistency** = is it 5/5 (deterministic) or 3/5 (flaky)? Report the distribution, not just the mean.
+- **failure modes** across the k runs (wrong RCR / wrong fix / regression / didn't resolve) — where the flakiness lives.
 
-## 3. RESOLVED (headline, per arm per scenario)
-`RESOLVED = find_RCR AND fix_resolved` (must localize at code grain **and** actually fix it). Report also the looser `RESOLVED_service = find_RCI AND fix_resolved`.
+## 5. Headline outputs (per scenario + aggregate)
+- **`RESOLVED@k` per arm** — code / obs+graphify / opus+neat — with the distribution. The claim NEAT must earn: **higher and more consistent RESOLVED@k** than code-alone and obs+graphify. That is "the graph makes the fix deterministic; code-alone is hit-or-miss."
+- **Grain/provenance quality** (supporting): did it land at the exact file:line with fused evidence (symbol-join, blast-radius, divergence) vs a lucky grep. Never step-count.
+- Anchor against PRAXIS's published runtime-only=0% / fused=61.5% RCR as external reference points (with the "our grader ≠ their held-out grader" caveat).
 
-## 4. Efficiency / quality (secondary, all objective)
-- **directness:** agent tool-calls, distinct files opened, wall-clock to a verified fix.
-- **grain:** did it land at file:line/function, or only name a service? (where fusion beats a trace UI even when both "resolve").
-- **fix size:** lines changed vs the reference fix (bloat / collateral).
-
-## 5. Headline outputs
-- **RESOLVED rate per arm** (code / obs+graphify / opus+neat), with the paired **McNemar test** on neat-vs-obs+graphify discordant outcomes — the fusion claim.
-- Anchored against PRAXIS's published **runtime-only 0.0% RCR** and **fused 61.5% RCR** as external reference points.
-- directness + grain deltas.
+**Command/tool count is NOT reported as a win/loss.** NEAT is *expected* to use more queries; that's fine. If we ever cite it, it's a neutral note ("neat ran the full arsenal; code read one file"), never a score.
 
 ## 6. Controls
-- Same model (Claude Opus), same token/step budget, identical injected scenario state per arm, randomized arm order, **≥3 seeds/scenario**, variance reported.
-- The fix oracle and each scenario's symptom-cleared signal are **pre-registered and frozen** before the first run — no tuning the oracle to the result.
+Identical injected state + model + budget across arms; only tooling differs. Randomize arm order. The fix oracle + each scenario's symptom signal are **pre-registered and frozen** before the first run. Healthy graph snapshot captured per scenario (for the neat arm's `neat diff` time-travel).
 
 ## 7. Honesty rules
-- A pass requires the app to actually recover. No "the patch looks right" credit.
-- Every fallback-(B) grade is labeled; T1/T2 fault tiers labeled.
-- If NEAT's own answer is what a neat-arm fix was built on and it was wrong/misleading → that's a filed NEAT weakness (see METHOD.md sub-loop), recorded, not smoothed over.
+- A pass requires the app to actually recover AND not regress. No "looks fixed."
+- Every NEAT weakness (a query that 500s, a grain gap, a misdirection) is **filed as an issue + fixed to `latest`** (CONTRACT rule 1) — recorded, never smoothed over.
+- The neat arm uses NEAT's **full arsenal** (CONTRACT rule 6), not just root-cause/incidents; a run where NEAT was under-used is invalid, not a NEAT loss.
+- Report the funnel + failure modes; a flaky arm's variance is the finding, not something to average away.

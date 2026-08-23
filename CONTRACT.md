@@ -42,7 +42,12 @@ This is the load-bearing spec for the ±NEAT benchmark. If any code, harness, ar
    The obs+graphify arm builds graphify's OWN code graph and drives FULL user flows to generate real observability — used the normal way, not a strawman. It must be a genuinely strong baseline (both signals, unfused) or the fusion win is fake.
 
 4. **"AND THE BUG SHOULD BE FIXED. NOT JUST FOUND. BY EACH AGENT. GRADE FINDING AND FIXING TOGETHER."**
-   Localization alone is NOT a pass. Each arm must emit a **fix**; the fix is **verified by the app actually recovering** (apply → redeploy → symptom-clears). The headline metric `RESOLVED` = correct code-grain localization **AND** verified fix. No "looks fixed" credit.
+   Localization alone is NOT a pass. Each arm must emit a **fix**; the fix is **verified by the app actually recovering** (apply → redeploy → symptom-clears) **AND introduce no regression in the other core flows** (a fix that clears the symptom but breaks/keeps artificial behaviour is not RESOLVED — see SCORING.md). Per-run `RESOLVED` = correct code-grain localization **AND** verified, regression-free fix. No "looks fixed" credit.
+
+8. **THE METRIC IS DETERMINISM, NOT SPEED. REMOVE command count.** (Cem, corrective: *"remove command count — ideally neat should increase command count a bit but increase determinism in bugfixes."*) NEAT's value is that the answer is a graph **lookup**, not an LLM **hunt** — so the agent resolves the bug **reliably, run after run**, even at the cost of a few extra queries. So:
+   - **Command/tool count is NOT a metric.** Do not headline it, do not grade on it, do not report "neat N vs code M" as a win/loss. (It may be noted as a neutral observation — NEAT often uses *more* queries; that's fine and expected.)
+   - **The headline is `RESOLVED@k` — determinism across independent seeds.** Run each arm **k≥5 times** per scenario, independently. Score the **fraction of runs that land a correct find + verified regression-free fix**, and its **consistency** (5/5 = deterministic; 3/5 = flaky). The claim NEAT must earn: **higher and more consistent `RESOLVED@k`** than code-alone / obs+graphify — the graph makes the fix *deterministic*, code-alone is hit-or-miss.
+   - Pair with provenance/grain (did it land at the right file:line with fused evidence) as supporting quality, never step-count.
 
 5. **"AND NEAT SHOULD HAVE LIVE DAEMONS."**
    The neat arm runs against a **live `neat watch` daemon** ingesting live OTel from the running app — not a snapshot, not replay. Fused, live, current.
