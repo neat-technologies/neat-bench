@@ -47,7 +47,15 @@ This is the load-bearing spec for the ±NEAT benchmark. If any code, harness, ar
 5. **"AND NEAT SHOULD HAVE LIVE DAEMONS."**
    The neat arm runs against a **live `neat watch` daemon** ingesting live OTel from the running app — not a snapshot, not replay. Fused, live, current.
 
-6. **"our new method … PRAXIS one … no self-injected bugs."** (Established this session.)
+6. **USE NEAT'S FULL ARSENAL — it is a fused reasoning graph, NOT an OTel feeder.** (Cem, corrective: *"neat has blast radius from observed, time travel states, policies and the like — why are you just using neat as an otel feeder rn"*.) Reducing the neat arm to `root-cause` + `incidents` (surfacing an error string) HANDICAPS it and is why it drew — that benchmarks NEAT's weakest surface against a strong code agent. The neat arm MUST be given and MUST lead with the full graph-reasoning surface:
+   - **`neat divergences`** — declared (EXTRACTED) vs observed (OBSERVED) code↔runtime mismatch, down to the field/symbol. (This is the direct route to code-grain faults like accessing a non-existent field.)
+   - **`neat diff --against <healthy-snapshot>`** — TIME-TRAVEL: snapshot the healthy graph BEFORE injection; diff after to see exactly what changed. (Harness MUST capture a healthy baseline snapshot per scenario.)
+   - **`neat blast-radius <node>`** — impact/propagation from the observed graph.
+   - **`neat stale-edges`** — edges that went silent (vanished dependency).
+   - **`neat policies`** — policy violations; **`neat search`** — semantic search over the fused graph; **`neat dependencies` / `observed-dependencies`** — full transitive edges.
+   Workflow: reason over the GRAPH (divergence + graph-diff + blast-radius) to localize the code-grain root cause and its blast radius — do NOT just eyeball a root-cause error string. If NEAT's full surface still can't localize where it should, THAT is a filed NEAT weakness (rule 1), not a reason to fall back and call it a draw.
+
+7. **"our new method … PRAXIS one … no self-injected bugs."** (Established this session.)
    Faults come from the **third-party PRAXIS Code-Cloud-RCA** benchmark (public, Zenodo, code-grain). We NEVER inject our own bugs. Grade at code grain (RCR), the grain where fusion is decisive — not ITBench-SRE's k8s-object grain (that draws).
 
 ## Non-negotiables (the anti-fudge firewall)
