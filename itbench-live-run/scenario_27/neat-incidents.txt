@@ -1,0 +1,84 @@
+the project has 12136 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T07:42:08.915Z — recommendation: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:4, grpc_message:"Deadline Exceeded"}"
+>
+    trace=46d9df0f903637629b56ea2c55991fcd span=1f6e4cf1fbab44af
+  2026-08-23T07:42:08.854Z — recommendation: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Deadline Exceeded", grpc_status:4}"
+>
+    trace=7970a8561ce9e96a9c764471236fcc79 span=341ea0fe01275d3e
+  2026-08-23T07:42:07.342Z — load-generator: HTTP 500
+    trace=c2ed3ff9aa8bee430c218e8fcb264479 span=5c736366949a8e40
+  2026-08-23T07:42:08.034Z — recommendation: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:4, grpc_message:"Deadline Exceeded"}"
+>
+    trace=a0fa77279d0058f98c39f59700194f3d span=8e15d6e26f0e95be
+  2026-08-23T07:42:07.946Z — recommendation: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Deadline Exceeded", grpc_status:4}"
+>
+    trace=1a81d2e4c9bb9c97f806bd0a97c9374b span=ed21d3eaaeee1731
+  2026-08-23T07:42:06.388Z — recommendation: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Deadline Exceeded", grpc_status:4}"
+>
+    trace=78c4918b4c48aa89165656e206f4a3e1 span=42c9e4dd6a359672
+  2026-08-23T07:42:06.094Z — recommendation: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:4, grpc_message:"Deadline Exceeded"}"
+>
+    trace=0676ccb62949b9b29362c4df8a00430a span=9ab00e086ab0c097
+  2026-08-23T07:42:05.212Z — cart: gRPC UNAVAILABLE
+    trace=cf48729fe81616322d270980ba6fe2b4 span=3b6e676fc585424f
+  2026-08-23T07:42:05.237Z — cart: Connection refused (flagd:8013)
+    trace=cf48729fe81616322d270980ba6fe2b4 span=d23484174cb5549d
+  2026-08-23T07:42:07.310Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=47f752f399ea50d07d21b1d07389ef18 span=0ac1b0dd98afd3af
+  2026-08-23T07:42:06.995Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=2aa938575f2d249f99a742e3acbc21b6 span=1335b760718ae610
+  2026-08-23T07:42:06.193Z — product-reviews: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Deadline Exceeded", grpc_status:4}"
+>
+    trace=ebb12c945afb515703d965656f6aa7f8 span=5697eb5a3f77bcfd
+  2026-08-23T07:42:06.994Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=307930659cb650bb901bbafa931e559e span=3716b1b31513cdec
+  2026-08-23T07:42:05.675Z — product-reviews: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Deadline Exceeded", grpc_status:4}"
+>
+    trace=ebb12c945afb515703d965656f6aa7f8 span=a5860fa3826dfb29
+  2026-08-23T07:42:06.809Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=47f752f399ea50d07d21b1d07389ef18 span=835641160d0480bb
+  2026-08-23T07:42:05.066Z — product-reviews: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Deadline Exceeded", grpc_status:4}"
+>
+    trace=eb17c57c8fa6244f2cb5267bae991b71 span=f95257c8de92f7f0
+  2026-08-23T07:42:06.494Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=2aa938575f2d249f99a742e3acbc21b6 span=c30e80dc77b71faf
+  2026-08-23T07:42:04.546Z — product-reviews: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED
+	details = "Deadline Exceeded"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:4, grpc_message:"Deadline Exceeded"}"
+>
+    trace=eb17c57c8fa6244f2cb5267bae991b71 span=b95682fe7ec77979
+  2026-08-23T07:42:06.494Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=307930659cb650bb901bbafa931e559e span=b5c38d5a2038902c
+  2026-08-23T07:42:07.343Z — frontend-proxy: HTTP 500
+    trace=c2ed3ff9aa8bee430c218e8fcb264479 span=daeb9ff445e61349
+
+confidence: n/a · provenance: OBSERVED

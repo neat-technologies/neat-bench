@@ -1,0 +1,30 @@
+the project has 578 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T08:19:16.074Z — payment: gRPC UNAVAILABLE
+    trace=5e7ae9a845b275dd100f26d6e8c05400 span=4254daf94b1fc36e
+  2026-08-23T08:19:18.092Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=c0bab74a048e168e983e295a32ce7fb7 span=dbe9e2b453955567
+  2026-08-23T08:19:17.847Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=7c6131121001ec0b7ee7faa5d45d9e4e span=f46d5dddd6ca3796
+  2026-08-23T08:19:17.591Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=c0bab74a048e168e983e295a32ce7fb7 span=8804e10e9f0936b8
+  2026-08-23T08:19:17.387Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=80fddfcad55ef4666f7de3daa265acb9 span=e0f8d7408c580ef5
+  2026-08-23T08:19:16.886Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=80fddfcad55ef4666f7de3daa265acb9 span=df4f83e2a2ed646f
+  2026-08-23T08:19:16.385Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=80fddfcad55ef4666f7de3daa265acb9 span=57732d87fe721562
+  2026-08-23T08:19:15.629Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=31577afc706e844e9e0c2d6b85b8efaf span=ec06038ae30b9740
+  2026-08-23T08:19:15.129Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=31577afc706e844e9e0c2d6b85b8efaf span=8fa83082cc85d4cc
+  2026-08-23T08:19:14.628Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=31577afc706e844e9e0c2d6b85b8efaf span=56d9e6cc6981e9d7
+  2026-08-23T08:19:17.007Z — fraud-detection: gRPC DEADLINE_EXCEEDED
+    trace=b4892905c60ec3e7e5e3c4d674ba3b1c span=11a09ee0ac2415ec
+  2026-08-23T08:19:16.079Z — fraud-detection: gRPC DEADLINE_EXCEEDED
+    trace=b4dfbd6ad8dc601f9f4d941f497d0a2a span=68e63d458c7a4592
+  2026-08-23T08:19:13.853Z — fraud-detection: gRPC DEADLINE_EXCEEDED
+    trace=5c28a4096b1f8c6ef633aaa572be1637 span=ec96a2dd0faf94cb
+  2026-08-23T08:19:13.846Z — payment: gRPC UNAVAILABLE
+    trace=8bae19e0c2803a77f66ed581e94ae609 span=82a404deb612a799

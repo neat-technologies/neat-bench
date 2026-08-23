@@ -1,0 +1,1 @@
+flagd-5f4755df9d-ml4xg             1/2     CrashLoopBackOff   12 (3m33s ago)   39m

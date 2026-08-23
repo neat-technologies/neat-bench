@@ -1,0 +1,12 @@
+the project has 784 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T08:27:26.693Z — fraud-detection: gRPC DEADLINE_EXCEEDED
+    trace=94801ee762377317b43f2368bbce6bc6 span=5787513bc89da1b8
+  2026-08-23T08:27:26.193Z — fraud-detection: gRPC DEADLINE_EXCEEDED
+    trace=955bba295e53f72e7ecc3ca08152d948 span=27c9075dda92f7fe
+  2026-08-23T08:27:25.692Z — fraud-detection: gRPC DEADLINE_EXCEEDED
+    trace=d150036cf7bccdbc1b97883616b743ed span=c487a04ea932e3be
+  2026-08-23T08:27:24.765Z — fraud-detection: gRPC DEADLINE_EXCEEDED
+    trace=fc5c276bff9dcf072cb233e52b309db3 span=d7a323d4c959d4e9
+  2026-08-23T08:27:24.264Z — fraud-detection: gRPC DEADLINE_EXCEEDED
+    trace=9f99c55e587852d7620b9e8137a01ef7 span=da358c23188b3e3b

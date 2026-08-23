@@ -1,0 +1,12 @@
+the project has 3021 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T09:04:08.727Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=3702bae77c3f80723ac16b657d815795 span=2d61fd100d104794
+  2026-08-23T09:04:08.709Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=068c681b6ec3f32835c688b99ebb3fda span=3349cbcb01f3a97c
+  2026-08-23T09:04:06.847Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=5d98580181a2a0b622cc55bda661e554 span=c1df7c525b289bbb
+  2026-08-23T09:04:13.346Z — recommendation: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:10.96.132.31:8080: Failed to connect to remote host: connect: Connection refused (111)"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:10.96.132.31:8080: Failed to connect to remote host: connect: Connection refused (111)"}"

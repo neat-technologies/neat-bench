@@ -1,0 +1,12 @@
+the project has 2093 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T09:10:09.146Z — frontend-proxy: HTTP 500
+    trace=d81c6a1a1a14249807dc7129a08eefdf span=b3c83e61b1e57ba7
+  2026-08-23T09:10:08.176Z — load-generator: HTTP 500
+    trace=f6f7605b2dbc887c00848af328156c6d span=134659a496d507b6
+  2026-08-23T09:10:08.152Z — load-generator: HTTP 500
+    trace=e4dd441e449f5d63f1a4383dae6a9d93 span=22f0d0bc36a25a99
+  2026-08-23T09:10:08.147Z — frontend-proxy: HTTP 500
+    trace=d2cc372028426196b2a89c74290467e6 span=8e52ddab239905e8
+  2026-08-23T09:10:08.149Z — load-generator: HTTP 500
+    trace=78e2d122997cb9062fd6ef736d857a90 span=cb88b3f6ce326c38
