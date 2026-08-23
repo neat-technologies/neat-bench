@@ -1,0 +1,12 @@
+the project has 2463 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T11:33:57.923Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=16e2330ee8d5ffbabbffa2970fb6fcf1 span=784e062e81cd4427
+  2026-08-23T11:33:57.910Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=37f3992d0c6f366d9954e5be5ac28fb2 span=9636eedc7c94dc36
+  2026-08-23T11:33:57.422Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=16e2330ee8d5ffbabbffa2970fb6fcf1 span=2f29d93e220955e8
+  2026-08-23T11:33:57.410Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=37f3992d0c6f366d9954e5be5ac28fb2 span=21b4951a6590f96d
+  2026-08-23T11:34:01.400Z — load-generator: HTTPConnectionPool(host='flagd', port=8016): Max retries exceeded with url: /ofrep/v1/evaluate/flags/loadGeneratorFloodHomepage (Caused by NewConnectionError("HTTPConnection(host='flagd', port=8016): Failed to establish a new connection: [Errno 111] Connection refused"))
+    trace=6c7e8cb0bdf455d78c7abcc16ef04670 span=820515a4475a87ca

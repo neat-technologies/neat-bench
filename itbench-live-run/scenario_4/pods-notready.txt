@@ -1,0 +1,1 @@
+flagd-bdbff8675-gnmk7              1/2     OOMKilled   4 (101s ago)   2m21s

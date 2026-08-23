@@ -1,0 +1,3 @@
+cart-7d9bf4cbf8-2tg7b              0/1     Pending            0               14m
+flagd-59f86bb6d9-6cxdw             1/2     CrashLoopBackOff   8 (4m23s ago)   20m
+valkey-cart-5c47d598f5-swn8l       0/1     OOMKilled          6 (4m13s ago)   10m

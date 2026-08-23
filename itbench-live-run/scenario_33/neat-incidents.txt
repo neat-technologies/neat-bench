@@ -1,0 +1,12 @@
+the project has 969 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T09:54:29.678Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=c1ba7c50dca6cc367078537479ef7aee span=5f2bb1404e163021
+  2026-08-23T09:54:28.445Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=f0a0e26efe2bc4ef7b7d4190051fa765 span=a403ec8421517d1d
+  2026-08-23T09:54:31.415Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=d32563e05e8e622401c4b70e5fa4c5f8 span=b00eaf94315836b0
+  2026-08-23T09:54:31.343Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=ed9580d33714565ede9fbdc1c13ef33d span=88266a82aa158541
+  2026-08-23T09:54:30.843Z — ad: gRPC DEADLINE_EXCEEDED
+    trace=ed9580d33714565ede9fbdc1c13ef33d span=7f4cbb27428cf002

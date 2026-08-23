@@ -1,0 +1,2 @@
+cart-7d9bf4cbf8-2tg7b              0/1     Pending            0              6m30s
+flagd-59f86bb6d9-6cxdw             1/2     CrashLoopBackOff   7 (105s ago)   12m

@@ -1,0 +1,12 @@
+the project has 1085 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T10:17:11.216Z — frontend-proxy: HTTP 504
+    trace=905390ce7fe2d98fcc5aa6372523ecde span=fd097a3047343f4c
+  2026-08-23T10:17:23.308Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=b89c6a941c33b0d799ca71558e52cc3d span=bee38898431500b8
+  2026-08-23T10:17:23.200Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=287b9f0da982a3422b67bcddfec15b2f span=2e2dea8270591e68
+  2026-08-23T10:17:22.930Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=92b430daa60b90a723755f53707f0694 span=75edbafe4c8f95fe
+  2026-08-23T10:17:23.308Z — recommendation: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.DEADLINE_EXCEEDED

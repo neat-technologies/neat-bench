@@ -36,3 +36,14 @@ NEAT roughly HALVES diagnostic steps when the ROOT is far from the SYMPTOM and r
 
 ## Scope / pending
 67 ITBench SRE scenarios; 62 target otel-demo (runnable), 5 target bookInfo (not deployed, skipped). ~18 chaos-mesh Schedule faults (intermittent, caveated). Continuing across the taxonomy. This doc consolidates to neat-bench (BenchOps home) with its own ADRs/contracts; NOTHING bench goes on neat-technologies/neat.
+
+## CORRECTION (2026-08-23): ITBench track vs PRAXIS
+PRAXIS used the "Code-Cloud-RCA Benchmark integrated into ITBench" (30 scenarios, software/config/deploy/resource faults, code-level PDG) — NOT in the public itbench-hub repo (only scenarios/sre + scenarios/ciso exist; SRE ground truths are k8s-object only, no code annotation). We are running ITBench **SRE** = k8s-object-graded = SERVICE-LEVEL DIRECTNESS number (PRAXIS-SDG-comparable), NOT PRAXIS's code-level benchmark and NOT the GTM ambiguity/fusion-coverage number. Cem's call: finish SRE anyway for the directness number; code-level bench is a separate next step.
+## Harness note: kindnet CNI does NOT enforce NetworkPolicy -> netpol faults (scenario_31) are INERT/invalid. flagd-ui OOM raised to 512Mi to stop ambient flag-eval noise; baseline re-captured.
+
+## TALLY UPDATE (scenario_3 done; 17 valid, 4 invalid)
+WINS (neat<obscode, trace-visible-far/subtle): 16(4v7) 30(2v4) 34(5v7)
+TIES (kubectl-obvious/localized): 24 2 20 33 40 105 49 58 39 23 25
+LOSSES (neat>obscode, over-investigation on obvious faults): 43(12v5,#1075) 3(6v3,flagd-ui noise)
+INVALID (precondition unmet on kindnet/otel-demo-2.2.0): 31(netpol) 38(hpa) 63(secret) + bookInfo(36,47,48,50,53)
+NET: NEAT decisive where root is far from symptom or fault is subtle; neutral when alert names the workload + pod state shows it; can inflate when arm over-cross-checks NEAT on trivial faults. flagd-ui OOM (even 512Mi) is persistent ambient noise degrading NEAT's flagd root-cause confidence -> raise to 1Gi or drop sidecar on resume.

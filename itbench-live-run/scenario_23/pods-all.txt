@@ -1,0 +1,24 @@
+NAME                               READY   STATUS             RESTARTS       AGE
+accounting-5968c4549c-5w274        1/1     Running            0              13m
+ad-6766d6dbf5-69r4p                1/1     Running            0              66m
+cart-659bfb45b5-2bbrq              1/1     Running            0              14m
+checkout-598658964d-rs4tj          1/1     Running            0              25s
+currency-74755d5fb5-46vbt          1/1     Running            0              66m
+email-cc5fbdd78-vk9nx              1/1     Running            0              66m
+flagd-59f86bb6d9-6cxdw             1/2     CrashLoopBackOff   12 (68s ago)   37m
+fraud-detection-7848d86556-mwlm8   1/1     Running            0              66m
+frontend-6f7b4557b9-pdx5z          1/1     Running            0              66m
+frontend-proxy-77644c45c8-zhd8k    1/1     Running            0              66m
+image-provider-dd55595f5-2nw59     1/1     Running            0              66m
+kafka-bb4bbc759-pz7kj              1/1     Running            0              66m
+llm-5fddbb8c4d-xkv6m               1/1     Running            0              66m
+load-generator-7587c94976-wb87r    1/1     Running            0              66m
+otel-collector-d4cff88b4-xlswr     1/1     Running            0              66m
+payment-6bb67944bf-md9jl           1/1     Running            0              6m8s
+postgresql-7bb76c85c-l9rtg         1/1     Running            0              66m
+product-catalog-54b9896767-jv8bb   1/1     Running            2 (66m ago)    66m
+product-reviews-f6c767477-lnsxd    1/1     Running            0              66m
+quote-654d8b4f44-zr4bl             1/1     Running            0              66m
+recommendation-5d9d87b775-ps975    1/1     Running            0              66m
+shipping-86d558f58f-ncns2          1/1     Running            0              66m
+valkey-cart-89745f57d-khtl5        1/1     Running            0              14m

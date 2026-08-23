@@ -1,0 +1,12 @@
+the project has 1303 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T09:58:33.722Z — load-generator: HTTP 504
+    trace=54650ff4bcaa270d4e193020af5c7b6b span=84a613dec10a4e1d
+  2026-08-23T09:58:48.930Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=d53ac20b90ea37c8e6ff09946bb9d150 span=2cb33a40b0ff174c
+  2026-08-23T09:58:48.455Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=53618cdf3192d39d025f6727d17b45e1 span=09fde249bcc33ce2
+  2026-08-23T09:58:47.452Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=341904c47a145bc7a905e0a1f24750e9 span=9d7d3b8be0410c2d
+  2026-08-23T09:58:46.462Z — recommendation: received grpc status code StatusCode.DEADLINE_EXCEEDED
+    trace=43e80b8df166959303fb9f08e325da94 span=27a4235f21bcdcb8

@@ -1,0 +1,26 @@
+NAME                               READY   STATUS             RESTARTS        AGE
+accounting-5968c4549c-sjv5q        1/1     Running            0               37m
+ad-5b9d45d58d-gf4vt                0/1     Pending            0               2m12s
+ad-6766d6dbf5-69r4p                1/1     Running            0               37m
+cart-659bfb45b5-477kl              1/1     Running            0               37m
+cart-7d9bf4cbf8-2tg7b              0/1     Pending            0               2m11s
+checkout-598658964d-tq5v4          1/1     Running            2 (11m ago)     37m
+currency-74755d5fb5-46vbt          1/1     Running            0               37m
+email-cc5fbdd78-vk9nx              1/1     Running            0               37m
+flagd-59f86bb6d9-6cxdw             1/2     CrashLoopBackOff   6 (2m34s ago)   8m17s
+fraud-detection-7848d86556-mwlm8   1/1     Running            0               37m
+frontend-6f7b4557b9-pdx5z          1/1     Running            0               37m
+frontend-proxy-77644c45c8-zhd8k    1/1     Running            0               37m
+image-provider-dd55595f5-2nw59     1/1     Running            0               37m
+kafka-bb4bbc759-pz7kj              1/1     Running            0               37m
+llm-5fddbb8c4d-xkv6m               1/1     Running            0               36m
+load-generator-7587c94976-wb87r    1/1     Running            0               36m
+otel-collector-d4cff88b4-xlswr     1/1     Running            0               36m
+payment-6bb67944bf-p84j5           1/1     Running            0               36m
+postgresql-7bb76c85c-l9rtg         1/1     Running            0               36m
+product-catalog-54b9896767-jv8bb   1/1     Running            2 (36m ago)     36m
+product-reviews-f6c767477-lnsxd    1/1     Running            0               36m
+quote-654d8b4f44-zr4bl             1/1     Running            0               36m
+recommendation-5d9d87b775-ps975    1/1     Running            0               36m
+shipping-86d558f58f-ncns2          1/1     Running            0               36m
+valkey-cart-89745f57d-8rdlj        1/1     Running            0               36m

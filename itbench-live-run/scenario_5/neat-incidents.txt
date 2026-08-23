@@ -1,0 +1,12 @@
+the project has 257 recorded incidents; showing the 20 most recent.
+
+  2026-08-23T11:46:03.030Z — load-generator: HTTP 504
+    trace=e6d746c2ca705f0b976e0e191ef7b0af span=db3cbf1021292e1d
+  2026-08-23T11:46:02.675Z — load-generator: HTTP 504
+    trace=855ddd4206ff5db31de41f3fcb2df309 span=c14cc47c74687b8c
+  2026-08-23T11:46:02.480Z — load-generator: HTTP 504
+    trace=8e80fb044153484fc8cfcb18e40bed23 span=3980dab787d24bb1
+  2026-08-23T11:46:17.332Z — load-generator: HTTP 500
+    trace=dff4ef8578343343b17a01968c07d015 span=6979ed5e5dd43ed8
+  2026-08-23T11:46:01.529Z — load-generator: HTTP 504
+    trace=5475e45e9b087b1964c4e89c813a4947 span=c70e4bb849e29848
