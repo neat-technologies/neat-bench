@@ -15,3 +15,25 @@ Building the benchmark is a prove-machine pointed at NEAT itself. Each item belo
 ## The loop
 
 These aren't blockers on the benchmark — they're the *output* of building it. #979 is the most load-bearing for the data axis (the first wall target), so it leads the hardening. Fixing it also makes an eventual NEAT-vs-NEAT ablation honest, because today NEAT's own static is too weak to be the "static" baseline.
+
+---
+
+# PRAXIS code-grain findings (fusion-decisive class)
+
+Second wave, surfaced running the PRAXIS Code-Cloud-RCA faults against a live `neat watch` daemon on the OTel Demo (CONTRACT rule 1: every weakness filed → subagent fix → ship to `latest` → re-verify). These are on the code/RCR grain — where fusion is supposed to be decisive and runtime-only scores 0%.
+
+| # | finding | issue | shipped | benchmark impact |
+|---|---|---|---|---|
+| 8 | `get_divergences` only reported edge-grain; missed symbol/field-grain code↔runtime mismatch (the `products_list` class) | [neat#1082](https://github.com/neat-technologies/neat/issues/1082) | **0.9.3** (PR #1085, ADR-215) | the direct route to code-grain faults was blind; classifier added, but see #1087 |
+| 9 | `incidents`/`root-cause`/`ask` 500 "Invalid string length" on a long-lived daemon (unbounded errors.ndjson serialization) | [neat#1083](https://github.com/neat-technologies/neat/issues/1083) | **0.9.3** (PR #1084) | queries the neat arm depends on died mid-run on busy daemons; **verified fixed live on 0.9.3** (918 incidents serialize clean) |
+| 10 | root-cause blamed the load generator on outbound-dependency faults | [neat#1075](https://github.com/neat-technologies/neat/issues/1075) | **0.9.3** (PR #1076, ADR-214) | misdirected RCI on the propagation class |
+| 11 | **incidents drop the code locus from `exceptionStacktrace`** — when the exception span carries a stacktrace but no `code.filepath` attr, the incident attributes to the **service**, not the declaring `file:line`. Defeats RCR, code-grain root-cause, AND #1085's symbol-grain divergence for the whole Python code-fault class. | [neat#1087](https://github.com/neat-technologies/neat/issues/1087) | in flight (fix subagent) | **the keystone.** This is why runtime-only RCR = 0% — the location is in the trace, unjoined. Turns RCI into RCR for the fusion-decisive class. |
+
+## 0.9.3 release + live re-verification (2026-08-24)
+
+Shipped #1076 + #1084 + #1085 as **0.9.3** to npm `latest` (lockstep bump, tag `v0.9.3`, publish workflow green through the umbrella-tarball smoke). Restanded the box on 0.9.3 (24/24 pods, daemon fused 2220 nodes / 2510 edges, the 401 `products_list` fault live).
+
+- **#1084 — VERIFIED FIXED live.** `neat incidents service:recommendation` returns all 918 incidents and `root-cause` responds cleanly; both previously 500'd on this daemon.
+- **#1085 — shipped but INERT live.** `neat divergences` still returns only edge-grain findings (28, all `missing-extracted`/`missing-observed`); zero symbol/field-grain. The classifier is correct but `symbolLocus` returns null: the incident carries no `code.filepath` and `affectedNode` is `service:recommendation`. The code location lives only in the unparsed `exceptionStacktrace` (`recommendation_server.py:96 in get_product_list`). This is #1087 — filed, fix dispatched. #1085's payoff unlocks once #1087 lands.
+
+The honest read: the 0.9.3 fixes are real (one verified live, two shipped), but the single biggest lever on the launch number — code-grain localization for stacktrace-only exception spans — is #1087, now the top of the queue. The graph already carries `symbol:recommendation:recommendation_server.py#get_product_list`; only the OBSERVED→EXTRACTED stacktrace join is missing.
