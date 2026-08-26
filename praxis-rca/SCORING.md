@@ -29,7 +29,7 @@ Run **each arm k≥5 times per scenario, independently** (fresh agent, identical
 - **failure modes** across the k runs (wrong RCR / wrong fix / regression / didn't resolve) — where the flakiness lives.
 
 ## 5. Headline outputs (per scenario + aggregate)
-- **`RESOLVED@k` per arm** — code / obs+graphify / opus+neat — with the distribution. The claim NEAT must earn: **higher and more consistent RESOLVED@k** than code-alone and obs+graphify. That is "the graph makes the fix deterministic; code-alone is hit-or-miss."
+- **`RESOLVED@k` per arm** — code / obscode / neat — with the distribution. The claim NEAT must earn: **higher and more consistent RESOLVED@k** than `code` and `obscode`. That is "the graph makes the fix deterministic; code-alone is hit-or-miss." `obscode` (source + raw traces, unfused) is the load-bearing comparison — beating it isolates fusion.
 - **Grain/provenance quality** (supporting): did it land at the exact file:line with fused evidence (symbol-join, blast-radius, divergence) vs a lucky grep. Never step-count.
 - Anchor against PRAXIS's published runtime-only=0% / fused=61.5% RCR as external reference points (with the "our grader ≠ their held-out grader" caveat).
 

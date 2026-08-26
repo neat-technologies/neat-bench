@@ -8,21 +8,33 @@ The launch benchmark. NEAT's real value — the **fused code+runtime graph as an
 - **Third-party faults = no self-overfitting.** The faults are authored by IBM+UIUC, patterned on real outages — we did not pick them to flatter NEAT. **We never inject our own bugs.** (That was the whole point of moving off the SRE grind.)
 - **Published baseline to anchor against:** runtime-only agent = **0.0% RCR** / 11.4% RCI; PRAXIS fused = **61.5% / 73.9%** (gpt-5-codex, Pass@1). The 0% runtime-only row is the story on a plate.
 
-## Arms (control variables: same model = Claude Opus, same scenario state, same token/step budget; ONLY the code-intel tooling differs)
-| arm | code access | runtime signal | graph | isolates |
+## Arms (control variables: same model = Claude Opus, same scenario state, same token/step budget; ONLY the tooling differs)
+Three arms: **`code`**, **`obscode`**, **`neat`**.
+
+| arm | code access | runtime signal | fused? | isolates |
 |---|---|---|---|---|
-| **code** | full source | none | none | the floor (raw-code ceiling) |
-| **obs + graphify** | full source | observability (traces/metrics from **driving full user flows**) | **graphify builds its OWN code graph**, run like normal | the realistic strong baseline: both signals, **unfused** |
-| **opus + neat** | full source | **live `neat watch` daemon** ingesting live OTel | NEAT fused code+runtime graph | **the join** |
+| **code** | source (read/grep/LSP) | none | — | the floor (raw-code ceiling) |
+| **obscode** | source (read/grep/LSP) | raw observability — traces + metrics (Jaeger/Prometheus), from the same live app | **NO** — two separate signals, the agent joins them by hand | the realistic strong baseline: **both signals, unfused** |
+| **neat** | source | **live `neat watch` daemon** ingesting live OTel | **YES** — one fused code+runtime graph, full arsenal | **the join** |
 
-If `opus+neat` beats `obs+graphify`, the win is provably the **fusion**, not "NEAT has data the baseline lacks" — both have code + runtime; only NEAT joins them. Stronger than anything PRAXIS published (they never tested both-but-unfused).
+`obscode` and `neat` get the **same two inputs** — the code, and the runtime. The only difference is that `neat` fuses them into one queryable graph and `obscode` hands the agent both raw and lets it stitch. So if `neat` beats `obscode`, the win is provably **the fusion itself**, not "NEAT has data the baseline lacks." Stronger than anything PRAXIS published (they never tested both-but-unfused).
 
-**Honesty guard:** the `obs+graphify` arm must be genuinely strong — a real graphify graph, real trace access, told to use both. A weak graphify setup strawmans the baseline and the win is fake.
+**Honesty guard:** `obscode` must be a genuinely strong baseline — real, complete trace/metric access (not a crippled subset), full source, and explicitly told to use both. A weak `obscode` strawmans the baseline and the fusion win is fake.
 
-## Per-scenario loop
-1. **Start scenario** — inject PRAXIS fault N into the live OTel Demo on the KinD box (faithful to the artifact's injector; state identical across arms).
-2. **Inject headless Claude** — one fresh Claude Opus agent per arm, diagnose-**and-fix**, per-arm tooling only.
-3. **Download code-intel packages** — arm sets up its tooling: `code` = nothing; `obs+graphify` = graphify builds its graph + a load driver runs full user flows; `neat` = `neat init` + live `neat watch` daemon fused via the collector.
+## Full NEAT extent — the anti-"glorified obscode" rule (task selection)
+The tasks must **require NEAT's whole reasoning surface**, not its weakest one. If a scenario is winnable by joining **one error span to one code line**, it is a **weak** scenario for this bench: `obscode` reaches it too (see the trace, read the file), so it tests NEAT's thinnest edge and *understates* fusion. A scenario earns its place only when the answer needs graph reasoning `obscode` cannot cheaply reconstruct by hand:
+- **blast-radius** over OBSERVED edges (what else the fault reaches, transitively);
+- **divergence** — declared (EXTRACTED) vs observed (OBSERVED) across the system, not one file;
+- **time-travel graph-diff** — healthy snapshot vs broken, what actually changed;
+- **stale-edges** — a dependency that went silent;
+- **multi-hop root-cause** through the fused graph, not a single hop.
+
+Weight scenario selection toward the **fusion-decisive** class (neo4j-timeout 405–410, propagation/blast-radius, cross-service divergence) and *away* from single-service "error→line" faults. Concretely: the 401 `products_list` data-schema fault is **close to glorified obscode** (an obs+code agent sees the `AttributeError` and reads the file) — its fusion margin is thin, so it is a control/warm-up, not a headline. The headline scenarios are the ones where the graph is load-bearing.
+
+## Per-scenario loop — each run is: Load Scenario → Load Tools → Load Headless Agent
+1. **Load Scenario** — inject PRAXIS fault N into the live OTel Demo on the KinD box (faithful to the artifact's injector; state identical across all three arms).
+2. **Load Tools** — set up ONLY this arm's tooling: `code` = source access (read/grep/LSP), nothing else; `obscode` = source access **+** raw trace/metric access (Jaeger/Prometheus over the live app), the two unfused; `neat` = `neat init` + a live `neat watch` daemon fused via the collector, the full arsenal exposed.
+3. **Load Headless Agent** — one fresh Claude Opus agent for this arm, same model + budget as the others, told to diagnose-**and-fix** with its arm's tools only.
 4. **Run & observe** — the agent localizes the root cause AND produces a **fix** (a patch).
 5. **Verify the fix** — apply the agent's patch → rebuild/redeploy the affected service → drive load → assert the **symptom clears** (the graded fix oracle; see SCORING.md). Fall back to reference-patch match only if apply-and-verify is infeasible for a scenario, and label it.
 6. **Grade find + fix together** — RCI/RCR localization AND fix-resolves-fault, one combined score per arm.
@@ -45,5 +57,5 @@ When NEAT shows **any** weakness — a bug, a misdirection, a low-confidence/mis
 
 ## Status / open inputs
 - PRAXIS artifact format + fix-verification path: under recon (agent `a39febdcf70d89088`).
-- graphify identity (user skill vs Augment product): pending user confirm; obs+graphify arm wired on answer.
+- `obscode` arm = raw code (read/grep/LSP) + raw traces/metrics (Jaeger/Prometheus), unfused (Cem, 2026-08-27). graphify dropped — leaner, and it isolates fusion over the same two signals.
 - Box: user re-spawning; harness (KinD + OTel-Demo + collector→NEAT fusion) transfers from the SRE run.

@@ -27,7 +27,7 @@ Each scenario declares Prometheus `alerts[]` (mostly `RequestErrorRate` on front
 ## Find + fix loop (per code scenario)
 1. **Seed once (offline, frozen):** build an *editable* faulted recommendation from the shipped reconstruction (`praxis-ae/examples/technology_codebase/opentelemetry-demo/src/recommendation/<variant>/` + `analysis_processed.json` code-snippets, diffed against `faultfree/`). Build image, `kind load`, deploy → confirm it fires the **same alert** as the quay image (validates the seed == authors' fault). Freeze.
 2. **Inject** (image swap or the seeded image) → wait ~3 min → confirm alert Firing.
-3. **Run the arm** (code / obs+graphify / opus+neat), fresh headless Claude Opus, diagnose **and** produce a source patch to `src/recommendation/`.
+3. **Run the arm** (code / obscode / neat), fresh headless Claude Opus, diagnose **and** produce a source patch to `src/recommendation/`.
 4. **Verify fix:** apply patch → `docker build` → `kind load` → `kubectl set image` + rollout → drive load (harness sets `BROWSE_PRODUCT_WEIGHT=1000`) → assert every scenario alert returns Firing→Inactive for a full window AND no new alert fires AND the deployment runs a *newly built* digest with replicas≥1 (anti-cheat: no scale-to-0, no revert-to-stock-image).
 5. **Score** find (RCI entity exact-match + RCR our LLM-judge vs `propagations`/`recommended_actions`) + fix (symptom-cleared boolean), jointly. Per SCORING.md.
 
@@ -42,6 +42,6 @@ Each scenario declares Prometheus `alerts[]` (mostly `RequestErrorRate` on front
 - [x] Ground truth + injection + oracle mapped; images pull; reconstruction source present.
 - [ ] Re-pin app to 2.0.1 (chart 0.36.4) + point NEAT at 2.0.1 recommendation source.  ← next
 - [ ] Archive quay faulted images + 2.0.1 baseline to local tars.
-- [ ] Wire 3 arms (code / obs+graphify=Safi graphify skill / opus+neat live daemon).
+- [ ] Wire 3 arms (code / obscode=source+raw traces / neat=live fused daemon).
 - [ ] Build fix-verify script (apply→build→load→rollout→alert-clears).
 - [ ] Freeze editable faulted seeds for 401–416.
