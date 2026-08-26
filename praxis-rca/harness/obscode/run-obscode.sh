@@ -44,7 +44,7 @@ echo "[$(date +%H:%M:%S)] obscode arm — scenario $SCEN trial $TRIAL (model=$MO
 
 # ── obs surface up (traces always; metrics best-effort — honest if it's down) ──
 obscode_ensure_jaeger || echo "run-obscode: WARNING Jaeger not answering — obs surface degraded" >&2
-if obscode_ensure_prom; then PROM_STATE="up"; else PROM_STATE="down (OOMKilled loop)"; fi
+if obscode_ensure_prom; then PROM_STATE="up (app RED + latency + infra; no alert rules loaded — see README)"; else PROM_STATE="not answering"; fi
 echo "  obs surface: traces=Jaeger($JAEGER_API)  metrics=Prometheus[$PROM_STATE]  logs=kubectl"
 
 # ── fresh editable copy of the recommendation service (reset per run) ──────────
@@ -80,9 +80,13 @@ correlate them yourself, by hand.
      obscode-metrics.sh --alerts                 # active Prometheus alerts
    Known services include: recommendation, product-catalog, frontend, frontend-proxy,
    cart, checkout, ad, currency, shipping, payment, quote, email.
-   NOTE: on this box the Prometheus metrics backend is unreliable (it OOM-loops);
-   if obscode-metrics.sh errors, that is an infrastructure gap, NOT "no anomaly."
-   Traces and logs are healthy and are your primary runtime signal.
+   METRICS NOTE: Prometheus carries the app RED metrics — traces_span_metrics_calls_total
+   (by service_name/span_name/status_code) and traces_span_metrics_duration_milliseconds_bucket
+   (use histogram_quantile for p95/p99 per service) — plus infra. Two caveats: no alert
+   RULES are loaded, so --alerts says "no active alerts" regardless (use the raw RED
+   metrics for the anomaly signal, not --alerts); and app-RED series need a few minutes to
+   repopulate after a Prometheus restart (a transient "empty result set" is a timing gap,
+   NOT "no anomaly"). Traces + logs are your primary signal; metrics give error-rate/latency.
 
 YOUR TASK — diagnose AND fix:
   a) Use BOTH signals together — read the traces/logs to see WHAT fails and WHERE

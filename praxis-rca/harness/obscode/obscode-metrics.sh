@@ -16,11 +16,15 @@
 #   obscode-metrics.sh 'histogram_quantile(0.95, sum by (le) (rate(duration_milliseconds_bucket[5m])))'
 #   obscode-metrics.sh --alerts
 #
-# HONEST NOTE: the otel-demo Prometheus pod is currently OOMKilled in a loop
-# (300Mi memory limit). This helper does NOT hide that — if Prometheus is down it
-# prints a loud error and exits non-zero, so the agent never mistakes "down" for
-# "no anomaly." Traces (obscode-traces.sh) + logs (obscode-logs.sh) are healthy
-# and are the load-bearing obs signal until the Prometheus limit is raised.
+# HONEST NOTE: Prometheus is healthy (it was OOM-looping at 300Mi; the operator raised
+# it to 1Gi). It carries the otel-demo app RED metrics — traces_span_metrics_calls_total
+# (by service_name/span_name/status_code) and traces_span_metrics_duration_milliseconds_bucket
+# (histogram_quantile p95/p99) — plus k8s/infra. Two honest caveats: (1) no alert RULES
+# are loaded, so --alerts always says "no active alerts" (use the raw RED metrics for the
+# anomaly signal); (2) app-RED series take a few minutes to repopulate after a Prometheus
+# restart, so PromQL may transiently return "empty result set" — reported honestly, never
+# a silent empty. If Prometheus is truly unreachable this helper errors loudly (non-zero
+# exit). See harness/obscode/README.md "Status of the metrics leg".
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -40,14 +44,14 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-DOWN_MSG='obscode-metrics: Prometheus is unreachable. On this bench box the otel-demo
-Prometheus pod OOM-loops (300Mi limit, exit 137), so metrics/alerts are
-INTERMITTENT-TO-DOWN. This is a known obs-surface gap (see harness/obscode/README.md),
-not "no anomaly." Rely on obscode-traces.sh + obscode-logs.sh for the runtime signal.'
+DOWN_MSG='obscode-metrics: Prometheus is not answering right now. It normally runs
+1/1 (the operator raised it to 1Gi after an OOM loop) — if this persists, check the
+pod (kubectl get pods -n otel-demo -l app.kubernetes.io/name=prometheus). This is
+NOT "no anomaly." Rely on obscode-traces.sh + obscode-logs.sh for the runtime signal.'
 
 if ! obscode_ensure_prom; then
   echo "$DOWN_MSG" >&2
-  echo '{"status":"error","errorType":"unreachable","error":"prometheus OOMKilled loop (300Mi) — see harness/obscode/README.md"}'
+  echo '{"status":"error","errorType":"unreachable","error":"prometheus not answering — see harness/obscode/README.md"}'
   exit 1
 fi
 
@@ -57,15 +61,19 @@ if [ "$MODE" = alerts ]; then
   OUT="$(fetch "${PROM_API}/api/v1/alerts")"
   [ -n "$OUT" ] || { echo "$DOWN_MSG" >&2; exit 1; }
   if [ "$RAW" = 1 ]; then echo "$OUT"; exit 0; fi
-  printf '%s' "$OUT" | python3 -c '
+  _TMP="$(mktemp)"; printf '%s' "$OUT" > "$_TMP"
+  python3 - "$_TMP" <<'PY'
 import sys,json
-d=json.load(sys.stdin)
+d=json.load(open(sys.argv[1]))
 alerts=(d.get("data") or {}).get("alerts") or []
-if not alerts: print("[obscode-metrics] no active alerts"); sys.exit(0)
+if not alerts:
+    print("[obscode-metrics] no active alerts"); sys.exit(0)
 for a in alerts:
     lbl=a.get("labels",{})
-    print(f"{a.get(\"state\",\"?\"):8} {lbl.get(\"alertname\",\"?\")}  { {k:v for k,v in lbl.items() if k not in (\"alertname\",)} }  since={a.get(\"activeAt\",\"?\")}")
-'
+    extra={k:v for k,v in lbl.items() if k!="alertname"}
+    print(f'{a.get("state","?"):8} {lbl.get("alertname","?")}  {extra}  since={a.get("activeAt","?")}')
+PY
+  rm -f "$_TMP"
   exit 0
 fi
 
@@ -87,23 +95,28 @@ fi
 [ -n "$OUT" ] || { echo "$DOWN_MSG" >&2; exit 1; }
 if [ "$RAW" = 1 ]; then echo "$OUT"; exit 0; fi
 
-printf '%s' "$OUT" | python3 -c '
+_TMP="$(mktemp)"; printf '%s' "$OUT" > "$_TMP"
+python3 - "$_TMP" <<'PY'
 import sys,json
-d=json.load(sys.stdin)
+d=json.load(open(sys.argv[1]))
 if d.get("status")!="success":
     print("[obscode-metrics] query error:", json.dumps(d)[:300]); sys.exit(0)
 r=d.get("data",{}); rt=r.get("resultType"); res=r.get("result") or []
-if not res: print("[obscode-metrics] empty result set"); sys.exit(0)
+if not res:
+    print("[obscode-metrics] empty result set"); sys.exit(0)
 for s in res[:40]:
     m=s.get("metric",{})
     lab=", ".join(f"{k}={v}" for k,v in m.items()) or "(no labels)"
     if rt=="vector":
-        print(f"{lab}  ->  {s.get(\"value\",[None,None])[1]}")
+        val=s.get("value",[None,None])[1]
+        print(f"{lab}  ->  {val}")
     elif rt=="matrix":
         vals=s.get("values",[])
-        pts=[float(v[1]) for v in vals if v[1] not in (None,\"NaN\")]
-        last=vals[-1][1] if vals else \"?\"
-        print(f"{lab}  ->  last={last}  n={len(vals)}  min={min(pts) if pts else \"?\"}  max={max(pts) if pts else \"?\"}")
+        pts=[float(v[1]) for v in vals if v[1] not in (None,"NaN")]
+        last=vals[-1][1] if vals else "?"
+        mn=min(pts) if pts else "?"; mx=max(pts) if pts else "?"
+        print(f"{lab}  ->  last={last}  n={len(vals)}  min={mn}  max={mx}")
     else:
         print(f"{lab}  ->  {s}")
-'
+PY
+rm -f "$_TMP"

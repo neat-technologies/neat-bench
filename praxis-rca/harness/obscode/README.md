@@ -14,9 +14,9 @@ surface.
 
 | signal | source | how reached | health |
 |---|---|---|---|
-| **traces** | `svc/jaeger-query` :16686, HTTP query API under **`/jaeger/ui/api`** | `kubectl port-forward` → local **16699** | **healthy, rich** |
-| **logs** | pod stdout/stderr | `kubectl logs deploy/<svc>` (read-only) | **healthy** |
-| **metrics / alerts** | `svc/prometheus` :9090 | `kubectl port-forward` → local **9099** | **DEGRADED — see gap below** |
+| **traces** | `svc/jaeger-query` :16686, HTTP query API under **`/jaeger/ui/api`** | `kubectl port-forward` → local **16699** | **healthy, rich, fresh** |
+| **logs** | pod stdout/stderr | `kubectl logs deploy/<svc>` (read-only) | **healthy** (app services; Envoy `frontend-proxy` is quiet by design — traces cover it) |
+| **metrics** | `svc/prometheus` :9090 | `kubectl port-forward` → local **9099** | **healthy** — app RED (`traces_span_metrics_*`) + latency histograms + infra; one caveat (no alert *rules* loaded) in the note below |
 
 `obscode-env.sh` is the one place that encodes those services + ports + API base
 paths; every helper and the runner source it. Port-forwards are started detached
@@ -85,29 +85,55 @@ Model/budget are control variables: `NEAT_BENCH_MODEL` (default `opus`),
 Outputs per run: `prompt.txt`, `claude-stream.jsonl`/`transcript.jsonl`, `answer.txt`,
 `tool-calls.log`, `patch.diff`, `arm.json`.
 
-## Honest gap — Prometheus is OOMKilled (metrics/alerts unreliable)
+## Status of the metrics leg (honest, current)
 
-The otel-demo `prometheus` pod is in a **CrashLoopBackOff / OOMKilled loop** (exit 137,
-`memory: 300Mi` limit, 70+ restarts). It comes up for a ~40s window, replays its WAL,
-then dies before/while scraping — so `obscode-metrics.sh` and `--alerts` are
-**intermittent-to-down**. There is no substitute: the collector exposes only its own
-self-telemetry on :8888 (no span→RED-metric exporter), and Grafana's datasource is that
-same Prometheus.
+**History (why early smoke looked broken):** the otel-demo `prometheus` pod was
+OOMKilling in a loop (300Mi limit, exit 137, 75 restarts). That cascaded — the collector
+couldn't push to Prometheus, backpressured, and returned `UNAVAILABLE` to every exporter,
+so **traces stopped landing in Jaeger too**. That is why some early `/traces` calls came
+back empty. The operator **raised Prometheus to 1Gi**; it now runs `1/1` with 0 restarts
+and the collector un-backpressured.
 
-This is a **cluster-config issue owned by the operator**, not a NEAT weakness and not a
-harness bug — the fix is to **raise the Prometheus memory limit** (the bench box is
-READ-ONLY to the obscode harness author, so we do not patch it here). It does **not**
-strawman the baseline:
+**Now (verified): all three legs are healthy and carrying live fault signal.**
+- **Traces** flow fresh (new traces landing within the last minute).
+- **Metrics** are reachable and rich — not just infra: the OpenTelemetry Demo's
+  **application RED metrics are present** once the pipeline catches up after the restart
+  (a few minutes): `traces_span_metrics_calls_total` (~90 series, filterable by
+  `service_name` / `span_name` / `status_code`) and
+  `traces_span_metrics_duration_milliseconds_bucket` (~1530 series → `histogram_quantile`
+  p95/p99 per service), plus `up`/`target_info`/k8s infra (2400+ series total). Confirmed
+  against the live fault (recommendation on the `neo4j-serving` variant, a 405–410-class
+  external-dep fault): `frontend-proxy` error-rate ≈ 0.03/s and p95 ≈ 2.5s while healthy
+  services sit at ~2ms.
+- **Logs** are healthy for app services (Envoy `frontend-proxy` is quiet by design).
 
-- Traces (Jaeger) + pod logs are **healthy and rich**, and for PRAXIS code-grain faults
-  (401–416: AttributeError, timeouts, index errors) the **decisive** runtime signal is
-  the exception/error span + log traceback — both fully present. This already matches
-  or exceeds PRAXIS's published **runtime-only** baseline (which was trace-only).
-- `obscode-metrics.sh` fails **loudly** (clear error + non-zero exit), never a silent
-  empty, so the agent can never mistake "Prometheus down" for "no anomaly."
-- The metrics helper is correct and ready; it lights up the instant the memory limit
-  is raised, restoring the aggregate RED/alert leg.
+**One real caveat (honest):** **no alert *rules* are loaded** in this Prometheus (`/api/v1/rules`
+→ 0 groups), so `obscode-metrics.sh --alerts` returns "no active alerts" regardless — the
+PRAXIS `RequestErrorRate` named-alert oracle isn't wired here. That's a bench-setup /
+grading concern for the operator (the fix oracle in INTEGRATION.md polls those alerts); it
+does **not** affect the obscode agent's *diagnostic* surface, because the raw RED metrics
+(error-rate + latency by service) and the error traces carry the same anomaly signal
+directly — see the sample below. Also note app-RED series need a few minutes to repopulate
+after any Prometheus restart; right after a restart, app-metric PromQL may transiently
+return `empty result set` (reported honestly, never a silent empty).
 
-**Recommendation before scored runs:** bump the Prometheus memory limit (e.g. 300Mi →
-1Gi) so the metrics leg is live, then re-confirm `obscode-metrics.sh --alerts`. Until
-then, obscode runs on traces + logs — a strong, honest surface, with the gap on record.
+**Not a strawman.** obscode gets the complete, unfused surface: full source + fresh
+traces (error spans, exceptions, stack frames, latency) + raw logs + live RED/latency
+metrics. It matches/exceeds PRAXIS's published runtime-only baseline and then some. The
+only missing piece is *named alert rules*, which are an oracle-wiring detail, not a
+diagnostic signal the agent needs.
+
+### Sample (live neo4j-serving fault, 405–410 class)
+```
+$ obscode-metrics.sh 'sum by (service_name) (rate(traces_span_metrics_calls_total{status_code="STATUS_CODE_ERROR"}[5m]))'
+service_name=frontend-proxy  ->  0.03
+service_name=load-generator  ->  0.04
+$ obscode-metrics.sh 'histogram_quantile(0.95, sum by (service_name,le) (rate(traces_span_metrics_duration_milliseconds_bucket[5m])))'
+service_name=frontend-proxy  ->  2521.1      # the fault symptom; healthy peers ~1.9
+$ obscode-traces.sh frontend-proxy --errors --lookback 10m
+    ERROR  frontend-proxy :: ingress  dur=3031.6ms
+    ERROR  frontend-proxy :: router frontend egress  dur=3031.5ms
+```
+Metrics say *which service is slow/erroring and how much*; traces say *where the 3s hang
+is*; source says *why* — obscode hands the agent all three, **unfused**, and it stitches
+them. `neat` fuses the same three into one graph; that difference is what the bench measures.
