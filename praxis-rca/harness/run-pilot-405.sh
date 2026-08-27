@@ -61,8 +61,9 @@ for seed in 1 2; do
     echo "[$(date +%H:%M:%S)] ===== arm=$arm seed=$seed ====="
     ensure_faulted
     RD="$HOME/praxis/runs/$SCEN/$arm$([ "$seed" = 1 ] || echo "/trial-$seed")"
+    RUNNER="$HERE/run-$arm.sh"; [ "$arm" = obscode ] && RUNNER="$HERE/obscode/run-obscode.sh"
     NEAT_BENCH_MODEL="${NEAT_BENCH_MODEL:-opus}" NEAT_BENCH_MAX_TURNS="${NEAT_BENCH_MAX_TURNS:-40}" \
-      bash "$HERE/run-$arm.sh" "$SCEN" "$seed" "$SYMPTOM" || echo "  [pilot] run-$arm returned nonzero (agent may have errored; continuing)"
+      bash "$RUNNER" "$SCEN" "$seed" "$SYMPTOM" || echo "  [pilot] run-$arm returned nonzero (agent may have errored; continuing)"
     PATCH="$RD/src/recommendation_server.py"
     RCR=$(rcr_grade "$RD/patch.diff")
     EDITED=$(python3 -c "import json;print(json.load(open('$RD/arm.json'))['edited_recommendation'])" 2>/dev/null || echo false)

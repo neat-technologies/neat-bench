@@ -38,9 +38,9 @@ for line in open(sys.argv[1]):
 PY
 _NCALLS=$(wc -l < "$_RD/tool-calls.log" 2>/dev/null | tr -d ' ')
 # cross-contamination guard: did an arm touch a tool it must not have?
-_NEAT_HITS=$(grep -icE '(^|[^a-z])neat( |_|-|$)|mcp__neat' "$_RD/tool-calls.log" 2>/dev/null || echo 0)
-_OBS_HITS=$(grep -cE 'obscode-(traces|metrics|logs)' "$_RD/tool-calls.log" 2>/dev/null || echo 0)
-_KUBECTL_HITS=$(grep -cE '(^|[^a-z])kubectl( |$)' "$_RD/tool-calls.log" 2>/dev/null || echo 0)
+_NEAT_HITS=$(grep -icE '(^|[^a-z])neat( |_|-|$)|mcp__neat' "$_RD/tool-calls.log" 2>/dev/null | head -1 || true)
+_OBS_HITS=$(grep -cE 'obscode-(traces|metrics|logs)' "$_RD/tool-calls.log" 2>/dev/null | head -1 || true)
+_KUBECTL_HITS=$(grep -cE '(^|[^a-z])kubectl( |$)' "$_RD/tool-calls.log" 2>/dev/null | head -1 || true)
 
 # patch record + whether the agent actually edited the graded file
 diff -u "$_RD/src/recommendation_server.py.orig" "$_RD/src/recommendation_server.py" > "$_RD/patch.diff" 2>/dev/null
