@@ -1,0 +1,21 @@
+# PRAXIS Code-Cloud-RCA — per-scenario ground truth for the ±NEAT suite.
+# Frozen BEFORE the runs (SCORING.md §6). One row per scenario.
+# Columns (tab-separated):
+#   scen        PRAXIS id
+#   rec_tag     quay.io/shengkunrz/it-bench-dev:<rec_tag> — the faulted recommendation image
+#   pdb_tag     matching neo4j-productdb variant tag, or NONE (401 has no neo4j dep)
+#   pdb_env     extra env for the productdb container (k=v), or -   (412 needs NUM_PRODUCTS=14)
+#   neo4j_endpoint  value for recommendation's NEO4J_PRODUCT_DATABASE_ENDPOINT, or -
+#                   405 uses an http:// URL (requests.get); 410/412 use host:port (raw socket)
+#   mode        oracle discriminator: ERROR | HANG | LATENCY
+#   rci         ground-truth faulty service (all four: recommendation)
+# RCR code-location targets (graded by grade.sh, greps documented there):
+#   401  cat_response.products_list -> products         (recommendation_server.py ~85/96)
+#   405  add timeout/retry to neo4j requests.get         (get_additional_product_from_database ~129)
+#   410  bound the `while True` neo4j socket retry loop   (get_additional_product_from_database ~143)
+#   412  reimplement recursive LCS with DP/memoization    (compare_product_compatibility ~157)
+scen	rec_tag	pdb_tag	pdb_env	neo4j_endpoint	mode	rci
+401	dev-recommendation	NONE	-	-	ERROR	recommendation
+405	neo4j-serving-recommendation	latest-neo4j-productdb	-	http://neo4j-productdb:7979	HANG	recommendation
+410	neo4jto-live-serving-recommendation	latest-empret-neo4j-productdb	-	neo4j-productdb:7979	HANG	recommendation
+412	logics-recommendation	latest-logic-neo4j-productdb	NUM_PRODUCTS=14	neo4j-productdb:7979	LATENCY	recommendation
