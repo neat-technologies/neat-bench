@@ -24,7 +24,11 @@ FIXED="${1:?usage: verify-405.sh <fixed_recommendation_server.py>}"
 
 NS=otel-demo
 DEP=recommendation
-FAULT_IMG="quay.io/shengkunrz/it-bench-dev:neo4j-serving-recommendation"
+# faulted base with max_workers bumped 10→100 (the concurrency AMPLIFIER removed
+# so we measure the neo4j-timeout fix, not pool exhaustion) — applied equally to
+# the faulted baseline and every arm's fix (a control variable). Local image, so
+# it must deploy with imagePullPolicy=IfNotPresent (patched below).
+FAULT_IMG="${FAULT_IMG_405:-neat-bench/rec-405-faulted-w100:v1}"
 TAG="neat-bench/rec-405-fix:$(date +%s)-$$"
 WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
 LAT_MAX_MS=12000     # must be well under the 15s client deadline

@@ -21,7 +21,10 @@ export PATH="$HOME/.local/bin:$HOME/.nvm/versions/node/v20.20.2/bin:/usr/local/b
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 NS=otel-demo; DEP=recommendation
-FAULT_IMG="quay.io/shengkunrz/it-bench-dev:neo4j-serving-recommendation"
+# faulted base with max_workers bumped 10→100 (concurrency amplifier removed;
+# a control variable applied to faulted + every arm). Local tag → IfNotPresent.
+FAULT_IMG="${FAULT_IMG_405:-neat-bench/rec-405-faulted-w100:v1}"
+export FAULT_IMG_405="$FAULT_IMG"   # verify-405 reads the same base
 SCEN=405
 OUT="$HOME/praxis/runs/$SCEN/pilot-results.tsv"
 mkdir -p "$(dirname "$OUT")"
@@ -29,21 +32,33 @@ echo -e "arm\tseed\trcr\thang_cleared\tfix\tresolved\tedited\ttokens\tcost_usd\t
 SYMPTOM="Users report the storefront intermittently fails to load product recommendations; some product pages time out. Diagnose the failing service and fix the root cause in the recommendation service source."
 
 ensure_faulted () {
-  local img; img=$(kubectl get deploy/$DEP -n $NS -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null)
-  if [ "$img" != "$FAULT_IMG" ]; then
-    echo "  [pilot] restoring faulted image"; kubectl set image deploy/$DEP -n $NS "$DEP=$FAULT_IMG" >/dev/null 2>&1
-    kubectl rollout status deploy/$DEP -n $NS --timeout=150s >/dev/null 2>&1
-  fi
+  # patch image + IfNotPresent together (the deploy ships imagePullPolicy=Always,
+  # which would make kubelet try to PULL our local tag and keep the old pod).
+  kubectl patch deploy/$DEP -n $NS --type=strategic \
+    -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"$DEP\",\"image\":\"$FAULT_IMG\",\"imagePullPolicy\":\"IfNotPresent\"}]}}}}" >/dev/null 2>&1
+  kubectl rollout status deploy/$DEP -n $NS --timeout=150s >/dev/null 2>&1
 }
 
-# steady background load so neat/obscode see a live OBSERVED hang (products fast + recs hang)
-pkill -f "port-forward.*frontend-proxy" 2>/dev/null; sleep 1
-setsid bash -c "export KUBECONFIG=$HOME/.kube/config; export PATH=$HOME/.local/bin:\$PATH; kubectl port-forward svc/frontend-proxy 18080:8080 -n $NS" >/tmp/pilot-pf.log 2>&1 </dev/null &
-sleep 4
-setsid bash -c 'while true; do curl -s -o /dev/null --max-time 5 http://localhost:18080/api/products; curl -s -o /dev/null --max-time 16 "http://localhost:18080/api/recommendations?productIds=OLJCESPC7Z" & sleep 2; done' >/tmp/pilot-load.log 2>&1 </dev/null &
-LOAD_PID=$!
-trap 'kill $LOAD_PID 2>/dev/null; pkill -f "port-forward.*frontend-proxy" 2>/dev/null' EXIT
-echo "[$(date +%H:%M:%S)] steady load started (pid $LOAD_PID); warming OBSERVED layer 40s"; sleep 40
+# ── LOAD ISOLATION: the background load runs ONLY during the agent phase (so the
+#    neat/obscode arms see a live OBSERVED hang). It is STOPPED before each verify
+#    so the oracle measures the fix under its own controlled, sequential load — the
+#    background load overlapping verify is what saturated the pool and confounded
+#    the first run. ──────────────────────────────────────────────────────────────
+LOAD_PID=""; PF_PID=""
+start_load () {
+  stop_load
+  setsid bash -c "export KUBECONFIG=$HOME/.kube/config; export PATH=$HOME/.local/bin:\$PATH; kubectl port-forward svc/frontend-proxy 18080:8080 -n $NS" >/tmp/pilot-pf.log 2>&1 </dev/null &
+  PF_PID=$!; sleep 4
+  setsid bash -c 'while true; do curl -s -o /dev/null --max-time 5 http://localhost:18080/api/products; curl -s -o /dev/null --max-time 16 "http://localhost:18080/api/recommendations?productIds=OLJCESPC7Z" & sleep 2; done' >/tmp/pilot-load.log 2>&1 </dev/null &
+  LOAD_PID=$!
+}
+stop_load () {
+  [ -n "$LOAD_PID" ] && kill "$LOAD_PID" 2>/dev/null; LOAD_PID=""
+  pkill -f 'api/recommendations' 2>/dev/null
+  [ -n "$PF_PID" ] && kill "$PF_PID" 2>/dev/null; PF_PID=""
+  pkill -f "port-forward.*frontend-proxy" 2>/dev/null
+}
+trap 'stop_load' EXIT
 
 rcr_grade () {   # $1=patch.diff → echo YES/NO
   local p="$1"; [ -s "$p" ] || { echo NO; return; }
@@ -60,10 +75,12 @@ for seed in 1 2; do
   for arm in $order; do
     echo "[$(date +%H:%M:%S)] ===== arm=$arm seed=$seed ====="
     ensure_faulted
+    start_load; echo "  [pilot] load on — warming OBSERVED 35s"; sleep 35   # live hang for the arm
     RD="$HOME/praxis/runs/$SCEN/$arm$([ "$seed" = 1 ] || echo "/trial-$seed")"
     RUNNER="$HERE/run-$arm.sh"; [ "$arm" = obscode ] && RUNNER="$HERE/obscode/run-obscode.sh"
     NEAT_BENCH_MODEL="${NEAT_BENCH_MODEL:-opus}" NEAT_BENCH_MAX_TURNS="${NEAT_BENCH_MAX_TURNS:-40}" \
       bash "$RUNNER" "$SCEN" "$seed" "$SYMPTOM" || echo "  [pilot] run-$arm returned nonzero (agent may have errored; continuing)"
+    stop_load; sleep 3   # load OFF → verify measures the fix in isolation (no pool saturation)
     PATCH="$RD/src/recommendation_server.py"
     RCR=$(rcr_grade "$RD/patch.diff")
     EDITED=$(python3 -c "import json;print(json.load(open('$RD/arm.json'))['edited_recommendation'])" 2>/dev/null || echo false)
