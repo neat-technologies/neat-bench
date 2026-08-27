@@ -40,7 +40,12 @@ docker build -q -t "$TAG" "$WORK" >/dev/null 2>&1 || { echo "verify-405: docker 
 kind load docker-image --name kind-dev "$TAG" >/dev/null 2>&1 || { echo "verify-405: kind load failed" >&2; echo "RESOLVED_405=NO reason=kind_load_failed"; exit 2; }
 
 echo "[$(date +%H:%M:%S)] verify-405: deploying fixed image + rollout"
-kubectl set image deploy/$DEP -n $NS "$DEP=$TAG" >/dev/null 2>&1
+# CRITICAL: the recommendation deploy ships imagePullPolicy=Always, which makes
+# kubelet try to PULL our locally-built tag (not in any registry) → the new pod
+# never starts and the OLD faulted pod keeps serving. Patch image AND policy to
+# IfNotPresent together so the kind-loaded image is actually used.
+kubectl patch deploy/$DEP -n $NS --type=strategic \
+  -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"$DEP\",\"image\":\"$TAG\",\"imagePullPolicy\":\"IfNotPresent\"}]}}}}" >/dev/null 2>&1
 kubectl rollout status deploy/$DEP -n $NS --timeout=150s >/dev/null 2>&1
 sleep 30   # settle; exclude the rollout transition from the oracle window
 
@@ -75,16 +80,28 @@ N504=$(printf '%s\n' $CODES | grep -cE '^(502|503|504|000)$' || true)
 # ── symptom check: DEADLINE_EXCEEDED / hang in recommendation over the window ──
 WINDOW=$(( $(date +%s) - SINCE_MARK + 5 ))
 DEADLINE=$(kubectl logs deploy/$DEP -n $NS --since=${WINDOW}s 2>/dev/null | grep -icE "DEADLINE_EXCEEDED|Deadline Exceeded|context deadline" || true)
-# ── regression: other core flows newly erroring? ──────────────────────────────
+# ── regression: probe product-catalog directly (a fix that broke another flow
+#    would 5xx here) — robust vs a broad log grep that matches baseline noise. ──
+POK=0
+for i in 1 2 3 4; do
+  pc=$(curl -s -o /dev/null -w '%{http_code}' --max-time 6 "http://localhost:$PF_PORT/api/products" 2>/dev/null)
+  [ "$pc" = 200 ] && POK=$((POK+1))
+done
+# hard failures in other services over the window (reported note, not the gate)
 OTHER=0
-for s in frontend cart checkout product-catalog; do
-  c=$(kubectl logs deploy/$s -n $NS --since=${WINDOW}s 2>/dev/null | grep -icE "error|exception|5[0-9][0-9]|UNAVAILABLE|INTERNAL" || true)
+for s in cart checkout product-catalog; do
+  c=$(kubectl logs deploy/$s -n $NS --since=${WINDOW}s 2>/dev/null | grep -icE "Traceback|CRITICAL|panic|UNAVAILABLE|INTERNAL" || true)
   OTHER=$((OTHER+c))
 done
-# ── anti-cheat: deployed image must be our freshly-built tag, replicas>=1 ──────
-CUR_IMG=$(kubectl get deploy/$DEP -n $NS -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null)
+# ── anti-cheat: the RUNNING pod's recommendation_server.py must DIFFER from the
+#    faulted seed (a real fix is deployed, not stock/scale-0), replicas>=1. Hash-
+#    compare — robust vs containerd image-name normalization (which false-flagged). ──
+RUNPOD=$(kubectl get pods -n $NS -o name 2>/dev/null | grep "$DEP" | head -1 | sed 's@pod/@@')
 REPLICAS=$(kubectl get deploy/$DEP -n $NS -o jsonpath='{.status.readyReplicas}' 2>/dev/null)
-CHEAT=NO; [ "$CUR_IMG" = "$TAG" ] && [ "${REPLICAS:-0}" -ge 1 ] || CHEAT=YES
+RUN_HAS_FIX=$(kubectl exec -n $NS "$RUNPOD" -- grep -c 'timeout=' /usr/src/app/recommendation_server.py 2>/dev/null | head -1 || echo 0)
+RUN_MD5=$(kubectl exec -n $NS "$RUNPOD" -- md5sum /usr/src/app/recommendation_server.py 2>/dev/null | awk '{print $1}')
+FAULT_MD5=$(md5sum "$HOME/praxis/seeds/405/faulted/recommendation_server.py" 2>/dev/null | awk '{print $1}')
+CHEAT=NO; { [ -n "$RUN_MD5" ] && [ "$RUN_MD5" != "$FAULT_MD5" ] && [ "${REPLICAS:-0}" -ge 1 ]; } || CHEAT=YES
 
 # ── verdict ───────────────────────────────────────────────────────────────────
 # HANG_CLEARED: the actual fault (the 15s indefinite hang) is gone — no request
@@ -97,15 +114,16 @@ HANG_CLEARED=NO
 # AND no regression AND the freshly-built image is what's deployed. A graceful
 # timeout+degrade fix reaches this; a bare fast-fail clears the hang but not this.
 RESOLVED=NO
-if [ "$HANG_CLEARED" = YES ] && [ "$N200" -ge 4 ] && [ "$OTHER" -lt 5 ] && [ "$CHEAT" = NO ]; then
+if [ "$HANG_CLEARED" = YES ] && [ "$N200" -ge 6 ] && [ "${POK:-0}" -ge 3 ] && [ "$CHEAT" = NO ]; then
   RESOLVED=YES
 fi
-echo "verify-405: codes=[$CODES ] max_latency_ms=$MAX_MS n200=$N200 n5xx=$N504 deadline_exceeded=$DEADLINE other_core_errors=$OTHER anticheat_breach=$CHEAT"
+echo "verify-405: codes=[$CODES ] max_latency_ms=$MAX_MS n200=$N200 n5xx=$N504 deadline_exceeded=$DEADLINE product_catalog_200=$POK/4 other_hard_errors=$OTHER run_has_timeout=$RUN_HAS_FIX anticheat_breach=$CHEAT"
 echo "HANG_CLEARED_405=$HANG_CLEARED  RESOLVED_405=$RESOLVED"
 
 # ── ALWAYS revert to faulted so the next run starts clean ─────────────────────
 echo "[$(date +%H:%M:%S)] verify-405: reverting recommendation to faulted image"
-kubectl set image deploy/$DEP -n $NS "$DEP=$FAULT_IMG" >/dev/null 2>&1
+kubectl patch deploy/$DEP -n $NS --type=strategic \
+  -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"$DEP\",\"image\":\"$FAULT_IMG\",\"imagePullPolicy\":\"IfNotPresent\"}]}}}}" >/dev/null 2>&1
 kubectl rollout status deploy/$DEP -n $NS --timeout=150s >/dev/null 2>&1
 pkill -f "port-forward.*frontend-proxy" 2>/dev/null || true
 [ "$RESOLVED" = YES ] && exit 0 || exit 1
