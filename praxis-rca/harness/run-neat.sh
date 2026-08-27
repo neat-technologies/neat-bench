@@ -76,6 +76,8 @@ the running system — static code (EXTRACTED) and live runtime behaviour
      neat stale-edges --project $NEAT_PROJECT                  # dependencies that went silent
      neat search "<term>" --project $NEAT_PROJECT              # semantic search over the fused graph (find the code node)
      neat dependencies service:<svc> --project $NEAT_PROJECT   # transitive declared edges
+     neat diff --against healthy --project $NEAT_PROJECT       # TIME-TRAVEL: what changed vs the healthy baseline snapshot
+     neat policies --project $NEAT_PROJECT                     # policy violations across the fused graph
    Provenance tells you how much to trust each claim: OBSERVED (seen via OTel),
    EXTRACTED (from source), INFERRED (stitched), STALE (went quiet).
 
