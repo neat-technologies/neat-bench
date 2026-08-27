@@ -48,6 +48,19 @@ sleep 30   # settle; exclude the rollout transition from the oracle window
 pkill -f "port-forward.*frontend-proxy" 2>/dev/null; sleep 1
 setsid bash -c "export KUBECONFIG=$HOME/.kube/config; export PATH=$HOME/.local/bin:\$PATH; kubectl port-forward svc/frontend-proxy $PF_PORT:8080 -n $NS" >/tmp/verify405-pf.log 2>&1 </dev/null &
 sleep 4
+# WARM-UP: during the faulted period the frontend-proxy circuit-breaker (Envoy
+# outlier detection) ejects recommendation and 503s EVERYTHING regardless of the
+# new code. Drive steady traffic ~90s so a WORKING fix lets the breaker re-admit
+# recommendation (→ 200s); a non-fix keeps it erroring (→ stays 503/504). Without
+# this the oracle measures the breaker, not the fix (the bug that failed all arms).
+echo "[$(date +%H:%M:%S)] verify-405: warm-up 90s (let circuit-breaker re-admit a healthy recommendation)"
+WEND=$(( $(date +%s) + 90 ))
+while [ "$(date +%s)" -lt "$WEND" ]; do
+  curl -s -o /dev/null --max-time 10 "http://localhost:$PF_PORT/api/products" 2>/dev/null
+  curl -s -o /dev/null --max-time 10 "http://localhost:$PF_PORT/api/recommendations?productIds=OLJCESPC7Z" 2>/dev/null
+  sleep 2
+done
+# MEASURE steady state
 SINCE_MARK=$(date +%s)
 CODES=""; LATS=""
 for i in 1 2 3 4 5 6 7 8; do
@@ -74,12 +87,21 @@ REPLICAS=$(kubectl get deploy/$DEP -n $NS -o jsonpath='{.status.readyReplicas}' 
 CHEAT=NO; [ "$CUR_IMG" = "$TAG" ] && [ "${REPLICAS:-0}" -ge 1 ] || CHEAT=YES
 
 # ── verdict ───────────────────────────────────────────────────────────────────
+# HANG_CLEARED: the actual fault (the 15s indefinite hang) is gone — no request
+# rides the deadline and no DEADLINE_EXCEEDED. A timeout-only fix (fast-fail)
+# clears the hang but may still error. This is the minimum a real fix achieves.
+HANG_CLEARED=NO
+[ "$MAX_MS" -lt "$LAT_MAX_MS" ] && [ "$DEADLINE" -eq 0 ] && HANG_CLEARED=YES
+# RESOLVED: the app actually RECOVERS — the hang is cleared AND recommendation is
+# serving again (breaker re-admitted it → real 200s, not just fast breaker-503s)
+# AND no regression AND the freshly-built image is what's deployed. A graceful
+# timeout+degrade fix reaches this; a bare fast-fail clears the hang but not this.
 RESOLVED=NO
-if [ "$N200" -eq 8 ] && [ "$N504" -eq 0 ] && [ "$DEADLINE" -eq 0 ] && [ "$MAX_MS" -lt "$LAT_MAX_MS" ] && [ "$OTHER" -lt 5 ] && [ "$CHEAT" = NO ]; then
+if [ "$HANG_CLEARED" = YES ] && [ "$N200" -ge 4 ] && [ "$OTHER" -lt 5 ] && [ "$CHEAT" = NO ]; then
   RESOLVED=YES
 fi
 echo "verify-405: codes=[$CODES ] max_latency_ms=$MAX_MS n200=$N200 n5xx=$N504 deadline_exceeded=$DEADLINE other_core_errors=$OTHER anticheat_breach=$CHEAT"
-echo "RESOLVED_405=$RESOLVED"
+echo "HANG_CLEARED_405=$HANG_CLEARED  RESOLVED_405=$RESOLVED"
 
 # ── ALWAYS revert to faulted so the next run starts clean ─────────────────────
 echo "[$(date +%H:%M:%S)] verify-405: reverting recommendation to faulted image"

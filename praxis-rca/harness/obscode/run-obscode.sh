@@ -130,63 +130,7 @@ echo "[$(date +%H:%M:%S)] launching headless claude (obscode, restricted PATH) �
 ) > "$RUN_DIR/claude-stream.jsonl" 2> "$RUN_DIR/claude.err" || true
 cp "$RUN_DIR/claude-stream.jsonl" "$RUN_DIR/transcript.jsonl"
 
-# ── capture outputs the graders / report reader expect ────────────────────────
-# final assistant answer (stream-json emits a terminal {"type":"result","result":...})
-python3 - "$RUN_DIR/claude-stream.jsonl" > "$RUN_DIR/answer.txt" 2>/dev/null <<'PY' || true
-import sys,json
-ans=""; last_asst=""
-for line in open(sys.argv[1]):
-    line=line.strip()
-    if not line: continue
-    try: o=json.loads(line)
-    except: continue
-    if o.get("type")=="result" and isinstance(o.get("result"),str): ans=o["result"]
-    if o.get("type")=="assistant":
-        for c in (o.get("message",{}).get("content") or []):
-            if isinstance(c,dict) and c.get("type")=="text" and c.get("text","").strip():
-                last_asst=c["text"]
-# on a completed run use the terminal result; on a truncated/max-turns run fall
-# back to the agent's last text so the reasoning is still captured.
-print(ans if ans else last_asst)
-PY
-# tool-call tally (neutral note; NOT a metric per SCORING.md §5)
-python3 - "$RUN_DIR/claude-stream.jsonl" > "$RUN_DIR/tool-calls.log" 2>/dev/null <<'PY' || true
-import sys,json
-for line in open(sys.argv[1]):
-    try: o=json.loads(line)
-    except: continue
-    if o.get("type")=="assistant":
-        for c in (o.get("message",{}).get("content") or []):
-            if isinstance(c,dict) and c.get("type")=="tool_use":
-                inp=c.get("input",{})
-                hint=inp.get("command") or inp.get("file_path") or inp.get("pattern") or ""
-                print(f'{c.get("name")}\t{str(hint)[:120]}')
-PY
-NCALLS=$(wc -l < "$RUN_DIR/tool-calls.log" 2>/dev/null | tr -d ' ')
-OBS_CALLS=$(grep -cE 'obscode-(traces|metrics|logs)' "$RUN_DIR/tool-calls.log" 2>/dev/null || echo 0)
-
-# patch record + whether the agent actually edited the file
-diff -u "$SRC/recommendation_server.py.orig" "$SRC/recommendation_server.py" > "$RUN_DIR/patch.diff" 2>/dev/null
-EDITED=$([ -s "$RUN_DIR/patch.diff" ] && echo true || echo false)
-
-cat > "$RUN_DIR/arm.json" <<JSON
-{
-  "arm": "obscode",
-  "scenario": "$SCEN",
-  "trial": $TRIAL,
-  "model": "$MODEL",
-  "max_turns": $MAX_TURNS,
-  "prom_state_at_run": "$PROM_STATE",
-  "edited_recommendation": $EDITED,
-  "tool_calls_total": ${NCALLS:-0},
-  "obs_helper_calls": ${OBS_CALLS:-0},
-  "graded_file": "$SRC/recommendation_server.py",
-  "verify": "grade-fix.sh $SRC/recommendation_server.py <faultfree_ref.py>  |  verify-generic.sh $SRC <tag> <base_image> <oracle>"
-}
-JSON
-
-echo "[$(date +%H:%M:%S)] obscode done → $RUN_DIR"
-echo "  edited=$EDITED  tool_calls=$NCALLS  obs_helper_calls=$OBS_CALLS  prom=$PROM_STATE"
-echo "  grade with:  bash ~/praxis/grade-fix.sh $SRC/recommendation_server.py <faultfree_ref.py>"
-echo "  or verify :  bash ~/praxis/verify-generic.sh $SRC obscode$SCEN <fault_base_image> ~/praxis/oracle-rec.sh"
-[ "$EDITED" = true ] || echo "  NOTE: agent produced no source edit — inspect answer.txt / claude.err"
+# ── shared capture: answer, tool tally + isolation flags, patch, tokens/cost,
+#    arm.json — identical to the code/neat arms (obscode lives one dir down). ──
+source "$HERE/../_arm-extract.sh" "$RUN_DIR" "obscode" "$SCEN" "$TRIAL" "$MODEL" "$MAX_TURNS"
+echo "  prom_state_at_run: $PROM_STATE"

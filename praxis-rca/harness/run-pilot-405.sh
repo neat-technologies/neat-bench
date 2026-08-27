@@ -25,7 +25,7 @@ FAULT_IMG="quay.io/shengkunrz/it-bench-dev:neo4j-serving-recommendation"
 SCEN=405
 OUT="$HOME/praxis/runs/$SCEN/pilot-results.tsv"
 mkdir -p "$(dirname "$OUT")"
-echo -e "arm\tseed\trcr\tfix\tresolved\tedited\tneat_hits\tobs_hits" > "$OUT"
+echo -e "arm\tseed\trcr\thang_cleared\tfix\tresolved\tedited\ttokens\tcost_usd\tneat_hits\tobs_hits" > "$OUT"
 SYMPTOM="Users report the storefront intermittently fails to load product recommendations; some product pages time out. Diagnose the failing service and fix the root cause in the recommendation service source."
 
 ensure_faulted () {
@@ -69,25 +69,34 @@ for seed in 1 2; do
     EDITED=$(python3 -c "import json;print(json.load(open('$RD/arm.json'))['edited_recommendation'])" 2>/dev/null || echo false)
     NEAT_HITS=$(python3 -c "import json;print(json.load(open('$RD/arm.json')).get('neat_tool_hits',0))" 2>/dev/null || echo 0)
     OBS_HITS=$(python3 -c "import json;print(json.load(open('$RD/arm.json')).get('obs_helper_hits',0))" 2>/dev/null || echo 0)
-    FIX=NO
+    TOKENS=$(python3 -c "import json;print(json.load(open('$RD/arm.json')).get('total_tokens',0))" 2>/dev/null || echo 0)
+    COST=$(python3 -c "import json;print(json.load(open('$RD/arm.json')).get('cost_usd',0))" 2>/dev/null || echo 0)
+    FIX=NO; HANG=NO
     if [ "$EDITED" = "True" ] || [ "$EDITED" = "true" ]; then
-      if bash "$HERE/verify-405.sh" "$PATCH" > "$RD/verify.log" 2>&1; then FIX=YES; fi
-      grep -E 'verify-405:|RESOLVED_405' "$RD/verify.log" | sed 's/^/    /'
+      bash "$HERE/verify-405.sh" "$PATCH" > "$RD/verify.log" 2>&1 || true
+      grep -E 'verify-405:|HANG_CLEARED_405|RESOLVED_405' "$RD/verify.log" | sed 's/^/    /'
+      grep -q 'RESOLVED_405=YES' "$RD/verify.log" && FIX=YES
+      grep -q 'HANG_CLEARED_405=YES' "$RD/verify.log" && HANG=YES
     else
       echo "    [pilot] no edit → skipping fix-verify (FIX=NO)"
     fi
     RESOLVED=NO; { [ "$RCR" = YES ] && [ "$FIX" = YES ]; } && RESOLVED=YES
-    echo -e "$arm\t$seed\t$RCR\t$FIX\t$RESOLVED\t$EDITED\t$NEAT_HITS\t$OBS_HITS" >> "$OUT"
-    echo "  [pilot] arm=$arm seed=$seed RCR=$RCR FIX=$FIX RESOLVED=$RESOLVED"
+    echo -e "$arm\t$seed\t$RCR\t$HANG\t$FIX\t$RESOLVED\t$EDITED\t$TOKENS\t$COST\t$NEAT_HITS\t$OBS_HITS" >> "$OUT"
+    echo "  [pilot] arm=$arm seed=$seed RCR=$RCR HANG_CLEARED=$HANG FIX=$FIX RESOLVED=$RESOLVED tokens=$TOKENS cost=\$$COST"
   done
 done
 
-echo; echo "======== 405 PILOT RESULTS (RESOLVED@2) ========"
+echo; echo "======== 405 PILOT RESULTS ========"
 column -t "$OUT"
-echo "---- per-arm RESOLVED@2 ----"
+echo "---- per-arm (k=2): RCR@2 / HANG_CLEARED@2 / RESOLVED@2 · mean tokens · mean cost ----"
 for arm in code obscode neat; do
+  # cols: 1arm 2seed 3rcr 4hang 5fix 6resolved 7edited 8tokens 9cost 10neat 11obs
   tot=$(awk -F'\t' -v a="$arm" '$1==a{n++}END{print n+0}' "$OUT")
-  res=$(awk -F'\t' -v a="$arm" '$1==a && $5=="YES"{n++}END{print n+0}' "$OUT")
-  echo "  $arm: RESOLVED@2 = $res/$tot"
+  rcr=$(awk -F'\t' -v a="$arm" '$1==a && $3=="YES"{n++}END{print n+0}' "$OUT")
+  hang=$(awk -F'\t' -v a="$arm" '$1==a && $4=="YES"{n++}END{print n+0}' "$OUT")
+  res=$(awk -F'\t' -v a="$arm" '$1==a && $6=="YES"{n++}END{print n+0}' "$OUT")
+  mtok=$(awk -F'\t' -v a="$arm" '$1==a{s+=$8;n++}END{if(n)printf "%d",s/n; else print 0}' "$OUT")
+  mcost=$(awk -F'\t' -v a="$arm" '$1==a{s+=$9;n++}END{if(n)printf "%.3f",s/n; else print 0}' "$OUT")
+  printf "  %-8s RCR=%s/%s  HANG=%s/%s  RESOLVED=%s/%s  ~%s tok  ~\$%s/run\n" "$arm" "$rcr" "$tot" "$hang" "$tot" "$res" "$tot" "$mtok" "$mcost"
 done
 echo "results: $OUT"
