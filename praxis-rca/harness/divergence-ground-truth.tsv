@@ -1,0 +1,34 @@
+# Detection bench — divergence-shaped PRAXIS scenarios. Frozen before the runs.
+# Metric is DETECTION (diagnose the fault), NOT resolution. No fix, no verify.
+# Columns (tab-separated):
+#   scen         PRAXIS id
+#   strength     strong | weak  (Cem's split)
+#   deploy       recimage | setimage | scale0
+#   target       deployment the fault lands on (== rci_service)
+#   rec_tag      recimage: faulted recommendation image tag; setimage: the bad image; scale0: -
+#   pdb_tag      matching neo4j-productdb variant, or NONE
+#   neo4j_ep     recommendation's NEO4J_PRODUCT_DATABASE_ENDPOINT, or -
+#   extra_env    extra recommendation env k=v;k=v, or -
+#   rci_service  ground-truth faulty service (RCI target)
+#   bootstrap    yes = fault fires at startup (pod never serves); no = serving-time fault
+# Fault nature (RCR target, graded by grade-detect.sh):
+#   401 field/contract mismatch (products_list vs proto products)      405/406 neo4j no-timeout deadlock/hang
+#   407/408 neo4j deadlock-timeout    409/410 neo4j livelock (retry loop)
+#   413/414 wrong DB host/label (master-neo4j-productdb, real=neo4j-productdb/primary)
+#   415 bad config NUM_PRODUCTS>catalog -> list index OOB    416 bad config-db
+#   20 product-catalog pointed at wrong image (app-image:latest, ImagePull fail)
+#   32 ad scaled to replicas=0 (service silent)
+scen	strength	deploy	target	rec_tag	pdb_tag	neo4j_ep	extra_env	rci_service	bootstrap
+401	strong	recimage	recommendation	dev-recommendation	NONE	-	-	recommendation	no
+405	weak	recimage	recommendation	neo4j-serving-recommendation	latest-neo4j-productdb	http://neo4j-productdb:7979	-	recommendation	no
+406	weak	recimage	recommendation	neo4j-bootstrap-recommendation	latest-neo4j-productdb	http://neo4j-productdb:7979	-	recommendation	yes
+407	weak	recimage	recommendation	neo4jto-serving-recommendation	latest-neo4j-productdb	http://neo4j-productdb:7979	-	recommendation	no
+408	weak	recimage	recommendation	neo4jto-bootstrap-recommendation	latest-neo4j-productdb	http://neo4j-productdb:7979	-	recommendation	yes
+409	weak	recimage	recommendation	neo4jto-live-bootstrap-recommendation	latest-empret-neo4j-productdb	neo4j-productdb:7979	-	recommendation	yes
+410	weak	recimage	recommendation	neo4jto-live-serving-recommendation	latest-empret-neo4j-productdb	neo4j-productdb:7979	-	recommendation	no
+413	strong	recimage	recommendation	neo4j-label-serving-recommendation	latest-primary-neo4j-productdb	master-neo4j-productdb:7979	-	recommendation	no
+414	strong	recimage	recommendation	neo4j-label-bootstrap-recommendation	latest-primary-neo4j-productdb	master-neo4j-productdb:7979	-	recommendation	yes
+415	weak	recimage	recommendation	config-recommendation	NONE	-	NUM_PRODUCTS=50;NUM_RETURN=10	recommendation	no
+416	weak	recimage	recommendation	configdb-recommendation	latest-config-neo4j-productdb	neo4j-productdb:7979	-	recommendation	no
+20	weak	setimage	product-catalog	app-image:latest	-	-	-	product-catalog	no
+32	strong	scale0	ad	-	-	-	-	ad	no
