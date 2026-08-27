@@ -37,7 +37,8 @@ SRC="$RUN_DIR/src"
 MODEL="${NEAT_BENCH_MODEL:-opus}"
 MAX_TURNS="${NEAT_BENCH_MAX_TURNS:-40}"
 
-command -v claude >/dev/null 2>&1 || { echo "run-obscode: claude CLI not found on PATH" >&2; exit 42; }
+CLAUDE_BIN="$(command -v claude || true)"
+[ -n "$CLAUDE_BIN" ] || { echo "run-obscode: claude CLI not found on PATH" >&2; exit 42; }
 [ -d "$REC_SRC" ] || { echo "run-obscode: recommendation source not found at $REC_SRC" >&2; exit 1; }
 
 echo "[$(date +%H:%M:%S)] obscode arm — scenario $SCEN trial $TRIAL (model=$MODEL, turns=$MAX_TURNS)"
@@ -108,14 +109,18 @@ PROMPT
 # ── run ONE fresh headless Claude Opus. obscode = NO MCP server (‑‑strict-mcp-config
 #    with no ‑‑mcp-config guarantees no neat / no ambient servers leak in). Same
 #    built-in toolset as the other arms; the ONLY difference vs neat is fusion. ──
-export PATH="$HERE:$PATH"                          # so Bash calls resolve obscode-*.sh
-export JAEGER_API PROM_API OBSCODE_NS               # helpers read these
+# ISOLATION: the headless agent gets the obscode helpers + kubectl (helpers need
+# it) + system dirs, but NOT the nvm bin — so `neat` is genuinely unreachable and
+# obscode cannot accidentally fuse. VALIDATE with a --max-turns 3 dry-run.
+OBSCODE_ARM_PATH="$HERE:$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 chmod +x "$HERE"/obscode-*.sh 2>/dev/null || true
 
 APPEND_SYS="You are the obscode arm of an RCA benchmark: raw source + raw observability, UNFUSED. Correlate traces/logs to code yourself. Prefer the obscode-*.sh helpers for runtime signal. Do not assume a graph exists — there is none."
 
-echo "[$(date +%H:%M:%S)] launching headless claude (obscode) …"
-( cd "$SRC" && claude -p "$(cat "$PROMPT_FILE")" \
+echo "[$(date +%H:%M:%S)] launching headless claude (obscode, restricted PATH) …"
+( cd "$SRC" && env -u NODE_OPTIONS PATH="$OBSCODE_ARM_PATH" \
+    JAEGER_API="$JAEGER_API" PROM_API="${PROM_API:-}" OBSCODE_NS="${OBSCODE_NS:-otel-demo}" \
+    "$CLAUDE_BIN" -p "$(cat "$PROMPT_FILE")" \
     --model "$MODEL" --max-turns "$MAX_TURNS" \
     --allowedTools "Read,Grep,Glob,Edit,Bash" \
     --append-system-prompt "$APPEND_SYS" \
