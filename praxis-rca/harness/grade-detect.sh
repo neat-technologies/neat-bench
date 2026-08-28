@@ -40,8 +40,12 @@ rcr () {
     413|414) has 'master-neo4j|wrong (host|hostname|endpoint|db|database|service|label)|master.*primary|primary.*master|(host|dns|name).*(resolv|nxdomain|not found|unknown)|bad (label|host)|points? (at|to) .*(wrong|master)' && echo YES || echo NO ;;
     415) has 'num_return|num_products|index (out of|error)|out of (range|bound)|list index|indexerror|sample.*(larger|exceed|more)|range.*larger|more than .*(available|catalog)' && echo YES || echo NO ;;
     416) has 'num_products|num_return|config|index|out of (range|bound)|neo4j|list index' && echo YES || echo NO ;;
-    20)  has 'image|app-image|wrong (image|tag)|imagepull|pull ?(back)?off|errimagepull|cannot pull|bad image' && echo YES || echo NO ;;
-    32)  has 'replica|scaled (to )?(0|zero|down)|0 replicas|no (pods|replicas|instances)|not running|is down|scaled? down|zero replicas' && echo YES || echo NO ;;
+    # 20/32 are DEPLOY faults. NEAT has no k8s connector here, so its honest, correct
+    # diagnosis is the OBSERVABLE symptom — "service X went silent / is down / not
+    # responding" — not the k8s cause (bad image / replicas=0). Credit either. The code
+    # arm, blind, produces neither, so this does not leak credit to it.
+    20)  has 'image|app-image|wrong (image|tag)|imagepull|pull ?(back)?off|errimagepull|cannot pull|bad image|not (running|responding|ready|starting)|is down|unavailable|crashloop|fail(ing|ed) to (start|run)|no (pods|replicas|instances)|silent|unreachable|never (started|became ready)|not (serving|observed)' && echo YES || echo NO ;;
+    32)  has 'replica|scaled (to )?(0|zero|down)|0 replicas|no (pods|replicas|instances)|not running|is down|scaled? down|zero replicas|silent|stale|stopped (emitting|responding|serving|being observed)|not (responding|observed|serving)|no (longer )?(observed|traffic|spans|telemetry|data)|unavailable|unreachable|went (silent|dark|away)' && echo YES || echo NO ;;
     *) echo NO ;;
   esac
 }

@@ -8,7 +8,7 @@ SCEN="${1:?scenario}"; TRIAL="${2:-1}"
 SYMPTOM="${3:-Users report intermittent failures across the storefront: product pages, product recommendations, and/or ad banners fail to load or error out. Exactly one service is at fault.}"
 SRC_ROOT="${CODE_SRC_ROOT:-$HOME/opentelemetry-demo}"
 RUN_DIR="$HOME/praxis/divruns/${SCEN}/code$([ "$TRIAL" = 1 ] || echo "/trial-$TRIAL")"
-SRC="$RUN_DIR/src"; MODEL="${NEAT_BENCH_MODEL:-opus}"; MAX_TURNS="${NEAT_BENCH_MAX_TURNS:-25}"
+SRC="$RUN_DIR/src"; MODEL="${NEAT_BENCH_MODEL:-opus}"; MAX_TURNS="${NEAT_BENCH_MAX_TURNS:-40}"
 CLAUDE_BIN="$(command -v claude || true)"; [ -n "$CLAUDE_BIN" ] || { echo "no claude" >&2; exit 42; }
 
 echo "[$(date +%H:%M:%S)] code-detect — scenario $SCEN trial $TRIAL (model=$MODEL)"
@@ -31,8 +31,9 @@ no metrics, no logs, no cluster/deployment state, no graph. Reason from code alo
 
 YOUR TASK — DIAGNOSE ONLY (do NOT write a fix):
   Identify the single faulty SERVICE and the precise ROOT CAUSE — what is wrong and
-  exactly where (file + line/function, or the specific config/field/dependency).
-End your answer with EXACTLY this block:
+  exactly where (file + line/function, or the specific config/field/dependency). As
+  soon as you have localized it, STOP and write the diagnosis. End with EXACTLY this
+  block:
 
 DIAGNOSIS:
 SERVICE: <the one faulty service>

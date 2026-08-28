@@ -6,21 +6,28 @@
 # a neutral note per SCORING.md §5.
 _RD="${1:?RUN_DIR}"; _ARM="${2:?arm}"; _SCEN="${3:?scenario}"; _TRIAL="${4:-1}"; _MODEL="${5:-opus}"; _MT="${6:-40}"
 
-# final assistant answer (terminal {"type":"result"}; fall back to last text on truncation)
+# final answer. Priority: the DIAGNOSIS block wherever it lands (robust to a
+# non-terminal final message on max-turns truncation) > terminal result > last text.
 python3 - "$_RD/claude-stream.jsonl" > "$_RD/answer.txt" 2>/dev/null <<'PY' || true
-import sys,json
-ans=""; last_asst=""
+import sys,json,re
+ans=""; last_asst=""; diag=""
+def has_diag(t):
+    t=t or ""
+    return ("DIAGNOSIS:" in t) or bool(re.search(r'(?im)^\s*SERVICE:\s', t))
 for line in open(sys.argv[1]):
     line=line.strip()
     if not line: continue
     try: o=json.loads(line)
     except: continue
-    if o.get("type")=="result" and isinstance(o.get("result"),str): ans=o["result"]
+    if o.get("type")=="result" and isinstance(o.get("result"),str):
+        ans=o["result"]
+        if has_diag(ans): diag=ans
     if o.get("type")=="assistant":
         for c in (o.get("message",{}).get("content") or []):
             if isinstance(c,dict) and c.get("type")=="text" and c.get("text","").strip():
                 last_asst=c["text"]
-print(ans if ans else last_asst)
+                if has_diag(last_asst): diag=last_asst
+print(diag if diag else (ans if ans else last_asst))
 PY
 
 # tool-call tally with a hint of each call (command / file / pattern / tool name)

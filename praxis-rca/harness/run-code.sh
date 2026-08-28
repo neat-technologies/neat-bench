@@ -50,18 +50,21 @@ SYMPTOM: $SYMPTOM
 
 You have ONE signal: the SOURCE CODE of the whole app, read-only, at
     $SRC_ROOT/src
-Read and grep freely across every service. The service you can EDIT and must
-PATCH is the recommendation service, whose source is your current directory
-(./). Your fix must be an edit to a file in ./ (e.g. ./recommendation_server.py).
+Read and grep freely across every service. The recommendation service — the ONE
+you can EDIT and must PATCH — is your working copy at this ABSOLUTE path:
+    $SRC
+Edit files there by absolute path, e.g. $SRC/recommendation_server.py. Do NOT
+edit anything under $SRC_ROOT — that tree is read-only reference only.
 
 You have NO runtime signal — no traces, no metrics, no logs, no graph. Reason
 from the code alone.
 
 YOUR TASK — diagnose AND fix:
   a) Read the source to find the faulty service, file, and exact line, and why.
-  b) Edit the recommendation source in ./ to fix the root cause. Change as little
-     as possible. Do not change tests. Do not add artificial workarounds — fix
-     the actual defect so the service behaves like a correct implementation.
+  b) Edit the recommendation source at $SRC/recommendation_server.py (this ABSOLUTE
+     path) to fix the root cause. Change as little as possible. Do not change
+     tests. Do not add artificial workarounds — fix the actual defect so the
+     service behaves like a correct implementation.
   c) State plainly: the faulty SERVICE, the FILE and LINE you changed, and WHY.
   d) End with a fenced block of the code facts you relied on, neutral terms only:
 

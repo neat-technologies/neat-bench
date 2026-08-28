@@ -62,9 +62,13 @@ You have TWO things, and NEAT has already FUSED them into one queryable graph of
 the running system — static code (EXTRACTED) and live runtime behaviour
 (OBSERVED) joined on the same nodes, with provenance on every edge.
 
-1) SOURCE CODE (read-only), whole app at:
+1) SOURCE CODE. Read the whole app (read-only reference) at:
      $SRC_ROOT/src
-   The service you EDIT and must PATCH is the recommendation service (./).
+   The recommendation service — the ONE you EDIT and must PATCH — is your working
+   copy at this ABSOLUTE path:
+     $SRC
+   Edit files there by absolute path, e.g. $SRC/recommendation_server.py. Do NOT
+   edit anything under $SRC_ROOT — that tree is read-only reference only.
 
 2) NEAT — the fused graph, via the \`neat\` CLI (run with Bash). ALWAYS pass
    --project $NEAT_PROJECT. LEAD WITH THE GRAPH, do not just eyeball one error:
@@ -86,8 +90,10 @@ YOUR TASK — diagnose AND fix:
      and its blast radius. A runtime failure joined to the declared code access
      is the point — use divergence / observed-deps / blast-radius, not just a
      root-cause error string. Then read the SOURCE at the located file:line.
-  b) Edit the recommendation source in ./ to fix the root cause. Change as little
-     as possible. No tests, no artificial workarounds — fix the real defect.
+  b) Edit the recommendation source at $SRC/recommendation_server.py (this ABSOLUTE
+     path — not a relative ./ path, since you may cd elsewhere to run neat) to fix
+     the root cause. Change as little as possible. No tests, no artificial
+     workarounds — fix the real defect.
   c) State plainly: the faulty SERVICE, the FILE and LINE you changed, WHY, and
      which graph queries + provenance led you there.
   d) End with a fenced block of the fused facts you relied on, neutral terms:
