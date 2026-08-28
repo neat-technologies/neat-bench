@@ -15,13 +15,18 @@ A="${2:?answer.txt}"; [ -f "$A" ] || A=/dev/null
 low() { tr '[:upper:]' '[:lower:]' < "$A"; }
 TXT="$(low)"
 has() { echo "$TXT" | grep -qE "$1"; }
+# For agent answers the faulty service is on the `SERVICE:` line — match RCI THERE
+# (precise: stops "recommendation image" in a product-catalog root cause from
+# false-crediting product-catalog, etc.). Raw query text has no SERVICE: line -> whole text.
+SVCLINE="$(echo "$TXT" | grep -E '^ *service:' | tail -1)"
+rci_has() { if [ -n "$SVCLINE" ]; then echo "$SVCLINE" | grep -qE "$1"; else echo "$TXT" | grep -qE "$1"; fi; }
 
 # ── RCI: right faulty service named ────────────────────────────────────────────
 rci () {
   case "$SCEN" in
-    20) has 'product ?-?catalog|productcatalog' && echo YES || echo NO ;;
-    32) { has '(^|[^a-z])ad( |-)?(service|deployment|svc)|service:ad|adservice|the ad service' ; } && echo YES || echo NO ;;
-    *)  has 'recommendation' && echo YES || echo NO ;;
+    20) rci_has 'product ?-?catalog|productcatalog' && echo YES || echo NO ;;
+    32) rci_has '(^|[^a-z])ad([^a-z]|service|$)|adservice' && echo YES || echo NO ;;
+    *)  rci_has 'recommendation' && echo YES || echo NO ;;
   esac
 }
 
