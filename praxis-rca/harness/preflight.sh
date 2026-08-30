@@ -16,10 +16,15 @@
 set -uo pipefail
 NS=otel-demo; PROJ=default; PRISTINE=""; ARM=""; TARGET=""; EXPECT_IMG=""
 NEAT_URL="${NEAT_URL:-http://localhost:8098}"; TOK="${NEAT_AUTH_TOKEN:-benchops-neat-token}"
+# Services the bench legitimately runs OFF or at variable scale, so they are NOT
+# stray faults: the built-in load-generator (we drive our own controlled load) and
+# the UI/observability sidecars. Extend with --allow-off "svc svc".
+ALLOW_OFF="load-generator flagd-ui react-native-app grafana prometheus jaeger opensearch"
 while [ $# -gt 0 ]; do case "$1" in
   --target) TARGET="$2"; shift 2;; --image) EXPECT_IMG="$2"; shift 2;;
   --pristine) PRISTINE="$2"; shift 2;; --arm) ARM="$2"; shift 2;;
   --ns) NS="$2"; shift 2;; --proj) PROJ="$2"; shift 2;;
+  --allow-off) ALLOW_OFF="$ALLOW_OFF $2"; shift 2;;
   *) echo "preflight: unknown arg $1" >&2; exit 2;; esac; done
 [ -n "$TARGET" ] || { echo "preflight: --target required" >&2; exit 2; }
 
@@ -85,6 +90,7 @@ STRAY=""
 while read -r dep desired ready; do
   [ -z "$dep" ] && continue
   [ "$dep" = "$TARGET" ] && continue
+  case " $ALLOW_OFF " in *" $dep "*) continue;; esac   # intentionally off/variable — not a stray fault
   ready=${ready:-0}; desired=${desired:-0}
   if [ "$desired" = "0" ]; then STRAY="$STRAY $dep(scaled-to-0)"; fi
   if [ "$ready" != "$desired" ]; then STRAY="$STRAY $dep($ready/$desired)"; fi
