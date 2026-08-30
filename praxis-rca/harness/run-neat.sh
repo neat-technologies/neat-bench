@@ -72,6 +72,7 @@ the running system — static code (EXTRACTED) and live runtime behaviour
 
 2) NEAT — the fused graph, via the \`neat\` CLI (run with Bash). ALWAYS pass
    --project $NEAT_PROJECT. LEAD WITH THE GRAPH, do not just eyeball one error:
+     neat-card.sh <svc>                                       # composed WORK-ORDER for the latest incident on <svc>: root cause + causal chain (per-hop provenance) + code locus (file:line) + blast radius — read this first
      neat root-cause service:<svc> --project $NEAT_PROJECT     # localized root cause + traversal
      neat divergences --project $NEAT_PROJECT                  # declared(EXTRACTED) vs observed(OBSERVED) mismatch, down to symbol/field
      neat blast-radius <node> --project $NEAT_PROJECT          # what an observed failure reaches, transitively
@@ -105,7 +106,8 @@ PROMPT
 
 # ── PATH: nvm bin (for neat + claude self-launch) + system. No ~/.local/bin
 #    (no kubectl) — the graph is the neat arm's runtime lens, not the cluster. ──
-ARM_PATH="$NVM_BIN:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+chmod +x "$HERE/neat-card.sh" 2>/dev/null || true
+ARM_PATH="$HERE:$NVM_BIN:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 APPEND_SYS="You are the neat arm of an RCA benchmark: raw source PLUS NEAT's fused code+runtime graph. Lead with graph reasoning (neat divergences / blast-radius / observed-dependencies / root-cause) to localize the code-grain root cause; trust claims by provenance. The graph fuses what code-only and obs-only agents must stitch by hand."
 

@@ -32,6 +32,7 @@ one queryable graph of the running system, with provenance on every edge. Query 
 with the \`neat\` CLI via Bash. ALWAYS pass --project $NEAT_PROJECT. The graph is your
 PRIMARY lens — match the query to the symptom, do NOT fixate on one verb:
 
+    neat-card.sh <svc>                                                 # the composed WORK-ORDER for the latest incident on <svc>: root cause + causal chain (per-hop OBSERVED/INFERRED provenance) + code locus (file:line) + blast radius + divergence, already assembled by the daemon — READ THIS FIRST
     neat observed-dependencies service:<svc> --project $NEAT_PROJECT   # live edges + error-rate/latency per edge — a FAILING dependency shows here
     neat incidents service:<svc> --project $NEAT_PROJECT               # runtime failures (ECONNREFUSED / timeout / deadline / 5xx), fused to code
     neat stale-edges --project $NEAT_PROJECT                           # a service/dependency that STOPPED being observed (silent / scaled away)
@@ -55,7 +56,8 @@ SERVICE: <the one faulty service>
 ROOT CAUSE: <the specific defect and where — file/symbol, config/field/host, or the wrong/silent dependency — and which graph query surfaced it>
 PROMPT
 
-ARM_PATH="$NVM_BIN:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+chmod +x "$HERE/neat-card.sh" 2>/dev/null || true
+ARM_PATH="$HERE:$NVM_BIN:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 APPEND_SYS="You are the neat arm of a DETECTION benchmark: lead with 'neat divergences' to surface the declared-vs-observed fault, then corroborate with root-cause / blast-radius / observed-dependencies / stale-edges / incidents. Trust claims by provenance. You are diagnosing, not fixing."
 echo "[$(date +%H:%M:%S)] launching headless claude (neat-detect, full arsenal) …"
 ( cd "$SRC" && env -u NODE_OPTIONS PATH="$ARM_PATH" NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" "$CLAUDE_BIN" -p "$(cat "$PROMPT_FILE")" \

@@ -1,0 +1,28 @@
+# fullsuite-catalog.tsv — every scenario we've run, boxed by where the bug LIVES.
+# The full-suite number breaks down per box (CONTRACT.md O4: label by class).
+#
+# box  ∈ strict-code    (bug visible in source alone)
+#        strict-runtime (bug only in runtime/config; source-blind)
+#        both           (needs code AND runtime; obscode can hand-stitch — the unfused case)
+#        fusion         (needs the cross-service JOIN obscode can't cheaply stitch)
+#        misc           (a scenario we've run that doesn't fit a box cleanly)
+# mode ∈ resolve (find + fix + oracle-verified app recovery; only where a verify oracle
+#                 exists: 401 405 410 412) | detect (diagnose only; grade-detect CAUGHT)
+# Fault params (image / neo4j endpoint / env) come from divergence-ground-truth.tsv
+# via setup-divergence.sh — this file only adds the box + the metric mode.
+#
+# scen	box	mode	rci_service	note
+401	fusion	resolve	recommendation	proto field products_list->products; symptom at frontend, cause at recommendation symbol — the card's cross-service rootCause is the join
+413	fusion	detect	recommendation	wrong neo4j host (master-neo4j-productdb) via env; declared-vs-observed host divergence, cross-service
+412	strict-code	resolve	recommendation	recursive LCS -> DP/memo; pure algorithm, no runtime needed to find
+405	both	resolve	recommendation	neo4j no-timeout hang (serving): runtime symptom (hang) + code fix (add timeout)
+410	both	resolve	recommendation	neo4j livelock retry loop (serving): bound the while-True
+407	both	detect	recommendation	neo4j deadlock-timeout (serving)
+406	both	detect	recommendation	neo4j hang (bootstrap — pod crashes at start)
+408	both	detect	recommendation	neo4j deadlock (bootstrap)
+409	both	detect	recommendation	neo4j livelock (bootstrap)
+415	both	detect	recommendation	config NUM_PRODUCTS>catalog -> list index OOB (config x code)
+416	both	detect	recommendation	config-db variant
+414	strict-runtime	detect	recommendation	wrong neo4j host (bootstrap — pod crashes)
+20	strict-runtime	detect	product-catalog	product-catalog pointed at a bad image (ImagePull fail)
+32	strict-runtime	detect	ad	ad scaled to replicas=0 (silent service)
