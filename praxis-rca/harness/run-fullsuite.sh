@@ -87,6 +87,9 @@ for SCEN in $SCENS; do
     grep -E "FAULT_FIRES|confirm" "$HOME/praxis/runs/fs-setup-$SCEN.log" | sed 's/^/    /'
     void_scenario "$SCEN" "$BOX" "$MODE" "fault did not confirm"; continue; fi
   grep -E "FAULT_FIRES|confirm" "$HOME/praxis/runs/fs-setup-$SCEN.log" | sed 's/^/    /'
+  # drain the setup confirm-load's spans through the collector BEFORE restand, so
+  # restand clears a store that won't then be re-populated by buffered spans (O3).
+  echo "  draining confirm-load spans 20s before restand"; sleep 20
   echo "[$(date +%H:%M:%S)] restand (clear incidents, fresh graph)"; restand
   sync_pristine_rec "$SCEN"
 
