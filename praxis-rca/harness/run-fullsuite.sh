@@ -87,9 +87,20 @@ for SCEN in $SCENS; do
     grep -E "FAULT_FIRES|confirm" "$HOME/praxis/runs/fs-setup-$SCEN.log" | sed 's/^/    /'
     void_scenario "$SCEN" "$BOX" "$MODE" "fault did not confirm"; continue; fi
   grep -E "FAULT_FIRES|confirm" "$HOME/praxis/runs/fs-setup-$SCEN.log" | sed 's/^/    /'
-  # drain the setup confirm-load's spans through the collector BEFORE restand, so
-  # restand clears a store that won't then be re-populated by buffered spans (O3).
-  echo "  draining confirm-load spans 20s before restand"; sleep 20
+  # ADAPTIVE drain (O3): wait until the setup confirm-load's error spans have all
+  # reached the daemon (its incident count for the target stops growing) BEFORE we
+  # restand — so restand kills a daemon whose collector queue is drained and the new
+  # daemon starts truly clean. A fixed sleep under-drains heavy-error faults (401's
+  # 54 AttributeErrors bled past a 20s wait and voided the scenario).
+  echo "  adaptive drain: waiting for confirm-load spans to finish arriving at the daemon"
+  _prev=-1; _stable=0; _t=0
+  while [ $_t -lt 96 ]; do
+    _cnt=$(neat incidents "service:$RCI" --project "$PROJ" 2>/dev/null | grep -oE '[0-9]+ recorded incident' | grep -oE '^[0-9]+' | head -1); _cnt=${_cnt:-0}
+    if [ "$_cnt" = "$_prev" ]; then _stable=$((_stable+1)); else _stable=0; fi
+    [ "$_stable" -ge 2 ] && break
+    _prev="$_cnt"; sleep 6; _t=$((_t+6))
+  done
+  echo "  drained: target incident count stable at ${_prev} after ${_t}s"
   echo "[$(date +%H:%M:%S)] restand (clear incidents, fresh graph)"; restand
   sync_pristine_rec "$SCEN"
 
