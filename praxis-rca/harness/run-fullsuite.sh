@@ -130,14 +130,17 @@ for SCEN in $SCENS; do
       if [ "$MODE" = resolve ]; then
         read -r RCI_R RCR_R <<<"$(bash "$HERE/grade.sh" "$SCEN" "$RD/answer.txt" "$RD/patch.diff" | sed 's/RCI=//;s/RCR=//')"
         EDITED=$(python3 -c "import json;print(json.load(open('$RD/arm.json'))['edited_recommendation'])" 2>/dev/null || echo false)
-        RESOLVED=NO
+        RESOLVED=NO; FIX=NO
         if [ "$EDITED" = True ] || [ "$EDITED" = true ]; then
           MODEO=$(grep -E "^${SCEN}\b" "$HERE/ground-truth.tsv" 2>/dev/null | grep -vE '^#' | head -1 | cut -f6)
           FAULT_IMG="$QUAY:$REC_TAG"
           LAT="$(cat "$HOME/praxis/seeds/$SCEN/lat_ceiling_ms.txt" 2>/dev/null || echo 4000)"
           LAT_MAX_MS="$LAT" bash "$HERE/verify-scenario.sh" "$SCEN" "$RD/src/recommendation_server.py" "$FAULT_IMG" "${MODEO:-HANG}" > "$RD/verify.log" 2>&1 || true
-          grep -q "RESOLVED_${SCEN}=YES" "$RD/verify.log" && RESOLVED=YES
+          grep -q "RESOLVED_${SCEN}=YES" "$RD/verify.log" && FIX=YES
         fi
+        # CONTRACT rule 4: RESOLVED = correct localization (RCR) AND verified recovery.
+        # Oracle-recover alone credits a lazy amputation (clear the symptom, wrong locus).
+        { [ "$RCR_R" = YES ] && [ "$FIX" = YES ]; } && RESOLVED=YES
       else
         read -r RCI_R RCR_R CAUGHT <<<"$(bash "$HERE/grade-detect.sh" "$SCEN" "$RD/answer.txt" | sed 's/RCI=//;s/RCR=//;s/CAUGHT=//')"
       fi
