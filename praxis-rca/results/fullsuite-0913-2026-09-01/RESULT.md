@@ -5,17 +5,35 @@ Driver: `run-fullsuite.sh`. Compare to the 0.9.11 baseline (`fullsuite-2026-08-3
 
 ## Headline (over runs that actually executed)
 
-| arm | solved | cost/run | tokens/run |
-|---|---|---|---|
-| neat + haiku | **25/52 (48%)** | **$0.121** | 498k |
-| obscode + opus | **47/52 (90%)** | $0.718 | 408k |
+| arm | solved | RCI | RCR | cost/run | tokens/run |
+|---|---|---|---|---|---|
+| neat + haiku | **27/60 (45%)** | 85% | 65% | **$0.118** | 488k |
+| obscode + opus | **56/60 (93%)** | 93% | 97% | $0.696 | 388k |
+
+*(60 valid runs = 12 scenarios × 5; 401 & 412 VOID excluded. 20 + 32 re-run after the session-limit
+truncation and folded in. This is the FINAL number.)*
 
 - **Cost: ~6× cheaper** (5.9× overall; **6.2× on parity scenarios** where accuracy is identical).
 - **Speed: ~26% faster** on detect (neat 84s/run vs obscode 113s/run); ~9% faster on resolve.
-- **Right-service accuracy (RCI): neat 98% vs obscode 92%** — the cheap+graph arm names the culprit service *more* reliably than opus+source.
-- RCR (reach code locus): neat 61% vs obscode 96%. Full-solve gap is largely grader artifacts (below).
+- **RCI (right service): neat 85% vs obscode 93% — obscode edges it.** CORRECTION: an earlier draft quoted
+  "neat 98% vs 92%" over the 52-run set that was MISSING 20 + 32. Those two are pure-DEPLOY faults
+  (bad-image, scale0) where neat's trace-only RCI collapses (20: 0/5, 32: 2/5) — see the deploy-fault
+  finding below. On the trace-visible faults neat's RCI still matches/beats opus; the two deploy faults
+  flip the aggregate.
+- RCR (reach code locus): neat 65% vs obscode 97%. Full-solve gap is largely grader artifacts (below).
 
-**DO NOT quote the harness's own 42%/78% summary** — it counts 16 rate-limited non-runs (scenario 32 entirely, scenario 20 seeds 3–5) as failures. Those arms emitted *"You've hit your session limit"* at 22:52 after 4.5h — the Max window exhausted, not a NEAT/infra failure (preflight PASSED for both 20 and 32). Numbers above exclude tok=0 non-runs and VOIDs.
+Rate-limit note for the record: the first pass truncated 20+32 when the Max window emitted *"You've hit
+your session limit"* at 22:52 (4.5h in); an earlier intermediate summary (42%/78%) counted those non-runs
+as failures. 20+32 were re-run on the next window and folded in — the 45%/93% above is the clean final.
+
+## Deploy-fault finding (20 + 32) — why NEAT's RCI collapses there
+20 (product-catalog bad image → ImagePull) and 32 (ad scaled to 0) are PURE cluster-state faults: the
+signal is in k8s, not in traces. neat scored RCI 0/5 and 2/5 — it could NOT reliably name the culprit
+service. This is exactly what 0.9.13's **#1131 deploy-mismatch** (declared ⋈ observed image) and **#1128
+unreachable** are built for — BUT the bench runs NEAT trace-only (no ~/.neat/k8s.json substrate), so #1131
+can't fire and the trace-only unreachable signal didn't land for product-catalog/ad. So the bench scores
+0.9.13's headline deploy features as absent. This is BOTH the reason for the RCI reversal AND a real
+bench-coverage gap: to test what 0.9.13 actually shipped, the k8s substrate must be wired into the harness.
 
 ## Per-scenario (valid runs only)
 
@@ -31,10 +49,10 @@ Driver: `run-fullsuite.sh`. Compare to the 0.9.11 baseline (`fullsuite-2026-08-3
 | 406 neo4j hang (bootstrap) | detect | 0/5 | 5/5 | UNREACHABLE-not-credited artifact |
 | 409 neo4j livelock (bootstrap) | detect | 0/5 | 5/5 | same class as 406 |
 | 414 wrong host (bootstrap) | detect | 1/5 | 5/5 | same class as 406 |
-| 20 bad image | detect | 0/2 | 1/2 | rate-limited after seed 2 (partial) |
+| 20 bad image | detect | 0/5 | 5/5 | pure-deploy fault; neat trace-only can't name it (see deploy finding) |
+| 32 ad scale0 | detect | 2/5 | 5/5 | pure-deploy fault; same |
 | 401 proto-field (fusion) | resolve | VOID | VOID | preflight race (bench bug) |
 | 412 recursive-LCS | resolve | VOID | VOID | fault-didn't-confirm (weak scenario) |
-| 32 ad scale0 | detect | — | — | rate-limited, 0 runs |
 
 ## Why the 48% is a floor, not a verdict — two grader artifacts
 
