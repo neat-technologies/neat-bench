@@ -66,6 +66,17 @@ grading-philosophy issues, not NEAT capability.
 | wall-time, resolve | 264s | 289s (−9%) |
 | RCI (right service) | **98%** | 92% |
 
+## Release scope — what 0.9.13 ACTUALLY contains (read before interpreting)
+**#1128 (unreachable) + #1131 (deploy-mismatch) ONLY.** The hang fix is NOT in this build:
+FRONTIER hang stack #1134/#1135/#1136 (incl. "hang sensor: stage a surface when a service hangs")
+are still OPEN PRs; #1114 (incident-card hang classifier) is pending review; only ADR-222 (#1116, the
+*design*) is in the tree. This suite is HANG-DOMINATED (neo4j no-timeout/deadlock/livelock/bootstrap-hang),
+so NEAT was scored WITHOUT hang-specific handling. → **48% is a floor the 0.9.14 hang work should raise.**
+Caveat the other way (honest): NEAT still diagnosed several hang faults correctly anyway — 407/408 CAUGHT
+5/5, 405 RCR 5/5 — via root-cause + incidents + latency, so hang handling is ADDITIVE, not a prerequisite.
+The hang-fix absence does NOT explain the 406/409/414 losses (those are bootstrap crashes → #1128 unreachable
+fired correctly → grader artifact), nor the 405/410 resolve losses (amputation artifact).
+
 ## Provenance / integrity
 - 0.9.13 install verified to carry the new logic (`unreachable` ×102, `deploy-mismatch` ×31 in @neat.is/core dist).
 - preflight O1–O3 gated every scored window. 401 voided on the incident-store-empty race (fast-erroring
@@ -79,4 +90,5 @@ grading-philosophy issues, not NEAT capability.
   variance (diff transcripts before filing). 416 win worth a writeup (config divergence opus can't source-read).
 - **Same-model context:** the clean NEAT-isolation number is the ITBench SRE run (opus both arms, NEAT
   purely additive): accuracy tie, directness ~40% fewer steps on far-from-symptom faults — but on
-  neat.is@0.9.2, before the incident work-order, hang handling, and the k8s substrate. Re-run on 0.9.13 to refresh.
+  neat.is@0.9.2, before the incident work-order and the k8s substrate. An ITBench refresh on 0.9.13 would
+  gain the work-order + k8s substrate + #1076, but NOT hang handling (still unshipped — see Release scope).
