@@ -63,20 +63,46 @@ Numbering is independent of the neat core decision log.
 
 ---
 
-## ADR-004: Experiment design for a NEAT-effect claim
+## ADR-004: Experiment design for a NEAT-effect claim, and the value of k
 
 **Status:** Proposed
-**Date:** 2026-10-15
+**Date:** 2026-10-15 (revised the same day with the literature and a pilot estimate)
 
-**Context.** The September bench isolated nothing (Sonnet+NEAT vs Opus+source changes the model and the tool at once) but ran k=5 and recorded time. The October bench put both models on every arm (so the same-model comparison exists) and added ROBUST, but ran k=1, recorded no time, and its clean re-run produced no data. The audit's replacement list: freeze product, model, prompts, budgets, prices and grader per run; develop on one task set and evaluate on an untouched one; compare the same model with source alone, source plus raw runtime and deployment evidence, and source plus NEAT; include unfamiliar systems and tasks where runtime context should not help; repeat enough to characterise variance; publish everything.
+**Context.** The September bench isolated nothing (Sonnet+NEAT vs Opus+source changes the model and the tool at once) but ran k=5 and recorded time. The October bench put both models on every arm (so the same-model comparison exists) and added ROBUST, but ran k=1, recorded no time, and its clean re-run produced no data. The effects this bench has actually observed are 10-15 points: +12.5 (Aug 27, same model, 7/8 vs 6/8), +15 (detect lift 16/20 to 19/20), -11 (Sept 13, 35/45 vs 40/45). The design has to be able to resolve an effect of that size, or it resolves nothing.
 
-**Decision (proposed).** A NEAT-effect claim requires, for the same model: three arms (source / source+raw runtime and deployment evidence / source+NEAT), both models, k of at least five per cell, per-run wall-clock and token categories recorded, a held-out scenario set never used during development, and the grader of ADR-002. Cost and speed are reported per arm with the accuracy on the same line. Developed-against results are published only as upper bounds and labelled.
+**What the literature says about k.**
+- Miller, *Adding Error Bars to Evals* (Anthropic 2024, arXiv 2411.00640): the unit of inference is the question, not the run. With K resamples per question, Var = (ω² + E[σ²]/K) / n where n is the number of questions and ω² is the between-question variance; "once E[σ²]/K is small relative to Var(x), increasing K further will have little effect." Cluster standard errors when questions are related ("over 3x larger than naive"); use paired differences "wherever practicable." Power (Eq. 9): n = (z_α/2 + z_β)² (ω² + σ_A²/K_A + σ_B²/K_B) / δ².
+- PRAXIS (arXiv 2512.22113), the upstream of this battery: "repeated each ⟨LLM, scenario⟩ experiment five times with distinct random seeds" on 30 scenarios (2,250 trajectories), mean ± dispersion.
+- ITBench (arXiv 2502.05352): SRE scenarios run 10 times per scenario per model, pass@1 with standard error.
+- METR (arXiv 2503.14499): 8 runs per agent-task pair, three-level hierarchical bootstrap over task families, tasks, runs.
+- Bjarnason et al., *On Randomness in Agentic Evals* (arXiv 2602.07150): 10 runs x 6 configs on SWE-bench Verified; a single-run pass@1 moves 2.2-6.0 points by run choice, SD above 1.5 points even at temperature 0; "estimate pass@1 from multiple independent runs per task, especially when measuring small improvements," and set the run count by power analysis.
+- *A Sober Look* (arXiv 2504.07086): for small benchmarks, at least ten seeds; variance "drops sharply for K >= 10."
+- τ-bench (arXiv 2406.12045) and τ²-bench: pass^k, the chance all k trials succeed, at least 3-4 trials per task; reliability degrades sharply with k (gpt-4o retail pass^1 61%, pass^8 under 25%).
+- Kapoor et al., *AI Agents That Matter* (arXiv 2407.01502): five runs per agent, t-based intervals, cost-controlled comparisons, and the warning that most benchmarks have no held-out set.
+- SkillsBench and *Resolution Diagnostics for Paired LLM Evaluation* (ICML 2026): the task is the inference unit; trials aggregate to a task-level rate; paired bootstrap plus sign-flip permutation; treating trials as independent "would overstate precision," and the unpaired shortcut mis-sizes N by about two in close comparisons.
+
+Observed practice therefore sits between k=3 and k=10, with the reliability-focused benchmarks (ITBench, METR, Sober Look) at 8-10 and the upstream PRAXIS at 5. Nobody serious reports k=1.
+
+**What the math says for this battery.** Minimum detectable effect (80% power, two-sided 0.05, worst-case Bernoulli variance), from Miller's formula with the scenario as the unit:
+
+| scenarios | k=3 | k=5 | k=10 | k=20 | floor (k→∞) |
+|---|---|---|---|---|---|
+| 15, ω²=0.02 | 31 pp | 25 pp | 19 pp | 15 pp | 10 pp |
+| 30, ω²=0.02 | 22 pp | 18 pp | **14 pp** | 11 pp | 7 pp |
+| 60, ω²=0.02 | 16 pp | 13 pp | 10 pp | 8 pp | 5 pp |
+
+ω² is the between-scenario variance of the arm difference. A pilot estimate from the September k=5 data, after subtracting within-scenario sampling noise: **ω² ≈ 0.013 (SD ~12 pp) with across-arm correlation ρ ≈ +0.69** on the Sept 13 same-tier run (9 scenarios). The Sept 1 Haiku-vs-Opus run gives ω² ≈ 0.24 and ρ ≈ -0.26, which is the model confound, not the battery, and is excluded. The levels in that data came from the keyword grader and are suspect; the variance structure is what the estimate uses. ω² = 0.02 is the conservative plug-in.
+
+Two conclusions follow. First, **the scenario count is the binding constraint**: at 15 scenarios the floor is 10 pp and reaching 15 pp needs k=20; repeats cannot buy what scenarios buy, and scenarios also buy generalisation. Second, **k=10 at 30 scenarios is the first cell that resolves the effect size this bench actually produces** (14 pp); k=5 at 30 scenarios (18 pp), the PRAXIS-matched design, resolves only a large effect. A sub-10 pp NEAT effect is not resolvable below roughly 60 scenarios and must not be promised.
+
+**Decision (proposed).** A NEAT-effect claim requires, for the same model: three arms (source / source+raw runtime and deployment evidence / source+NEAT), both models, a battery of at least 30 scenarios with a held-out subset never used during development, per-run wall-clock and token categories recorded, and the grader of ADR-002. The scenario is the unit of inference. Analysis is paired by scenario with a hierarchical bootstrap (target, scenario, run) and reports the interval, never the point alone. pass^k is reported beside the mean pass rate. The run plan is adaptive: **k=5 on the full battery first** (PRAXIS-matched; 900 runs for the 3-arm, 2-model core), then **top up to k=10 on every comparison whose observed gap is inside its interval**, which is where Bjarnason and the resolution-diagnostics work say the repeats earn their cost. k=3 is for development and smoke only. k=1 is never a result.
 
 **Options.**
-- k: 5 (proposed) or 3 with a bootstrap interval. Five is the September precedent and the audit's "enough to characterise variability".
-- Held-out source: the unwired PRAXIS scenarios (402-404, the flagd set) held back from development; or a second target system NEAT was not engineered against. The second is the stronger test and the one the core repo's own definition of success demands.
-- Whether competitor arms are part of the NEAT-effect design or a separate comparison with its own, weaker claims.
+- k for the first full run: 5 (proposed; PRAXIS precedent, Kapoor) or 10 outright (ITBench, Sober Look; 1,800 runs, roughly twice the cost and box time).
+- Battery: 30 (all of PRAXIS, wiring 402-404 and the flagd set) or 60 (PRAXIS plus a second target system NEAT was not engineered against). The second is what resolves a 10 pp effect and is the test the core repo's own definition of success demands.
+- Held-out source: the unwired PRAXIS scenarios held back, or the second target. The second is stronger.
+- Competitor arms: inside the NEAT-effect design, or a separate comparison with its own weaker claims (proposed: separate).
 
-**Recommendation.** k=5; both held-out sources, the second target being the one that counts; competitors as a separate comparison.
+**Recommendation.** Battery to 30 now and 60 as the headline target; k=5 first, k=10 top-up on close cells; competitors separate.
 
-**Consequences.** One cell is 5 runs; the three-arm, two-model, 15-scenario core is 450 agent runs before competitors. That is the price of a number that survives an audit.
+**Consequences.** The first full run is about 900 agent runs (roughly $45-450 depending on model mix, one to two box days with parallel arms); the top-up adds 300-600. Every published comparison carries an interval and a pass^k. The scenario inventory contract must grow before the run, not after.
