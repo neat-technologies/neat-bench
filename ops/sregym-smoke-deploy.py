@@ -14,6 +14,7 @@ Run from the SREGym checkout with its venv, on a bench box:
 The problem id only selects the application; its fault is never injected here.
 """
 import logging
+import subprocess
 import sys
 
 from sregym.conductor.conductor import Conductor, ConductorConfig
@@ -41,6 +42,21 @@ def main() -> int:
     print(f"application: {app.__class__.__name__} namespace={getattr(app, 'namespace', '?')} (problem {pid}, fault NOT injected)")
     conductor.deploy_app()
     print("deployed; workload running; collector exporting to NEAT and to /var/lib/otel/sregym-spans.json")
+
+    # SREGym swaps each app namespace's `jaeger` Service for an ExternalName to its collector
+    # only after the application is up. Jaeger clients that resolve the agent address once at
+    # start (the DeathStarBench Go services do) keep sending UDP to the deleted ClusterIP and
+    # the collector never sees them (seen 2026-10-16 on hotel-reservation: zero Jaeger spans
+    # until the pods were restarted). Restart the application deployments so they re-resolve.
+    for ns in getattr(app, "namespaces", None) or [app.namespace]:
+        out = subprocess.run(
+            f"kubectl -n {ns} get deploy -o name", shell=True, capture_output=True, text=True
+        ).stdout.split()
+        for d in out:
+            if any(x in d for x in ("mongodb", "memcached", "consul", "jaeger", "redis", "postgres", "kafka", "valkey")):
+                continue
+            subprocess.run(f"kubectl -n {ns} rollout restart {d}", shell=True, check=False, capture_output=True)
+        print(f"restarted application deployments in {ns} so Jaeger clients re-resolve the collector")
     return 0
 
 
