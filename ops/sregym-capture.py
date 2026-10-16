@@ -47,7 +47,9 @@ EXTS = {
     ".cpp": "cpp", ".cc": "cpp", ".cs": "csharp", ".lua": "lua",
 }
 CAPTURE_FILE = "sregym-spans.json"
-JAEGER_MARKERS = ("jaeger.version", "client-uuid")
+# What the collector's Jaeger receiver puts on a resource: the client's exporter version and the
+# process tags (`ip`, `host.name` = pod name). OTLP-native SDKs carry `telemetry.sdk.name` instead.
+JAEGER_MARKERS = ("opencensus.exporterversion", "jaeger.version", "ip")
 NEAT_URL = os.environ.get("NEAT_URL", "http://localhost:8098")
 NEAT_TOKEN = os.environ.get("NEAT_AUTH_TOKEN", "")
 
@@ -120,7 +122,7 @@ def main() -> int:
             continue
         for rs in req.get("resourceSpans", []):
             attrs = {a["key"]: a.get("value", {}) for a in rs.get("resource", {}).get("attributes", [])}
-            is_jaeger = any(k in attrs for k in JAEGER_MARKERS)
+            is_jaeger = any(k in attrs for k in JAEGER_MARKERS) and "telemetry.sdk.name" not in attrs
             if args.origin == "jaeger" and not is_jaeger:
                 continue
             if args.origin == "otlp" and is_jaeger:
