@@ -49,6 +49,36 @@ def main() -> int:
     # the collector never sees them (seen 2026-10-16 on hotel-reservation: zero Jaeger spans
     # until the pods were restarted). Restart the application deployments so they re-resolve.
     for ns in getattr(app, "namespaces", None) or [app.namespace]:
+        # Some SREGym images (the DeathStarBench socialNetwork build) also export OTLP gRPC to
+        # the bare name otel-collector:4317, which exists in no application namespace. Give
+        # them the same ExternalName SREGym gives Jaeger, so full-fidelity OTLP spans arrive.
+        subprocess.run(
+            f"kubectl -n {ns} get svc otel-collector >/dev/null 2>&1 || "
+            f"kubectl -n {ns} create service externalname otel-collector "
+            f"--external-name otel-collector.observe.svc.cluster.local",
+            shell=True, check=False, capture_output=True,
+        )
+        # DeathStarBench ConfigMaps ship a probabilistic Jaeger sampler (0.01 in SREGym's
+        # charts); the bench wants every trace, so sample everything.
+        cms = subprocess.run(
+            f"kubectl -n {ns} get cm -o json", shell=True, capture_output=True, text=True
+        ).stdout
+        try:
+            import json, re
+            for item in json.loads(cms or "{}").get("items", []):
+                y = (item.get("data") or {}).get("jaeger-config.yml")
+                if not y:
+                    continue
+                y2 = re.sub(r'type: *"?probabilistic"?', 'type: "const"', y)
+                y2 = re.sub(r"param: *[0-9.]+", "param: 1", y2)
+                if y2 != y:
+                    patch = json.dumps({"data": {"jaeger-config.yml": y2}})
+                    subprocess.run(
+                        ["kubectl", "-n", ns, "patch", "cm", item["metadata"]["name"], "--type=merge", "-p", patch],
+                        check=False, capture_output=True,
+                    )
+        except ValueError:
+            pass
         out = subprocess.run(
             f"kubectl -n {ns} get deploy -o name", shell=True, capture_output=True, text=True
         ).stdout.split()
