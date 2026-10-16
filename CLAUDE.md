@@ -16,7 +16,7 @@ The audit report, the findings it reproduced, and what they imply are the starti
 
 ## Layout
 
-- `bench/` is the consumer-ready bench being built against the contracts (see ADR-001 for the layout ruling).
+- `bench/` is the proposed home of the consumer-ready bench built against the contracts (ADR-001, awaiting the layout ruling). `ops/` holds the box-side scripts.
 - `praxis-rca/`, `competitive-rca/`, `harness/`, `itbench-live-run/` are earlier generations. They are evidence, frozen at the commits the audit cites. They are not patched in place.
 - `docs/contracts/` are the rules. `docs/decisions.md` is why.
 
@@ -31,8 +31,11 @@ The audit report, the findings it reproduced, and what they imply are the starti
 ## Don't do
 
 - Don't publish, cite, or put in a doc any number that fails `docs/contracts/claims.md`. "Not yet" is a valid result.
-- Don't snapshot a running cluster and call it the clean baseline. Clean is derived from the pinned chart; a snapshot of a live cluster has carried injected faults before.
-- Don't `helm uninstall` or reinstall the demo on the box. The collector-to-NEAT wiring lives in a configmap a reinstall wipes.
-- Don't run any leg of the bench locally. It filled a laptop disk once. The box only.
-- Don't trust a grader you have not fed wrong, negated and "unknown" answers. A grader is validated before its output is a result.
+- Don't snapshot a running cluster and call it the clean baseline; clean is the chart rendering, proven by the chart audit (environment rules 3 and 4, run-validity rule 1).
+- Don't call a server-side apply, a client-side apply or a helm upgrade a reset; none removes a field the fault injector owns (run-validity rule 2, ADR-003).
+- Don't `helm uninstall` or reinstall the demo inside a running bench cluster (environment rule 4).
+- Don't run any leg of the bench on a laptop (environment rule 1).
+- Don't trust a grader that has not passed the negative-control suite, and don't publish its number without the controls beside it (scoring rules 1 and 4).
+- Don't let a model decide RESOLVED: it is RCR plus a verified, regression-free fix, every gate a script (scoring definitions, ADR-005).
+- Don't publish a point without its interval, and don't buy repeats when the battery is what is too small (experiment-design rules 3 to 5).
 - Don't write an ADR on unverified evidence. Reproduce every number and behavioural claim first.
