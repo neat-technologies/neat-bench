@@ -41,6 +41,9 @@ EXPORTER_BLOCK = """      otlphttp/neat:
       file/capture:
         path: "{capture}"
         format: json
+        rotation:
+          max_megabytes: 256
+          max_backups: 1
 """
 
 PIPELINES = {

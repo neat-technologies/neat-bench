@@ -4,22 +4,28 @@
 Produces the deliverable Instrumentation files language-coverage gaps against:
   <out>/<app>/<timestamp>/
     collector-config.yaml       the collector config as deployed (token redacted)
-    spans-all.json              the raw capture (OTLP JSON, one ExportTraceServiceRequest per line)
-    services.tsv                service, language, source dir, span count, distinct span names
-    by-service/<service>.json   that service's resource spans only
+    services.tsv                service, language, source dir, total spans seen, distinct span names
+    by-service/<service>.json   up to --cap resource-span batches for that service (OTLP JSON)
     neat-fusion.tsv             per service: does NEAT hold a ServiceNode for it, how many OBSERVED
                                 edges touch it, and how many of its observed targets landed on a
                                 FRONTIER node (seen at runtime, matched to nothing static)
 
-Language is detected from the service's source directory in the application checkout
-(manifest files, then file extensions), so it is a fact about the checkout, not a guess.
+The capture file is read as a stream (it reaches gigabytes under a load generator), and only the
+first --cap batches per service are kept; the counts in services.tsv cover everything seen.
+Language is detected from the service's source directory in the application checkout.
 
-The collector image is built from scratch (no shell, no tar), so the file is read through an
-ephemeral busybox debug container sharing the collector's process namespace.
+Two applications can share a service name (the demo and the hotel app both have `frontend`),
+so --origin selects by how the spans arrived: `jaeger` keeps resources that carry Jaeger client
+attributes (opentracing apps), `otlp` keeps the rest, `all` keeps everything.
+
+The collector image has no shell or tar and `kubectl debug -i` truncates large streams, so the
+emptyDir file is read from the kind node container's kubelet volume path.
 
 Usage (on a bench box, kube context on the SREGym cluster, NEAT daemon on :8098):
-  python3 ops/sregym-capture.py astronomy-shop ~/SREGym/SREGym-applications/astronomy-shop/src ~/sregym-captures
+  python3 ops/sregym-capture.py hotel-reservation ~/sregym-src/DeathStarBench/hotelReservation/cmd \
+      ~/sregym-captures --origin jaeger
 """
+import argparse
 import collections
 import json
 import os
@@ -40,7 +46,8 @@ EXTS = {
     ".js": "javascript", ".py": "python", ".rb": "ruby", ".php": "php", ".rs": "rust",
     ".cpp": "cpp", ".cc": "cpp", ".cs": "csharp", ".lua": "lua",
 }
-CAPTURE = "/var/lib/otel/sregym-spans.json"
+CAPTURE_FILE = "sregym-spans.json"
+JAEGER_MARKERS = ("jaeger.version", "client-uuid")
 NEAT_URL = os.environ.get("NEAT_URL", "http://localhost:8098")
 NEAT_TOKEN = os.environ.get("NEAT_AUTH_TOKEN", "")
 
@@ -66,63 +73,76 @@ def sh(cmd: str, timeout: int = 120) -> str:
     return subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, timeout=timeout).stdout
 
 
-def read_capture() -> str:
-    pod = sh("kubectl -n observe get pod -l app-name=otel-collector -o jsonpath='{.items[0].metadata.name}'").strip()
-    return sh(
-        f"kubectl -n observe debug -q -i {pod} --image=busybox:1.36 --target=otel-collector "
-        f"-- cat /proc/1/root{CAPTURE}", timeout=300,
-    )
+def capture_stream():
+    uid = sh("kubectl -n observe get pod -l app-name=otel-collector -o jsonpath='{.items[0].metadata.uid}'").strip()
+    node = sh("kubectl -n observe get pod -l app-name=otel-collector -o jsonpath='{.items[0].spec.nodeName}'").strip()
+    path = f"/var/lib/kubelet/pods/{uid}/volumes/kubernetes.io~empty-dir/capture/{CAPTURE_FILE}"
+    proc = subprocess.Popen(["docker", "exec", node, "cat", path], stdout=subprocess.PIPE, text=True)
+    assert proc.stdout is not None
+    return proc, proc.stdout
 
 
 def neat_graph() -> dict:
     req = urllib.request.Request(f"{NEAT_URL}/graph", headers={"Authorization": f"Bearer {NEAT_TOKEN}"} if NEAT_TOKEN else {})
-    with urllib.request.urlopen(req, timeout=60) as r:
+    with urllib.request.urlopen(req, timeout=120) as r:
         return json.load(r)
 
 
 def main() -> int:
-    if len(sys.argv) != 4:
-        print(__doc__, file=sys.stderr)
-        return 2
-    app, src_root, out_root = sys.argv[1], pathlib.Path(sys.argv[2]), pathlib.Path(sys.argv[3])
-    out = out_root / app / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    ap = argparse.ArgumentParser()
+    ap.add_argument("app")
+    ap.add_argument("src_root", type=pathlib.Path)
+    ap.add_argument("out_root", type=pathlib.Path)
+    ap.add_argument("--origin", choices=["jaeger", "otlp", "all"], default="all")
+    ap.add_argument("--cap", type=int, default=400, help="resource-span batches kept per service")
+    args = ap.parse_args()
+
+    out = args.out_root / args.app / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     (out / "by-service").mkdir(parents=True)
 
     cfg = sh("kubectl -n observe get configmap otel-collector-config -o jsonpath='{.data.config\\.yaml}'")
     (out / "collector-config.yaml").write_text(cfg.replace(f"Bearer {NEAT_TOKEN}", "Bearer <redacted>") if NEAT_TOKEN else cfg)
-    raw = read_capture()
-    (out / "spans-all.json").write_text(raw)
 
-    per_service: dict[str, list] = collections.defaultdict(list)
+    kept: dict[str, list] = collections.defaultdict(list)
     span_names: dict[str, set] = collections.defaultdict(set)
     span_count: collections.Counter = collections.Counter()
-    bad = 0
-    for line in raw.splitlines():
+    bad = lines = 0
+    proc, stream = capture_stream()
+    for line in stream:
+        lines += 1
         line = line.strip()
-        if not line or not line.startswith("{"):
+        if not line.startswith("{"):
             continue
         try:
             req = json.loads(line)
         except json.JSONDecodeError:
-            bad += 1  # a line the collector was still writing, or debug-attach noise
+            bad += 1
             continue
         for rs in req.get("resourceSpans", []):
             attrs = {a["key"]: a.get("value", {}) for a in rs.get("resource", {}).get("attributes", [])}
+            is_jaeger = any(k in attrs for k in JAEGER_MARKERS)
+            if args.origin == "jaeger" and not is_jaeger:
+                continue
+            if args.origin == "otlp" and is_jaeger:
+                continue
             svc = attrs.get("service.name", {}).get("stringValue", "unknown")
-            per_service[svc].append(rs)
+            n = 0
             for ss in rs.get("scopeSpans", []):
                 for sp in ss.get("spans", []):
                     span_names[svc].add(sp.get("name", ""))
-                    span_count[svc] += 1
+                    n += 1
+            span_count[svc] += n
+            if len(kept[svc]) < args.cap:
+                kept[svc].append(rs)
+    proc.wait()
 
     with (out / "services.tsv").open("w") as f:
         f.write("service\tlanguage\tsource_dir\tspans\tdistinct_span_names\n")
-        for svc in sorted(per_service):
-            (out / "by-service" / f"{svc}.json").write_text(json.dumps({"resourceSpans": per_service[svc]}))
-            d = src_root / svc
+        for svc in sorted(span_count):
+            (out / "by-service" / f"{svc}.json").write_text(json.dumps({"resourceSpans": kept[svc]}))
+            d = args.src_root / svc
             f.write(f"{svc}\t{detect_language(d)}\t{d if d.is_dir() else '-'}\t{span_count[svc]}\t{len(span_names[svc])}\n")
 
-    # What NEAT made of it.
     try:
         g = neat_graph()
         nodes = {n["id"]: n for n in g.get("nodes", [])}
@@ -138,13 +158,13 @@ def main() -> int:
                 frontier[e["source"].split(":", 1)[1]] += 1
         with (out / "neat-fusion.tsv").open("w") as f:
             f.write("service\thas_service_node\tobserved_edges_touching\tobserved_targets_on_frontier\n")
-            for svc in sorted(per_service):
+            for svc in sorted(span_count):
                 f.write(f"{svc}\t{'yes' if f'service:{svc}' in service_ids else 'no'}\t{touch[svc]}\t{frontier[svc]}\n")
         print(f"neat: nodes={len(nodes)} observed_edges={len(obs)} frontier_nodes={sum(1 for i in nodes if i.startswith('frontier:'))}")
-    except Exception as exc:  # the capture is still valid without the fusion view
+    except Exception as exc:
         print(f"neat graph not read: {exc}", file=sys.stderr)
 
-    print(f"capture at {out} (unparseable lines skipped: {bad})")
+    print(f"capture at {out} (lines read: {lines}, unparseable: {bad}, origin={args.origin}, cap={args.cap}/service)")
     for line in (out / "services.tsv").read_text().splitlines()[1:]:
         print("  " + line.replace("\t", "  "))
     return 0
