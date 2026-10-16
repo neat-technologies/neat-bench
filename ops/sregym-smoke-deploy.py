@@ -85,12 +85,15 @@ def main() -> int:
         for d in out:
             if any(x in d for x in ("mongodb", "memcached", "consul", "jaeger", "redis", "postgres", "kafka", "valkey")):
                 continue
-            # Images built with an OpenTelemetry SDK but no OTEL_SERVICE_NAME report as
-            # `unknown_service` (the socialNetwork C++ build does). Name them after the deployment;
-            # a no-op for images that already set it. `set env` also triggers the restart.
+            # Images built with an OpenTelemetry SDK but no resource report as `unknown_service`
+            # (the socialNetwork C++ build does). Name them after the deployment. The C++ SDK's
+            # env detector honoured OTEL_RESOURCE_ATTRIBUTES and not OTEL_SERVICE_NAME on the
+            # bench (verified 2026-10-17), so set both; a no-op for images that already set a
+            # name. `set env` also triggers the restart.
             name = d.split("/", 1)[1]
             subprocess.run(
-                f"kubectl -n {ns} set env {d} OTEL_SERVICE_NAME={name}", shell=True, check=False, capture_output=True
+                f"kubectl -n {ns} set env {d} OTEL_SERVICE_NAME={name} OTEL_RESOURCE_ATTRIBUTES=service.name={name}",
+                shell=True, check=False, capture_output=True,
             )
             subprocess.run(f"kubectl -n {ns} rollout restart {d}", shell=True, check=False, capture_output=True)
         print(f"restarted application deployments in {ns} so Jaeger clients re-resolve the collector")
