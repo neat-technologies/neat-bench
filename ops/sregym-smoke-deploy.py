@@ -31,7 +31,11 @@ def main() -> int:
     if pid not in ids:
         print(f"unknown problem id {pid!r}; {len(ids)} known", file=sys.stderr)
         return 2
+    # What start_problem() does before deploy, minus the submission bookkeeping and the
+    # fault: load the problem instance so deploy_app() has an application to deploy.
     conductor.problem_id = pid
+    conductor.problem = conductor.problems.get_problem_instance(pid)
+    conductor.app = conductor.problem.app
     problem = conductor.current_problem
     app = problem.app
     print(f"application: {app.__class__.__name__} namespace={getattr(app, 'namespace', '?')} (problem {pid}, fault NOT injected)")
