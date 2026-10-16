@@ -138,11 +138,19 @@ def main() -> int:
                 kept[svc].append(rs)
     proc.wait()
 
+    def source_dir(svc: str) -> pathlib.Path:
+        # DeathStarBench names services `compose-post-service` at runtime and
+        # `ComposePostService` in the tree; try the literal name, then the CamelCase form.
+        for cand in (svc, "".join(p.capitalize() for p in svc.split("-"))):
+            if (args.src_root / cand).is_dir():
+                return args.src_root / cand
+        return args.src_root / svc
+
     with (out / "services.tsv").open("w") as f:
         f.write("service\tlanguage\tsource_dir\tspans\tdistinct_span_names\n")
         for svc in sorted(span_count):
             (out / "by-service" / f"{svc}.json").write_text(json.dumps({"resourceSpans": kept[svc]}))
-            d = args.src_root / svc
+            d = source_dir(svc)
             f.write(f"{svc}\t{detect_language(d)}\t{d if d.is_dir() else '-'}\t{span_count[svc]}\t{len(span_names[svc])}\n")
 
     try:
