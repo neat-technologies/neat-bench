@@ -96,11 +96,16 @@ def main() -> int:
     per_service: dict[str, list] = collections.defaultdict(list)
     span_names: dict[str, set] = collections.defaultdict(set)
     span_count: collections.Counter = collections.Counter()
+    bad = 0
     for line in raw.splitlines():
         line = line.strip()
-        if not line:
+        if not line or not line.startswith("{"):
             continue
-        req = json.loads(line)
+        try:
+            req = json.loads(line)
+        except json.JSONDecodeError:
+            bad += 1  # a line the collector was still writing, or debug-attach noise
+            continue
         for rs in req.get("resourceSpans", []):
             attrs = {a["key"]: a.get("value", {}) for a in rs.get("resource", {}).get("attributes", [])}
             svc = attrs.get("service.name", {}).get("stringValue", "unknown")
@@ -139,7 +144,7 @@ def main() -> int:
     except Exception as exc:  # the capture is still valid without the fusion view
         print(f"neat graph not read: {exc}", file=sys.stderr)
 
-    print(f"capture at {out}")
+    print(f"capture at {out} (unparseable lines skipped: {bad})")
     for line in (out / "services.tsv").read_text().splitlines()[1:]:
         print("  " + line.replace("\t", "  "))
     return 0
