@@ -25,7 +25,16 @@ Usage: python3 ops/sregym-bench-patch.py ~/SREGym
 import pathlib
 import sys
 
-AGENTS = """  - name: claudecode-base
+AGENTS = """  - name: claudecode-vanilla
+    kickoff_command: python -m clients.claudecode.driver
+    kickoff_workdir: .
+    kickoff_env:
+      NEAT_MCP: "0"
+      BENCH_ARM: vanilla
+    install_script: null
+    agent_version: null
+    container_isolation: false
+  - name: claudecode-base
     kickoff_command: python -m clients.claudecode.driver
     kickoff_workdir: .
     kickoff_env:
@@ -45,13 +54,13 @@ AGENTS = """  - name: claudecode-base
 
 PRE = '''        # neat-bench: arm tree, incident record, preflight
         arm_neat = os.environ.get("NEAT_MCP") == "1"
-        arm_cwd = os.environ.get("AGENT_CWD_NEAT" if arm_neat else "AGENT_CWD_BASE") or None
+        arm_cwd = None if os.environ.get("BENCH_ARM") == "vanilla" else (os.environ.get("AGENT_CWD_NEAT" if arm_neat else "AGENT_CWD_BASE") or None)
         neat_env = dict(os.environ, NEAT_CORE_URL=os.environ.get("NEAT_CORE_URL", "http://localhost:8098"),
                         NEAT_AUTH_TOKEN=os.environ.get("NEAT_AUTH_TOKEN", ""))
         rec_script = os.environ.get("NEAT_MCP_CALL", str(Path.home() / "neat-bench-ops" / "neat-mcp-call.py"))
         rec = subprocess.run(["python3", rec_script, "call", "ask", json.dumps({"question": "What is failing right now and why?"})],
                              capture_output=True, text=True, env=neat_env, cwd=arm_cwd, timeout=180)
-        (self.logs_dir / "neat-incident-record.json").write_text(json.dumps({"rc": rec.returncode, "out": rec.stdout[-6000:], "arm": "neat" if arm_neat else "base", "cwd": arm_cwd}))
+        (self.logs_dir / "neat-incident-record.json").write_text(json.dumps({"rc": rec.returncode, "out": rec.stdout[-6000:], "arm": "neat" if arm_neat else os.environ.get("BENCH_ARM", "base"), "cwd": arm_cwd}))
         if arm_neat and rec.returncode != 0:
             (self.logs_dir / "neat-preflight-void.json").write_text(json.dumps({"void_reason": "NEAT unreachable or erroring through MCP at agent start", "rc": rec.returncode, "out": rec.stdout[-2000:]}))
             logger.error("neat-bench: NEAT preflight failed; attempt VOID")

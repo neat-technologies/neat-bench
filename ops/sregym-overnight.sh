@@ -18,7 +18,7 @@ export KUBECONFIG="$HOME/.kube/config"
 export NEAT_CORE_URL="${NEAT_CORE_URL:-http://localhost:8098}"
 MODELS="${MODELS:-${MODEL:-claude-sonnet-5-5}}"; AGENT_TIMEOUT="${AGENT_TIMEOUT:-600}"
 BASELINE="${BASELINE:-180}"; PROPAGATION="${PROPAGATION:-60}"; STAGES="${STAGES:-diagnosis mitigation}"
-BLOCK="${BLOCK:-5}"; TAKE="${TAKE:-2}"; MAX_PROBLEMS="${MAX_PROBLEMS:-0}"; ONLY="${ONLY:-}"
+ARMS="${ARMS:-claudecode-vanilla claudecode-base claudecode-neat}"; BLOCK="${BLOCK:-5}"; TAKE="${TAKE:-2}"; MAX_PROBLEMS="${MAX_PROBLEMS:-0}"; ONLY="${ONLY:-}"
 ROOT="$HOME/SREGym"; OPS="$HOME/neat-bench-ops"; RUN="$HOME/sregym-bench/$(date -u +%Y%m%dT%H%M%SZ)"; mkdir -p "$RUN"
 export NEAT_MCP_BIN="$(command -v neat-mcp || echo "$(npm root -g)/@neat.is/mcp/dist/index.cjs")"
 export NEAT_MCP_CALL="$OPS/neat-mcp-call.py"
@@ -38,7 +38,7 @@ log "problems: $TOTAL (of $(wc -l < "$RUN/problem-apps.txt") in registry order; 
 cat > "$RUN/manifest.json" <<EOF
 {"bench_tag":"neat-bench ops/sregym-overnight.sh","started":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","machine":"$(hostname)","hardware":"nproc=$(nproc) mem_gib=$(free -g | awk '/^Mem:/{print $2}')",
  "neat_version":"$(neat --version 2>/dev/null)","neat_version_requested":"${NEAT_VERSION:-unset}","sregym":"$(git -C "$ROOT" rev-parse --short HEAD) + ops/sregym-bench-patch.py + collector patch","models":"$MODELS","judge":"SREGym LLM judge via Claude Code (--judge-backend claudecode)",
- "arms":{"claudecode-base":"pristine copy of the app source as cwd, no NEAT","claudecode-neat":"app source after neat init + neat claude install as cwd, fresh daemon per attempt, NEAT MCP (full surface) with URL+token"},
+ "arms":{"claudecode-vanilla":"SREGym as shipped: telemetry MCP + kubectl, no source","claudecode-base":"pristine copy of the app source as cwd, no NEAT","claudecode-neat":"app source after neat init + neat claude install as cwd, fresh daemon per attempt, NEAT MCP (full surface) with URL+token"},
  "instruction":"identical for both arms (SREGym's own); no NEAT text in the prompt","k":1,"stages":"$STAGES","agent_timeout_s":$AGENT_TIMEOUT,"baseline_s":$BASELINE,"propagation_s":$PROPAGATION,
  "problem_selection":"registry order, source-backed apps, take $TAKE of every $BLOCK","problems":$TOTAL,"cache":"per-attempt nonce in the system prompt; caching kept within a session",
  "exclusions":"vendor/, node_modules/, .git/ excluded from both arm trees","confounds":"k=1; agents on the host (no container) so the base arm could reach the daemon if it went looking; one cluster, arms sequential; hooks off (product default)"}
@@ -50,7 +50,7 @@ while read -r pid app ns src; do
   [ -z "$pid" ] && continue
   n=$((n+1)); [ "$MAX_PROBLEMS" -gt 0 ] && [ "$n" -gt "$MAX_PROBLEMS" ] && break
   for model in $MODELS; do
-  for arm in claudecode-base claudecode-neat; do
+  for arm in $ARMS; do
     tries=0
     while :; do
       PREP=$(NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" bash "$OPS/neat-arm-prep.sh" "$app" "$ns" "$src" 2>&1)
