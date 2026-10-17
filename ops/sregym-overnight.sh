@@ -63,7 +63,8 @@ while read -r pid app ns src; do
       s=$(date +%s)
       timeout $((AGENT_TIMEOUT + 1800)) uv run main.py --problem "$pid" --agent "$arm" --model "$model" --judge-backend claudecode --internet-access open --agent-timeout "$AGENT_TIMEOUT" --baseline "$BASELINE" --propagation "$PROPAGATION" --stages $STAGES > "$RUN/$tag.log" 2>&1
       rc=$?; e=$(date +%s)
-      if grep -qiE "RateLimitError|rate_limit|usage limit|Login expired|authentication_failed" "$RUN/$tag.log"; then
+      # Only the harness's own failure lines count (the demo has a flag named llmRateLimitError).
+      if ! grep -q "Agent process completed" "$RUN/$tag.log" && grep -qE "litellm\.RateLimitError|Judge pre-flight check failed|\"rate_limit_error\"|Login expired|authentication_failed" "$RUN/$tag.log"; then
         tries=$((tries+1)); mv "$RUN/$tag.log" "$RUN/$tag.limited-$tries.log"
         log "[$n/$TOTAL] $pid $arm hit the API/usage limit (try $tries); waiting 30 min"
         [ "$tries" -le 12 ] && { sleep 1800; continue; }
