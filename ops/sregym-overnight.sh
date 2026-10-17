@@ -1,86 +1,84 @@
 #!/usr/bin/env bash
-# sregym-overnight.sh — the overnight smoke run on SREGym: same agent with and without NEAT,
-# k=1, both arms on each problem before moving on, problems taken 2 from every block of 5 in
-# SREGym's own order (Deniz, 2026-10-17). Development numbers only (claims contract rule 7).
+# sregym-overnight.sh — the SREGym smoke: same agent, base arm vs NEAT arm, k=1 per call.
 #
-# Env (all optional): NEAT_VERSION (manifest only; install first with sregym-repoint.sh),
-#   MODEL (default claude-sonnet-5-5), AGENT_TIMEOUT (s, default 480), BASELINE/PROPAGATION
-#   (s, default 60/60), STAGES (default "diagnosis mitigation"), BLOCK (5), TAKE (2),
-#   MAX_PROBLEMS (stop after N problems), SKIP_WAIT=1 (don't wait for the repoint log),
-#   KEEP_APPS=1 (don't tear down the smoke namespaces). NEAT_AUTH_TOKEN required.
+# The NEAT arm is the product as a user gets it: before EVERY attempt neat-arm-prep.sh puts a
+# fresh daemon on the app's own source (`neat init` + `neat claude install`), points the k8s
+# connector at its namespace, and builds the base arm's pristine copy. The agent runs in its
+# arm's tree with an identical instruction; the NEAT arm gets the full mcp__neat__* surface.
+# Problems: SREGym's order, restricted to apps whose source the box has, then TAKE of every
+# BLOCK (Deniz: "do 2 then skip to the next block of 5"). Both arms per problem before moving on.
+#
+# Env: NEAT_AUTH_TOKEN (required), NEAT_VERSION (manifest), MODELS (space-separated, default
+# claude-sonnet-5-5), AGENT_TIMEOUT (600), BASELINE (180: OBSERVED edges need traffic),
+# PROPAGATION (60), STAGES, BLOCK (5), TAKE (2), MAX_PROBLEMS (0 = all), ONLY (problem ids).
 set -uo pipefail
 export PATH="$HOME/.local/bin:$HOME/.nvm/versions/node/v20.20.2/bin:$PATH"
 export KUBECONFIG="$HOME/.kube/config"
 : "${NEAT_AUTH_TOKEN:?NEAT_AUTH_TOKEN required}"
-MODEL="${MODEL:-claude-sonnet-5-5}"; AGENT_TIMEOUT="${AGENT_TIMEOUT:-480}"; BASELINE="${BASELINE:-60}"; PROPAGATION="${PROPAGATION:-60}"
-STAGES="${STAGES:-diagnosis mitigation}"; BLOCK="${BLOCK:-5}"; TAKE="${TAKE:-2}"; MAX_PROBLEMS="${MAX_PROBLEMS:-0}"
-ROOT="$HOME/SREGym"; RUN="$HOME/sregym-bench/$(date -u +%Y%m%dT%H%M%SZ)"; mkdir -p "$RUN"
+export NEAT_CORE_URL="${NEAT_CORE_URL:-http://localhost:8098}"
+MODELS="${MODELS:-${MODEL:-claude-sonnet-5-5}}"; AGENT_TIMEOUT="${AGENT_TIMEOUT:-600}"
+BASELINE="${BASELINE:-180}"; PROPAGATION="${PROPAGATION:-60}"; STAGES="${STAGES:-diagnosis mitigation}"
+BLOCK="${BLOCK:-5}"; TAKE="${TAKE:-2}"; MAX_PROBLEMS="${MAX_PROBLEMS:-0}"; ONLY="${ONLY:-}"
+ROOT="$HOME/SREGym"; OPS="$HOME/neat-bench-ops"; RUN="$HOME/sregym-bench/$(date -u +%Y%m%dT%H%M%SZ)"; mkdir -p "$RUN"
 export NEAT_MCP_BIN="$(command -v neat-mcp || echo "$(npm root -g)/@neat.is/mcp/dist/index.cjs")"
+export NEAT_MCP_CALL="$OPS/neat-mcp-call.py"
 log() { printf '%s %s\n' "$(date -u +%H:%M:%SZ)" "$*" | tee -a "$RUN/launcher.log"; }
 kubectl config use-context kind-kind >/dev/null
-
-if [ "${SKIP_WAIT:-0}" != "1" ]; then
-  log "waiting for the nightly re-point to finish (marker in ~/sregym-repoint.log)"
-  for i in $(seq 1 180); do grep -q "== frontier nodes" "$HOME/sregym-repoint.log" 2>/dev/null && break; sleep 10; done
-fi
-log "neat $(neat --version 2>/dev/null) daemon: $(curl -s -m 5 http://localhost:8098/health | head -c 120)"
-
-if [ "${KEEP_APPS:-0}" != "1" ]; then
-  log "tearing down smoke namespaces (SREGym deploys each problem's app itself)"
-  for ns in astronomy-shop hotel-reservation social-network; do kubectl delete ns "$ns" --ignore-not-found --wait=false >/dev/null 2>&1; done
-  for i in $(seq 1 60); do n=$(kubectl get ns --no-headers 2>/dev/null | grep -cE "^(astronomy-shop|hotel-reservation|social-network) "); [ "$n" -eq 0 ] && break; sleep 10; done
-  log "namespaces gone: $([ "${n:-0}" -eq 0 ] && echo yes || echo "no ($n left)")"
-fi
+bash "$OPS/fix-kind-bridge.sh" >> "$RUN/launcher.log" 2>&1
 
 cd "$ROOT"
-python3 "$HOME/neat-bench-ops/sregym-bench-patch.py" "$ROOT" | tee -a "$RUN/launcher.log"
-.venv/bin/python - "$BLOCK" "$TAKE" > "$RUN/problems.txt" <<'PY'
-import sys
-from sregym.conductor.problems.registry import ProblemRegistry
-block, take = int(sys.argv[1]), int(sys.argv[2])
-ids = ProblemRegistry().get_problem_ids()
-for i in range(0, len(ids), block):
-    for p in ids[i:i + take]:
-        print(p)
-PY
-TOTAL=$(wc -l < "$RUN/problems.txt"); log "problems: $TOTAL of $(.venv/bin/python -c 'from sregym.conductor.problems.registry import ProblemRegistry; print(len(ProblemRegistry().get_problem_ids()))') (take $TAKE of every $BLOCK)"
+git checkout -q agents.yaml clients/claudecode/claudecode_agent.py
+python3 "$OPS/sregym-bench-patch.py" "$ROOT" | tee -a "$RUN/launcher.log"
+
+if [ -n "$ONLY" ]; then .venv/bin/python "$OPS/sregym-problem-app.py" $ONLY > "$RUN/problem-apps.txt"
+else .venv/bin/python "$OPS/sregym-problem-app.py" > "$RUN/problem-apps.txt"; fi
+awk '$4 != "-"' "$RUN/problem-apps.txt" | awk -v b="$BLOCK" -v k="$TAKE" -v only="$ONLY" '{ if (only != "" || (NR-1) % b < k) print }' > "$RUN/problems.txt"
+TOTAL=$(wc -l < "$RUN/problems.txt")
+log "problems: $TOTAL (of $(wc -l < "$RUN/problem-apps.txt") in registry order; source-backed apps only; take $TAKE of every $BLOCK)"
 cat > "$RUN/manifest.json" <<EOF
 {"bench_tag":"neat-bench ops/sregym-overnight.sh","started":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","machine":"$(hostname)","hardware":"nproc=$(nproc) mem_gib=$(free -g | awk '/^Mem:/{print $2}')",
- "neat_version":"$(neat --version 2>/dev/null)","neat_version_requested":"${NEAT_VERSION:-unset}","sregym":"$(git -C "$ROOT" rev-parse --short HEAD) + ops patches","model":"$MODEL","judge":"claudecode (SREGym LLM judge via the box's Claude login)",
- "arms":["claudecode-base","claudecode-neat"],"k":1,"stages":"$STAGES","agent_timeout_s":$AGENT_TIMEOUT,"baseline_s":$BASELINE,"propagation_s":$PROPAGATION,
- "problem_selection":"take $TAKE of every $BLOCK in registry order","problems":$TOTAL,"cache":"per-attempt nonce in the system prompt; caching kept within a session",
- "confounds":"k=1; one cluster so arms run sequentially per problem; agents run on the host (no container) so the base arm could reach the NEAT daemon on localhost if it went looking; one daemon over all app sources; OBSERVED edges from earlier problems go STALE between problems; apps redeployed per problem by SREGym"}
+ "neat_version":"$(neat --version 2>/dev/null)","neat_version_requested":"${NEAT_VERSION:-unset}","sregym":"$(git -C "$ROOT" rev-parse --short HEAD) + ops/sregym-bench-patch.py + collector patch","models":"$MODELS","judge":"SREGym LLM judge via Claude Code (--judge-backend claudecode)",
+ "arms":{"claudecode-base":"pristine copy of the app source as cwd, no NEAT","claudecode-neat":"app source after neat init + neat claude install as cwd, fresh daemon per attempt, NEAT MCP (full surface) with URL+token"},
+ "instruction":"identical for both arms (SREGym's own); no NEAT text in the prompt","k":1,"stages":"$STAGES","agent_timeout_s":$AGENT_TIMEOUT,"baseline_s":$BASELINE,"propagation_s":$PROPAGATION,
+ "problem_selection":"registry order, source-backed apps, take $TAKE of every $BLOCK","problems":$TOTAL,"cache":"per-attempt nonce in the system prompt; caching kept within a session",
+ "exclusions":"vendor/, node_modules/, .git/ excluded from both arm trees","confounds":"k=1; agents on the host (no container) so the base arm could reach the daemon if it went looking; one cluster, arms sequential; hooks off (product default)"}
 EOF
-printf 'problem\tarm\tstart_epoch\tend_epoch\twall_s\trc\tresults_dir\n' > "$RUN/timing.tsv"
+printf 'problem\tapp\tarm\tmodel\tstart_epoch\tend_epoch\twall_s\trc\tresults_dir\tvoid\n' > "$RUN/timing.tsv"
 
 n=0
-while read -r pid; do
+while read -r pid app ns src; do
   [ -z "$pid" ] && continue
   n=$((n+1)); [ "$MAX_PROBLEMS" -gt 0 ] && [ "$n" -gt "$MAX_PROBLEMS" ] && break
+  for model in $MODELS; do
   for arm in claudecode-base claudecode-neat; do
-    # the judge runs through Claude Code with a token; take the freshest one the host holds
-    export CLAUDE_CODE_OAUTH_TOKEN="$(python3 -c 'import json,pathlib; print(json.load(open(pathlib.Path.home()/".claude/.credentials.json"))["claudeAiOauth"]["accessToken"])' 2>/dev/null)"
-    before=$(ls -d results/*/ 2>/dev/null | sort | tail -1)
-    log "[$n/$TOTAL] $pid $arm start"
-    s=$(date +%s)
-    NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" NEAT_MCP_BIN="$NEAT_MCP_BIN" timeout $((AGENT_TIMEOUT + 1500)) uv run main.py --problem "$pid" --agent "$arm" --model "$MODEL" --judge-backend claudecode --internet-access open --agent-timeout "$AGENT_TIMEOUT" --baseline "$BASELINE" --propagation "$PROPAGATION" --stages $STAGES > "$RUN/$pid.$arm.log" 2>&1
-    rc=$?; e=$(date +%s)
-    # Rate limit on the shared subscription (seen 2026-10-17 03:47Z: the judge pre-flight got
-    # RateLimitError and the loop burned 38 problems at 19 s each). Don't advance: wait for the
-    # reset and retry the same attempt, up to 12 times (6 h).
-    if grep -qiE "RateLimitError|rate_limit|usage limit|Login expired|authentication_failed" "$RUN/$pid.$arm.log"; then
-      tries=$((${tries:-0}+1)); log "[$n/$TOTAL] $pid $arm hit the API/usage limit (try $tries); waiting 30 min for the reset"
-      mv "$RUN/$pid.$arm.log" "$RUN/$pid.$arm.limited-$tries.log"
-      if [ "$tries" -le 12 ]; then sleep 1800; continue 2; fi
-    fi
     tries=0
+    while :; do
+      PREP=$(NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" bash "$OPS/neat-arm-prep.sh" "$app" "$ns" "$src" 2>&1)
+      echo "$PREP" | head -1 | tee -a "$RUN/launcher.log" >/dev/null
+      eval "$(echo "$PREP" | tail -1)"; export AGENT_CWD_NEAT AGENT_CWD_BASE
+      export CLAUDE_CODE_OAUTH_TOKEN="$(python3 -c 'import json,pathlib; print(json.load(open(pathlib.Path.home()/".claude/.credentials.json"))["claudeAiOauth"]["accessToken"])' 2>/dev/null)"
+      before=$(ls -d results/*/ 2>/dev/null | sort | tail -1)
+      tag="$pid.$arm.${model##*-}"
+      log "[$n/$TOTAL] $pid ($app) $arm $model start"
+      s=$(date +%s)
+      timeout $((AGENT_TIMEOUT + 1800)) uv run main.py --problem "$pid" --agent "$arm" --model "$model" --judge-backend claudecode --internet-access open --agent-timeout "$AGENT_TIMEOUT" --baseline "$BASELINE" --propagation "$PROPAGATION" --stages $STAGES > "$RUN/$tag.log" 2>&1
+      rc=$?; e=$(date +%s)
+      if grep -qiE "RateLimitError|rate_limit|usage limit|Login expired|authentication_failed" "$RUN/$tag.log"; then
+        tries=$((tries+1)); mv "$RUN/$tag.log" "$RUN/$tag.limited-$tries.log"
+        log "[$n/$TOTAL] $pid $arm hit the API/usage limit (try $tries); waiting 30 min"
+        [ "$tries" -le 12 ] && { sleep 1800; continue; }
+      fi
+      break
+    done
     after=$(ls -d results/*/ 2>/dev/null | sort | tail -1); [ "$after" = "$before" ] && after="-"
-    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$pid" "$arm" "$s" "$e" "$((e-s))" "$rc" "$after" >> "$RUN/timing.tsv"
-    log "[$n/$TOTAL] $pid $arm done rc=$rc wall=$((e-s))s"
+    void=$(find "$after" -name neat-preflight-void.json 2>/dev/null | head -1); void=${void:+yes}
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$pid" "$app" "$arm" "$model" "$s" "$e" "$((e-s))" "$rc" "$after" "${void:-no}" >> "$RUN/timing.tsv"
+    log "[$n/$TOTAL] $pid $arm $model done rc=$rc wall=$((e-s))s void=${void:-no}"
+  done
   done
 done < "$RUN/problems.txt"
 
 log "aggregating"
-python3 "$HOME/neat-bench-ops/sregym-aggregate.py" "$RUN" "$ROOT/results" | tee -a "$RUN/launcher.log"
+python3 "$OPS/sregym-aggregate.py" "$RUN" "$ROOT/results" | tee -a "$RUN/launcher.log"
 echo "{\"finished\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > "$RUN/finished.json"
 log "done: $RUN"
