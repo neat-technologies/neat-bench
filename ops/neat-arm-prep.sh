@@ -15,7 +15,7 @@ export PATH="$HOME/.local/bin:$HOME/.nvm/versions/node/v20.20.2/bin:$PATH"
 APP="$1"; NS="$2"; SRC="$3"
 : "${NEAT_AUTH_TOKEN:?NEAT_AUTH_TOKEN required}"
 NEAT_DIR="$HOME/neat-arm/$APP"; BASE_DIR="$HOME/base-arm/$APP"
-EXCL=(--exclude .git --exclude vendor --exclude node_modules --exclude neat-out --exclude CLAUDE.md)
+EXCL=(--exclude .git --exclude vendor --exclude node_modules --exclude neat-out --exclude CLAUDE.md --exclude policy.json)
 
 P=$(ss -ltnp 2>/dev/null | awk '/:8098 /{print $NF}' | grep -oE 'pid=[0-9]+' | head -1 | cut -d= -f2)
 [ -n "$P" ] && kill "$P" && sleep 2
@@ -26,14 +26,33 @@ rm -rf "$NEAT_DIR/neat-out"
 
 python3 - "$NS" <<'PY'
 import json, pathlib, sys
-p = pathlib.Path.home() / ".neat/k8s.json"
-d = {"version": 1, "deployments": [{"id": f"sregym-{sys.argv[1]}", "credential": {"kubeconfig": str(pathlib.Path.home() / ".kube/config")}, "namespace": sys.argv[1], "intervalMs": 15000}]}
-p.write_text(json.dumps(d, indent=2))
+home = pathlib.Path.home()
+ns = sys.argv[1]
+d = {"version": 1, "deployments": [{"id": f"sregym-{ns}", "credential": {"kubeconfig": str(home / ".kube/config")}, "namespace": ns, "intervalMs": 15000}]}
+(home / ".neat/k8s.json").write_text(json.dumps(d, indent=2))
+# The app's flag store, when it runs one (astronomy-shop's flagd). Reached through a
+# supervised port-forward to flagd's sync port, the way an operator's NEAT reaches it in-cluster.
+stores = [{"id": f"{ns}-flagd", "provider": "flagd", "endpoint": "localhost:18015", "intervalMs": 5000}] if ns == "astronomy-shop" else []
+(home / ".neat/flag-stores.json").write_text(json.dumps({"version": 1, "stores": stores}))
 PY
+
+# Supervised port-forward to flagd's sync port (8015); flag faults and the post-swap restart
+# both restart flagd, so it reconnects. One supervisor at a time, tracked by pidfile.
+PF="$HOME/neat-snapshots/flagd-pf.pid"; mkdir -p "$HOME/neat-snapshots"
+if [ -f "$PF" ]; then OLD=$(cat "$PF"); pkill -P "$OLD" 2>/dev/null; kill "$OLD" 2>/dev/null; rm -f "$PF"; fi
+if [ "$NS" = "astronomy-shop" ]; then
+  ( echo $BASHPID > "$PF"
+    for i in $(seq 1 2000); do
+      kubectl --context kind-kind -n "$NS" port-forward deploy/flagd 18015:8015 >/dev/null 2>&1
+      sleep 3
+    done ) > /dev/null 2>&1 &
+fi
 
 cd "$NEAT_DIR"
 neat init . >/dev/null 2>&1
 neat claude install >/dev/null 2>&1
+# The generic policy pack (ops/policy-generic-v1.json), committed before any scored attempt.
+cp "$(dirname "$0")/policy-generic-v1.json" "$NEAT_DIR/policy.json" 2>/dev/null
 ( NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" NEAT_OTEL_TOKEN="$NEAT_AUTH_TOKEN" NEAT_WEB_DISABLED=1 HOST=0.0.0.0 PORT=8098 OTEL_PORT=4319 setsid nohup neat watch . > "$HOME/sregym-neat.log" 2>&1 & )
 for i in $(seq 1 60); do curl -s -m 3 http://localhost:8098/health 2>/dev/null | grep -q '"ok":true' && break; sleep 5; done
 # Healthy snapshot for get_graph_diff (the PRAXIS method): once the app's pods have been Ready
