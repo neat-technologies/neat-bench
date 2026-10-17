@@ -26,9 +26,29 @@ KNOWN = ["BlueprintHotelReservation", "AstronomyShop", "HotelReservation", "Soci
          "FleetCast", "FlightTicket", "Saleor", "SlackSpine", "Frappe", "Gitea", "Gitlab", "Mattermost", "TiDB"]
 
 
+def resolve_factory(obj):
+    """Registry entries are often lambdas (`lambda: MongoDBRevokeAuth(faulty_service=...)`).
+    Resolve the class such a lambda calls so we read the problem's own module, never the
+    registry's (which names every app and made the first one win)."""
+    if inspect.isclass(obj):
+        return obj
+    try:
+        src = inspect.getsource(obj)
+    except (OSError, TypeError):
+        return obj
+    m = re.search(r"lambda[^:]*:\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(", src)
+    if not m:
+        return obj
+    mod = sys.modules.get(getattr(obj, "__module__", ""), None)
+    return getattr(mod, m.group(1), obj) if mod else obj
+
+
 def app_of(cls) -> str:
     """The app class a problem uses: first known app class instantiated in its class source,
     else in its module, else via a problem parameter like `app_name="astronomy_shop"`."""
+    cls = resolve_factory(cls)
+    if not inspect.isclass(cls):
+        return "?"
     texts = []
     try:
         texts.append(inspect.getsource(cls))
