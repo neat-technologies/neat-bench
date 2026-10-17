@@ -81,10 +81,10 @@ def main() -> int:
             out["calls"]["investigate"] = m.call("investigate", {"target": culprit})
             out["calls"]["get_root_cause"] = m.call("get_root_cause", {"errorNode": culprit})
             out["calls"]["get_blast_radius"] = m.call("get_blast_radius", {"nodeId": culprit})
-        if snap and os.path.exists(snap):
-            out["calls"]["get_graph_diff"] = m.call("get_graph_diff", {"againstSnapshot": snap})
-        else:
-            out["calls"]["get_graph_diff"] = {"is_error": True, "text": f"no healthy snapshot at {snap or '(none)'}"}
+        # The daemon diffs only against snapshots it manages (`self` or a registered project;
+        # core #693), so a file-path baseline is rejected. Record the self-diff until a
+        # time-based or healthy-baseline diff exists in the product.
+        out["calls"]["get_graph_diff"] = m.call("get_graph_diff", {"againstSnapshot": "self"})
         out["calls"]["get_recent_stale_edges"] = m.call("get_recent_stale_edges", {"limit": 15})
         out["calls"]["get_divergences"] = m.call("get_divergences", {"minConfidence": 0.7})
         print(json.dumps(out))
