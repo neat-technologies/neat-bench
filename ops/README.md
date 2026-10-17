@@ -16,3 +16,6 @@ Box-side scripts, governed by `docs/contracts/environment.md` and `docs/contract
 - `sregym-overnight.sh` — the overnight smoke run: both arms on each problem, problems taken 2 from every block of 5 in SREGym's order, k=1, manifest + per-attempt timing, then the aggregator.
 - `sregym-aggregate.py` — summary.tsv and totals.json per problem and arm: outcomes, wall time, tokens (input, output, cache read, cache write), cost only when prices are given.
 - `restart-on-tag.sh` — waits for a published `@neat.is/core` tag, installs core and mcp at that version, restarts the daemon over the source workspace, repairs the bridges, and starts the smoke from problem 1 pinned to the tag.
+- `iterate.sh` + `iterate-set.txt` — the 4-to-6-hour iteration run: vanilla versus NEAT, baseline 90 s, propagation 30 s, k=1, on the problems that discriminate (plain agents fail, or NEAT's record was partial).
+- `policy-generic-v1.json` — the NEAT arm's policy pack: every compatibility check and a blast-radius warning; committed before any scored attempt, nothing SREGym-specific.
+- `neat-record.py` — at agent start, NEAT's whole answer (ask, investigate, root cause, blast radius, graph diff, stale edges, divergences, policies) through one MCP session; measurement only, the agent never sees it.
