@@ -48,10 +48,13 @@ NEAT_DEFAULT_INSTRUCTION = (
     "You have NEAT available as MCP tools (names start with mcp__neat__). NEAT keeps a live "
     "semantic graph of this system: code, infrastructure and runtime behaviour from OpenTelemetry, "
     "fused, with provenance on every edge (EXTRACTED from source, OBSERVED at runtime, INFERRED, "
-    "STALE). Lead with it. First list its tools, then use the incident / root-cause views, "
-    "declared-versus-observed divergences, observed dependencies and blast radius, stale edges and "
-    "graph search to localise the fault, and keep using it alongside kubectl and the observability "
-    "endpoints while you diagnose and mitigate."
+    "STALE). It is the investigation layer for this task: before running any kubectl or shell "
+    "command, call NEAT first. Required order: (1) call the NEAT tools that list incidents, "
+    "root causes and divergences (declared-versus-observed) for the whole system; (2) for the "
+    "suspect service, call the observed-dependency, blast-radius and stale-edge tools; (3) only "
+    "then use kubectl, logs and the observability endpoints to confirm and to act. Cite which "
+    "NEAT findings led you to the diagnosis in your submission. A run that never queries NEAT "
+    "is a failed run for this arm."
 )
 '''
 
