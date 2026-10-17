@@ -43,9 +43,21 @@ def resolve_factory(obj):
     return getattr(mod, m.group(1), obj) if mod else obj
 
 
+APP_NAME_ARG = {"astronomy_shop": "AstronomyShop", "hotel_reservation": "HotelReservation",
+                "social_network": "SocialNetwork", "train_ticket": "TrainTicket"}
+
+
 def app_of(cls) -> str:
-    """The app class a problem uses: first known app class instantiated in its class source,
-    else in its module, else via a problem parameter like `app_name="astronomy_shop"`."""
+    """The app class a problem uses. A registry lambda's explicit `app_name="..."` argument wins
+    (generic classes like DuplicatePVCMounts serve several apps); then the first known app class
+    instantiated in the problem's class source, else in its module."""
+    try:
+        lam = inspect.getsource(cls) if not inspect.isclass(cls) else ""
+    except (OSError, TypeError):
+        lam = ""
+    m = re.search(r"app_name\s*=\s*[\"']([a-z_]+)[\"']", lam)
+    if m and m.group(1) in APP_NAME_ARG:
+        return APP_NAME_ARG[m.group(1)]
     cls = resolve_factory(cls)
     if not inspect.isclass(cls):
         return "?"
