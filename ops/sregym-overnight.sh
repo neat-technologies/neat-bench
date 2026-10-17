@@ -65,6 +65,15 @@ while read -r pid; do
     s=$(date +%s)
     NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" NEAT_MCP_BIN="$NEAT_MCP_BIN" timeout $((AGENT_TIMEOUT + 1500)) uv run main.py --problem "$pid" --agent "$arm" --model "$MODEL" --judge-backend claudecode --internet-access open --agent-timeout "$AGENT_TIMEOUT" --baseline "$BASELINE" --propagation "$PROPAGATION" --stages $STAGES > "$RUN/$pid.$arm.log" 2>&1
     rc=$?; e=$(date +%s)
+    # Rate limit on the shared subscription (seen 2026-10-17 03:47Z: the judge pre-flight got
+    # RateLimitError and the loop burned 38 problems at 19 s each). Don't advance: wait for the
+    # reset and retry the same attempt, up to 12 times (6 h).
+    if grep -qiE "RateLimitError|rate_limit|usage limit|Login expired|authentication_failed" "$RUN/$pid.$arm.log"; then
+      tries=$((${tries:-0}+1)); log "[$n/$TOTAL] $pid $arm hit the API/usage limit (try $tries); waiting 30 min for the reset"
+      mv "$RUN/$pid.$arm.log" "$RUN/$pid.$arm.limited-$tries.log"
+      if [ "$tries" -le 12 ]; then sleep 1800; continue 2; fi
+    fi
+    tries=0
     after=$(ls -d results/*/ 2>/dev/null | sort | tail -1); [ "$after" = "$before" ] && after="-"
     printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$pid" "$arm" "$s" "$e" "$((e-s))" "$rc" "$after" >> "$RUN/timing.tsv"
     log "[$n/$TOTAL] $pid $arm done rc=$rc wall=$((e-s))s"
