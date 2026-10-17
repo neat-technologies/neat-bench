@@ -53,9 +53,11 @@ def read_usage(run_dir: pathlib.Path) -> dict:
         return {}
 
 
-def transcript_stats(run: pathlib.Path, pid: str, arm: str, model: str) -> dict:
+def transcript_stats(run: pathlib.Path, pid: str, arm: str, model: str, k: str = "") -> dict:
     """NEAT calls, first tool, tool count and Claude Code's own cost line, from the attempt log."""
     tag = f"{pid}.{arm}.{model.split('-')[-1]}" if model else f"{pid}.{arm}"
+    if k:
+        tag = f"{tag}.k{k}"
     files = sorted(run.glob(f"{tag}.log")) or sorted(run.glob(f"{pid}.{arm}*.log"))
     files = [f for f in files if "limited" not in f.name]
     out = {"tools": 0, "neat_calls": 0, "first_tool": "", "first_neat_index": "", "cc_cost_usd": ""}
@@ -101,9 +103,9 @@ def main() -> int:
                         + (toks["cached_input_tokens"] or 0) * (pcr or 0) + (toks["cache_creation_input_tokens"] or 0) * (pcw or 0)) / 1e6
             diag = next((v for k, v in outcome.items() if "diagnosis" in k.lower() and ("result" in k.lower() or "success" in k.lower() or "pass" in k.lower())), None)
             mit = next((v for k, v in outcome.items() if "mitigation" in k.lower() and ("result" in k.lower() or "success" in k.lower() or "pass" in k.lower())), None)
-            ts = transcript_stats(run, t["problem"], t["arm"], t.get("model", ""))
+            ts = transcript_stats(run, t["problem"], t["arm"], t.get("model", ""), t.get("k", ""))
             rows.append({
-                "problem": t["problem"], "app": t.get("app", ""), "arm": t["arm"], "model": t.get("model", ""), "void": t.get("void", ""),
+                "problem": t["problem"], "app": t.get("app", ""), "arm": t["arm"], "model": t.get("model", ""), "k": t.get("k", ""), "void": t.get("void", ""),
                 "wall_s": t["wall_s"], "rc": t["rc"], **ts,
                 "diagnosis": diag, "mitigation": mit, "ttd": outcome.get("TTD") or outcome.get("ttd"), "ttm": outcome.get("TTM") or outcome.get("ttm"),
                 "run_status": outcome.get("run_status"), **{k: ("" if v is None else v) for k, v in toks.items()},
