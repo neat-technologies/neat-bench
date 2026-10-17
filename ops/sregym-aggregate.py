@@ -53,6 +53,37 @@ def read_usage(run_dir: pathlib.Path) -> dict:
         return {}
 
 
+def transcript_stats(run: pathlib.Path, pid: str, arm: str, model: str) -> dict:
+    """NEAT calls, first tool, tool count and Claude Code's own cost line, from the attempt log."""
+    tag = f"{pid}.{arm}.{model.split('-')[-1]}" if model else f"{pid}.{arm}"
+    files = sorted(run.glob(f"{tag}.log")) or sorted(run.glob(f"{pid}.{arm}*.log"))
+    files = [f for f in files if "limited" not in f.name]
+    out = {"tools": 0, "neat_calls": 0, "first_tool": "", "first_neat_index": "", "cc_cost_usd": ""}
+    if not files:
+        return out
+    order = []
+    for line in open(files[-1], errors="replace"):
+        line = line.strip()
+        if not line.startswith("{"):
+            continue
+        try:
+            ev = json.loads(line)
+        except Exception:
+            continue
+        if ev.get("type") == "result" and ev.get("total_cost_usd") is not None:
+            out["cc_cost_usd"] = f"{ev['total_cost_usd']:.4f}"
+        c = (ev.get("message") or {}).get("content")
+        if isinstance(c, list):
+            order += [x["name"] for x in c if x.get("type") == "tool_use"]
+    real = [n for n in order if n != "ToolSearch"]
+    out["tools"] = len(real)
+    out["neat_calls"] = sum(1 for n in real if n.startswith("mcp__neat__"))
+    out["first_tool"] = real[0] if real else ""
+    idx = next((i for i, n in enumerate(real) if n.startswith("mcp__neat__")), None)
+    out["first_neat_index"] = "" if idx is None else idx
+    return out
+
+
 def main() -> int:
     run = pathlib.Path(sys.argv[1]); results_root = pathlib.Path(sys.argv[2])
     pin, pout, pcr, pcw = price("PRICE_IN"), price("PRICE_OUT"), price("PRICE_CACHE_READ"), price("PRICE_CACHE_WRITE")
@@ -70,8 +101,10 @@ def main() -> int:
                         + (toks["cached_input_tokens"] or 0) * (pcr or 0) + (toks["cache_creation_input_tokens"] or 0) * (pcw or 0)) / 1e6
             diag = next((v for k, v in outcome.items() if "diagnosis" in k.lower() and ("result" in k.lower() or "success" in k.lower() or "pass" in k.lower())), None)
             mit = next((v for k, v in outcome.items() if "mitigation" in k.lower() and ("result" in k.lower() or "success" in k.lower() or "pass" in k.lower())), None)
+            ts = transcript_stats(run, t["problem"], t["arm"], t.get("model", ""))
             rows.append({
-                "problem": t["problem"], "arm": t["arm"], "wall_s": t["wall_s"], "rc": t["rc"],
+                "problem": t["problem"], "app": t.get("app", ""), "arm": t["arm"], "model": t.get("model", ""), "void": t.get("void", ""),
+                "wall_s": t["wall_s"], "rc": t["rc"], **ts,
                 "diagnosis": diag, "mitigation": mit, "ttd": outcome.get("TTD") or outcome.get("ttd"), "ttm": outcome.get("TTM") or outcome.get("ttm"),
                 "run_status": outcome.get("run_status"), **{k: ("" if v is None else v) for k, v in toks.items()},
                 "cost_usd": "" if cost is None else f"{cost:.4f}", "attempt_dir": str(attempt) if attempt else "-",
@@ -96,6 +129,11 @@ def main() -> int:
             "cached_input_tokens": sum(int(r["cached_input_tokens"] or 0) for r in rs), "cache_creation_input_tokens": sum(int(r["cache_creation_input_tokens"] or 0) for r in rs),
             "cost_usd": (None if pin is None else round(sum(float(r["cost_usd"] or 0) for r in rs), 2)),
             "usage_missing": sum(1 for r in rs if r["input_tokens"] in ("", None)),
+            "void": sum(1 for r in rs if r.get("void") == "yes"),
+            "neat_calls_total": sum(int(r["neat_calls"] or 0) for r in rs),
+            "attempts_with_neat_call": sum(1 for r in rs if int(r["neat_calls"] or 0) > 0),
+            "attempts_neat_first": sum(1 for r in rs if str(r["first_tool"]).startswith("mcp__neat__")),
+            "cc_cost_usd": round(sum(float(r["cc_cost_usd"] or 0) for r in rs), 4),
         }
     json.dump(totals, open(run / "totals.json", "w"), indent=2)
     print(json.dumps(totals, indent=2))
