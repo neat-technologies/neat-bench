@@ -55,7 +55,7 @@ while read -r pid app ns src; do
     while :; do
       PREP=$(NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" bash "$OPS/neat-arm-prep.sh" "$app" "$ns" "$src" 2>&1)
       echo "$PREP" | head -1 | tee -a "$RUN/launcher.log" >/dev/null
-      eval "$(echo "$PREP" | tail -1)"; export AGENT_CWD_NEAT AGENT_CWD_BASE
+      eval "$(echo "$PREP" | tail -1)"; export AGENT_CWD_NEAT AGENT_CWD_BASE NEAT_SNAPSHOT
       export CLAUDE_CODE_OAUTH_TOKEN="$(python3 -c 'import json,pathlib; print(json.load(open(pathlib.Path.home()/".claude/.credentials.json"))["claudeAiOauth"]["accessToken"])' 2>/dev/null)"
       before=$(ls -d results/*/ 2>/dev/null | sort | tail -1)
       tag="$pid.$arm.${model##*-}"

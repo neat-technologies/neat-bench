@@ -36,6 +36,16 @@ neat init . >/dev/null 2>&1
 neat claude install >/dev/null 2>&1
 ( NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" NEAT_OTEL_TOKEN="$NEAT_AUTH_TOKEN" NEAT_WEB_DISABLED=1 HOST=0.0.0.0 PORT=8098 OTEL_PORT=4319 setsid nohup neat watch . > "$HOME/sregym-neat.log" 2>&1 & )
 for i in $(seq 1 60); do curl -s -m 3 http://localhost:8098/health 2>/dev/null | grep -q '"ok":true' && break; sleep 5; done
+# Healthy snapshot for get_graph_diff (the PRAXIS method): once the app's pods have been Ready
+# for 90 s (SREGym's baseline traffic, before the fault), copy the daemon's graph outside the
+# arm's tree. A background job, so the attempt is not delayed.
+SNAP_DIR="$HOME/neat-snapshots/$APP"; mkdir -p "$SNAP_DIR"; rm -f "$SNAP_DIR/healthy.json"
+( for i in $(seq 1 120); do
+    nr=$(kubectl --context kind-kind -n "$NS" get pods --no-headers 2>/dev/null | grep -vcE " (Running|Completed) ")
+    tot=$(kubectl --context kind-kind -n "$NS" get pods --no-headers 2>/dev/null | wc -l)
+    if [ "$tot" -gt 0 ] && [ "$nr" -eq 0 ]; then sleep 90; cp "$NEAT_DIR/neat-out/graph.json" "$SNAP_DIR/healthy.json" 2>/dev/null && date -u +%FT%TZ > "$SNAP_DIR/healthy.taken"; break; fi
+    sleep 10
+  done ) > /dev/null 2>&1 &
 H=$(curl -s -m 3 http://localhost:8098/health | head -c 160)
 echo "prep $APP ns=$NS daemon=$H claude_md=$(grep -c '^## neat' "$NEAT_DIR/CLAUDE.md" 2>/dev/null || echo 0)"
-echo "AGENT_CWD_NEAT=$NEAT_DIR AGENT_CWD_BASE=$BASE_DIR"
+echo "AGENT_CWD_NEAT=$NEAT_DIR AGENT_CWD_BASE=$BASE_DIR NEAT_SNAPSHOT=$SNAP_DIR/healthy.json"
