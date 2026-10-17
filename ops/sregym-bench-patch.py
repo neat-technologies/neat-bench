@@ -119,7 +119,25 @@ def main() -> int:
         "            command.extend([\"--mcp-config\", str(mcp_cfg), \"--strict-mcp-config\"])\n"
         "            tools = tools + [\"mcp__neat__*\"]\n"
         "        command.extend([\"--append-system-prompt\", f\"bench-attempt:{_uuid.uuid4()}\"])\n"
-        "        command.extend([\"--allowedTools\", *tools])\n", 1)
+        "        command.extend([\"--allowedTools\", *tools])\n"
+        "        # neat-bench: hide every answer key from the agent process (bubblewrap): SREGym's\n"
+        "        # problems/oracles/injectors, other attempts' results and judge logs, the bench's own\n"
+        "        # logs and scripts, snapshots, captures, the original sources, and the other arm's tree.\n"
+        "        home = Path.home()\n"
+        "        hide = [home / 'SREGym' / d for d in ('sregym', 'clients', 'llm_backend', 'docs', 'logs', 'results', 'tests', 'scripts')]\n"
+        "        hide += [home / d for d in ('sregym-bench', 'neat-bench-ops', 'neat-snapshots', 'sregym-captures', 'sregym-src', 'praxis', 'ITBench', 'benchops-baseline', 'otel-demo-2.2.0', 'otel-pristine')]\n"
+        "        hide += [home / ('base-arm' if arm_neat else 'neat-arm')]\n"
+        "        if not arm_neat:\n"
+        "            hide += [home / '.neat']\n"
+        "        if shutil.which('bwrap') and os.environ.get('NEAT_BENCH_NO_MASK') != '1':\n"
+        "            wrap = ['bwrap', '--dev-bind', '/', '/']\n"
+        "            for h in hide:\n"
+        "                if h.exists():\n"
+        "                    wrap += ['--tmpfs', str(h)]\n"
+        "            for keep in (self.logs_dir, self.sessions_dir):\n"
+        "                wrap += ['--bind', str(keep), str(keep)]\n"
+        "            command = wrap + command\n"
+        "            logger.info('neat-bench: agent masked from %d paths', len(hide))\n", 1)
 
     a = "                    stdin=subprocess.DEVNULL,\n"; must(t, a, "Popen stdin")
     t = t.replace(a, a + "                    cwd=arm_cwd,  # neat-bench: the arm's tree\n", 1)
