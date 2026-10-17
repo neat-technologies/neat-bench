@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "policies": [
+    {
+      "id": "compat-all",
+      "name": "Declared and running dependencies are compatible",
+      "description": "Generic: re-run every compatibility check (driver and engine, runtime engine, package conflicts, deprecated APIs) against the live graph. Written for any system before any scored SREGym attempt; encodes no knowledge of SREGym faults.",
+      "severity": "error",
+      "onViolation": "alert",
+      "rule": { "type": "compatibility" }
+    },
+    {
+      "id": "blast-radius-service",
+      "name": "No service has an outsized blast radius",
+      "description": "Generic: warn when a service has more than 10 transitively affected dependents within 4 hops.",
+      "severity": "warning",
+      "onViolation": "log",
+      "rule": { "type": "blast-radius", "nodeType": "ServiceNode", "maxAffected": 10, "depth": 4 }
+    }
+  ]
+}
