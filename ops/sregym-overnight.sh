@@ -27,7 +27,7 @@ kubectl config use-context kind-kind >/dev/null
 bash "$OPS/fix-kind-bridge.sh" >> "$RUN/launcher.log" 2>&1
 
 cd "$ROOT"
-git checkout -q agents.yaml clients/claudecode/claudecode_agent.py
+git checkout -q agents.yaml clients/claudecode/claudecode_agent.py sregym/conductor/conductor.py
 python3 "$OPS/sregym-bench-patch.py" "$ROOT" | tee -a "$RUN/launcher.log"
 
 if [ -n "$ONLY" ]; then .venv/bin/python "$OPS/sregym-problem-app.py" $ONLY > "$RUN/problem-apps.txt"

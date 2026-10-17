@@ -150,6 +150,32 @@ def main() -> int:
 
     p.write_text(t)
     print("claudecode_agent.py: patched")
+
+    # conductor.py: SREGym swaps each app namespace's `jaeger` Service to an ExternalName pointing
+    # at its collector only AFTER the app is deployed. Clients that resolve the agent address once
+    # at start (DeathStarBench Go and C++ services) keep sending spans to the old ClusterIP, so the
+    # collector, the agents' trace tools and NEAT never see them. Restart the application
+    # deployments right after the swap, before the baseline window, identically for every arm.
+    p = root / "sregym/conductor/conductor.py"
+    t = p.read_text()
+    if "neat-bench: re-resolve jaeger" not in t:
+        a = ("        if not is_train_ticket:\n"
+             "            for ns in app_namespaces:\n"
+             "                self.jaeger.create_external_name_service(ns)\n")
+        must(t, a, "jaeger swap after deploy")
+        t = t.replace(a, a +
+            "            # neat-bench: re-resolve jaeger after the swap (see ops/sregym-bench-patch.py)\n"
+            "            for ns in app_namespaces:\n"
+            "                self.kubectl.exec_command(\n"
+            "                    f\"for d in $(kubectl -n {ns} get deploy -o name | grep -vE 'mongodb|memcached|redis|consul|jaeger|postgres|kafka|valkey'); \"\n"
+            "                    f\"do kubectl -n {ns} rollout restart $d; done; \"\n"
+            "                    f\"for d in $(kubectl -n {ns} get deploy -o name); do kubectl -n {ns} rollout status $d --timeout=180s; done\"\n"
+            "                )\n"
+            "            self.logger.info('[DEPLOY] neat-bench: restarted app deployments so tracing clients re-resolve the collector')\n", 1)
+        p.write_text(t)
+        print("conductor.py: patched")
+    else:
+        print("conductor.py: already patched")
     return 0
 
 
