@@ -28,5 +28,7 @@ print(n)' "$GL")
 log "gate: pushed_mentions=$PUSHED neat_calls=$CALLS ($GL)"
 if [ "$PUSHED" -eq 0 ] || [ "$CALLS" -eq 0 ]; then log "GATE FAILED: push did not reach or move the agent; Lite not started"; echo "{\"gate\":\"failed\",\"pushed\":$PUSHED,\"neat_calls\":$CALLS,\"log\":\"$GL\"}" > ~/sregym-lite-gate.json; exit 1; fi
 log "gate passed"
+# The fault NEAT should win (missing fallback behind a slow dependency): all three arms, first.
+NEAT_VERSION=0.10.10 MODELS=claude-opus-5-5 K=1 ARMS="claudecode-vanilla claudecode-base claudecode-neat" ONLY="missing_stale_cache_fallback_astronomy_shop" bash ~/neat-bench-ops/sregym-overnight.sh
 cd ~/SREGym && LITE=$(.venv/bin/python -c 'from sregym.conductor.problem_sets import PROBLEM_SETS; print(" ".join(PROBLEM_SETS["sregym-lite"]))')
 NEAT_VERSION=0.10.10 MODELS=claude-opus-5-5 K=3 ARMS="claudecode-vanilla claudecode-neat" ONLY="$LITE" bash ~/neat-bench-ops/sregym-overnight.sh
