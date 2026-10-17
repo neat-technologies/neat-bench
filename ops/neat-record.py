@@ -87,6 +87,7 @@ def main() -> int:
         out["calls"]["get_graph_diff"] = m.call("get_graph_diff", {"againstSnapshot": "self"})
         out["calls"]["get_recent_stale_edges"] = m.call("get_recent_stale_edges", {"limit": 15})
         out["calls"]["get_divergences"] = m.call("get_divergences", {"minConfidence": 0.7})
+        out["calls"]["check_policies"] = m.call("check_policies", {})
         print(json.dumps(out))
         return 0
     finally:
