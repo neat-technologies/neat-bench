@@ -52,6 +52,11 @@ while read -r pid app ns src; do
   for kk in $(seq 1 "$K"); do
   for model in $MODELS; do
   for arm in $ARMS; do
+    # Clean-cluster preflight: another app left deployed feeds its spans to the daemon and its
+    # noise to both arms. Any app namespace other than this problem's marks the attempt void.
+    contam=$(kubectl get ns -o jsonpath='{.items[*].metadata.name}' 2>/dev/null | tr ' ' '\n' \
+      | grep -xF -f <(awk '{print $3}' "$RUN/problem-apps.txt" | sort -u) | grep -vx "$ns" | tr '\n' ',' | sed 's/,$//')
+    [ -n "$contam" ] && log "[$n/$TOTAL] $pid WARN other app namespaces deployed: $contam (attempt marked void)"
     tries=0
     while :; do
       PREP=$(NEAT_AUTH_TOKEN="$NEAT_AUTH_TOKEN" bash "$OPS/neat-arm-prep.sh" "$app" "$ns" "$src" 2>&1)
@@ -74,6 +79,7 @@ while read -r pid app ns src; do
     done
     after=$(ls -d results/*/ 2>/dev/null | sort | tail -1); [ "$after" = "$before" ] && after="-"
     void=$(find "$after" -name neat-preflight-void.json 2>/dev/null | head -1); void=${void:+yes}
+    [ -n "$contam" ] && void="contaminated:$contam"
     printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$pid" "$app" "$arm" "$model" "$kk" "$s" "$e" "$((e-s))" "$rc" "$after" "${void:-no}" >> "$RUN/timing.tsv"
     log "[$n/$TOTAL] $pid $arm $model k$kk done rc=$rc wall=$((e-s))s void=${void:-no}"
   done
