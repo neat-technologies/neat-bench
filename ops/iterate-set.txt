@@ -1,0 +1,13 @@
+# Iteration set: problems that discriminate. One id per line; a comment says why.
+# Seeded 2026-10-17 from the 0.10.9 smoke; refreshed from the code-fault leg and the Lite run.
+valkey_memory_disruption                       # every arm diagnosed it, none mitigated it
+missing_stale_cache_fallback_astronomy_shop    # one of SREGym's two code-edit fixes
+missing_stale_cache_fallback_long_delay_astronomy_shop
+integer_overflow_primary_key_astronomy_shop    # code-level, data-dependent
+feature_flag_latent_bug_hotel_reservation      # flag-armed code bug
+postgres_lock_contention_product_catalog       # contention, cross-component
+search_rate_retry_collapse_hotel_reservation   # metastable retry collapse (Lite)
+kafka_poison_pill_hol_block                    # head-of-line blocking (Lite)
+revoke_auth_mongodb-1                          # NEAT's root cause stopped one hop short (#1474)
+update_incompatible_correlated                 # acceptance case for the session-start push
+mutating_webhook_resource_limits_social_network # both arms blame the victim, never the webhook (Lite, diag 11)

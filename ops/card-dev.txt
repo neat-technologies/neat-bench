@@ -1,0 +1,23 @@
+# Frozen split, 2026-10-18 (re-frozen after the app-mapper fix; same rule): sha256(problem id) mod 10; 0-2 = fix set (tune on these), 3-5 = held-out (never tuned on; scored only). Problems whose app source is on the box only.
+missing_env_variable_astronomy_shop
+revoke_auth_mongodb-1
+valkey_auth_disruption
+valkey_memory_disruption
+init_container_dependency_hang_hotel_reservation
+missing_stale_cache_fallback_astronomy_shop
+missing_stale_cache_fallback_long_delay_astronomy_shop
+priority_preemption_cascade_hotel_reservation
+readiness_probe_misconfiguration_hotel_reservation
+resource_request_too_small
+rolling_update_misconfigured_social_network
+scale_pod_zero_social_net
+wrong_dns_policy_hotel_reservation
+astronomy_shop_failed_readiness_probe
+kafka_queue_problems
+latent_sector_error
+expired_tls_hotel_reservation
+ingress_misroute
+node_conntrack_exhaustion_hotel_reservation
+calico_route_reflector_label_drift_hotel_reservation
+kubelet_crash
+workload_imbalance
