@@ -10,3 +10,4 @@ search_rate_retry_collapse_hotel_reservation   # metastable retry collapse (Lite
 kafka_poison_pill_hol_block                    # head-of-line blocking (Lite)
 revoke_auth_mongodb-1                          # NEAT's root cause stopped one hop short (#1474)
 update_incompatible_correlated                 # acceptance case for the session-start push
+mutating_webhook_resource_limits_social_network # both arms blame the victim, never the webhook (Lite, diag 11)

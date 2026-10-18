@@ -23,13 +23,24 @@ def price(name: str):
     return float(v) if v else None
 
 
-def find_attempt(results_root: pathlib.Path, results_dir: str, arm: str, pid: str):
-    base = pathlib.Path(results_dir) if results_dir and results_dir != "-" else None
+def find_attempt(results_root: pathlib.Path, results_dir: str, arm: str, pid: str,
+                 start: float | None = None, end: float | None = None):
+    # The launcher records results_dir relative to the SREGym checkout ("results/1017_2005/"),
+    # so resolve it there. Never fall back to "the latest run of this problem": with k repeats
+    # that hands every repeat the last one's outcome and usage.
     cands = []
-    if base and base.exists():
-        cands = sorted(base.glob(f"{arm}/{pid}/run_*"))
-    if not cands:
-        cands = sorted(results_root.glob(f"*/{arm}/{pid}/run_*"))
+    if results_dir and results_dir != "-":
+        base = pathlib.Path(results_dir)
+        if not base.is_absolute():
+            base = results_root.parent / base
+        if base.exists():
+            cands = sorted(base.glob(f"{arm}/{pid}/run_*"))
+    if not cands and start is not None and end is not None:
+        # Fallback: the run whose results were written inside this attempt's own window.
+        for c in sorted(results_root.glob(f"*/{arm}/{pid}/run_*")):
+            mt = c.stat().st_mtime
+            if start - 5 <= mt <= end + 60:
+                cands.append(c)
     return cands[-1] if cands else None
 
 
@@ -92,7 +103,11 @@ def main() -> int:
     rows = []
     with open(run / "timing.tsv", newline="") as fh:
         for t in csv.DictReader(fh, delimiter="\t"):
-            attempt = find_attempt(results_root, t["results_dir"], t["arm"], t["problem"])
+            def _f(v):
+                try: return float(v)
+                except (TypeError, ValueError): return None
+            attempt = find_attempt(results_root, t["results_dir"], t["arm"], t["problem"],
+                                   _f(t.get("start_epoch")), _f(t.get("end_epoch")))
             outcome = read_outcome(attempt) if attempt else {}
             usage = read_usage(attempt) if attempt else {}
             toks = {k: usage.get(k) for k in ("input_tokens", "output_tokens", "cached_input_tokens", "cache_creation_input_tokens", "reasoning_output_tokens")}
