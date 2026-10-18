@@ -89,8 +89,16 @@ def main():
     (LOGS / "neat-card-submission.txt").write_text(text)
     code, body = post("/submit", {"stage": "diagnosis", "solution": text})
     print(f"neat-card: submitted {len(text)} chars in {took}s -> {code} {body[:200]}", flush=True)
-    # The judge runs after submission; wait for the conductor to move on so the run closes cleanly.
-    wait_stage({"mitigation"}, deadline_s=900)
+    # The judge runs after submission; exit as soon as the conductor leaves the diagnosis stage
+    # (mitigation, tearing_down, done, …) so the attempt closes without waiting out the timeout.
+    end = time.time() + 900
+    while time.time() < end:
+        try:
+            if get("/status").get("stage") != "diagnosis":
+                break
+        except Exception:
+            break
+        time.sleep(5)
     return 0
 
 

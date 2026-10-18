@@ -43,6 +43,10 @@ def resolve_factory(obj):
     return getattr(mod, m.group(1), obj) if mod else obj
 
 
+APP_MODULE = {"slack_spine": "SlackSpine", "saleor": "Saleor", "frappe": "Frappe", "coordination": "Coordination",
+              "astronomy_shop": "AstronomyShop", "hotel_reservation": "HotelReservation",
+              "social_network": "SocialNetwork", "train_ticket": "TrainTicket"}
+
 APP_NAME_ARG = {"astronomy_shop": "AstronomyShop", "hotel_reservation": "HotelReservation",
                 "social_network": "SocialNetwork", "train_ticket": "TrainTicket"}
 
@@ -61,6 +65,13 @@ def app_of(cls) -> str:
     cls = resolve_factory(cls)
     if not inspect.isclass(cls):
         return "?"
+    # Ported problems live under problems/apps/<app>/ and subclass the original (an astronomy-shop
+    # or hotel class), so the text heuristics below would name the original app. The module path
+    # names the app the port actually deploys.
+    mod = (getattr(cls, "__module__", "") or "")
+    m = re.search(r"\.problems\.apps\.([a-z_]+)\.", mod + ".")
+    if m:
+        return APP_MODULE.get(m.group(1), m.group(1))
     texts = []
     try:
         texts.append(inspect.getsource(cls))
