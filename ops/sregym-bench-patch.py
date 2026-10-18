@@ -50,9 +50,17 @@ AGENTS = """  - name: claudecode-vanilla
     install_script: null
     agent_version: null
     container_isolation: false
-"""
+  - name: neat-card
+    kickoff_command: python3 {home}/neat-bench-ops/neat-card-agent.py
+    kickoff_workdir: .
+    kickoff_env:
+      NEAT_MCP: "1"
+    install_script: null
+    agent_version: null
+    container_isolation: false
+""".replace("{home}", str(pathlib.Path.home()))
 
-PRE = '''        # neat-bench: arm tree, incident record, preflight
+PRE ='''        # neat-bench: arm tree, incident record, preflight
         arm_neat = os.environ.get("NEAT_MCP") == "1"
         arm_cwd = None if os.environ.get("BENCH_ARM") == "vanilla" else (os.environ.get("AGENT_CWD_NEAT" if arm_neat else "AGENT_CWD_BASE") or None)
         neat_env = dict(os.environ, NEAT_CORE_URL=os.environ.get("NEAT_CORE_URL", "http://localhost:8098"),
@@ -79,7 +87,7 @@ def main() -> int:
 
     p = root / "agents.yaml"
     t = p.read_text()
-    if "claudecode-neat" not in t:
+    if "claudecode-neat" not in t or "name: neat-card" not in t:
         p.write_text(t.rstrip("\n") + "\n" + AGENTS)
     print("agents.yaml: ok")
 
