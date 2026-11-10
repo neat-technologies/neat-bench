@@ -19,16 +19,17 @@ const SKILL = mkdtempSync(join(tmpdir(), 'skill-'))
 mkdirSync(join(SKILL, 'hooks'))
 writeFileSync(join(SKILL, 'GRAPH_FIRST.md'), '# Graph first\n\nAsk NEAT before you grep.\n\n\n')
 
-function dryRun(arm, extra = []) {
+function dryRun(arm, extra = [], env = {}) {
   const out = mkdtempSync(join(tmpdir(), `arm-${arm}-`))
   const r = spawnSync('bash', [join(CR, 'arms/run.sh'), TASK, arm, '1', '--out', out, '--dry-run', ...extra], {
-    env: { ...process.env, SKILL_DIR: SKILL, NEAT_MCP_BIN: '/opt/neat/mcp.cjs', REST: '8090' },
+    env: { ...process.env, SKILL_DIR: SKILL, NEAT_MCP_BIN: '/opt/neat/mcp.cjs', REST: '8090', ...env },
     encoding: 'utf8',
   })
   assert.equal(r.status, 0, r.stderr)
-  const argv = JSON.parse(readFileSync(join(out, 'cmd.json'), 'utf8')).argv
+  const cmd = JSON.parse(readFileSync(join(out, 'cmd.json'), 'utf8'))
+  const argv = cmd.argv
   const flag = (name) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : undefined)
-  return { out, argv, flag }
+  return { out, argv, flag, warmupArgv: cmd.warmupArgv }
 }
 
 // What the frozen harness itself builds, evaluated from its own source lines.
@@ -101,4 +102,34 @@ test('neat-bytes counts NEAT tool results and hook output, not other tools', () 
     { type: 'system', subtype: 'hook_response', output: 'nudge!' },
   ].map((e) => JSON.stringify(e))
   assert.deepEqual(neatBytes(lines), { neat_tool_results: 2, neat_tool_result_bytes: 8, hook_responses: 1, hook_output_bytes: 6 })
+})
+
+test('lean-full: the short directive, the once-per-session nudge and the lean server switches', () => {
+  const { flag, argv, out } = dryRun('lean-full')
+  const lean = readFileSync(join(CR, 'arms/GRAPH_FIRST.lean.md'), 'utf8').replace(/\n+$/, '')
+  assert.equal(flag('--append-system-prompt'), lean)
+  const hook = JSON.parse(flag('--settings')).hooks.PreToolUse[0]
+  assert.equal(hook.matcher, 'Grep|Glob|Bash')
+  assert.equal(hook.hooks[0].command, `NEAT_SEARCH_NUDGE_ONCE=1 node ${SKILL}/hooks/neat-search-nudge.mjs`)
+  assert.equal(flag('--allowedTools'), harnessAllow())
+  const mcp = JSON.parse(readFileSync(join(out, 'with-neat.mcp.json'), 'utf8'))
+  assert.deepEqual(mcp.mcpServers.neat.env, { NEAT_CORE_URL: 'http://127.0.0.1:8090', NEAT_SESSION_LEAD: '0', NEAT_MCP_TOOLS: 'core' })
+  assert.ok(argv.includes('--strict-mcp-config'))
+
+  const full = dryRun('full')
+  const fullMcp = JSON.parse(readFileSync(join(full.out, 'with-neat.mcp.json'), 'utf8'))
+  assert.deepEqual(fullMcp.mcpServers.neat.env, { NEAT_CORE_URL: 'http://127.0.0.1:8090' })
+})
+
+test('the warm-up repeats the arm exactly, with a one-word prompt and one turn', () => {
+  for (const arm of ['bare', 'full', 'lean-full', 'oracle']) {
+    const { argv, warmupArgv } = dryRun(arm)
+    assert.equal(warmupArgv.length, argv.length, arm)
+    for (let i = 0; i < argv.length; i++) {
+      if (argv[i - 1] === '-p') assert.equal(warmupArgv[i], 'Reply with the single word OK.')
+      else if (argv[i - 1] === '--max-turns') assert.equal(warmupArgv[i], '1')
+      else assert.equal(warmupArgv[i], argv[i], `${arm} arg ${i}`)
+    }
+  }
+  assert.equal(dryRun('full', [], { WARMUP: '0' }).warmupArgv, null)
 })

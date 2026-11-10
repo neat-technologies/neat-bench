@@ -6,22 +6,39 @@ Refs neat-technologies/neat-bench#23. A development experiment, not a result. No
 
 NEAT loads the same context into every session whatever the task: 28 tool descriptions, the graph-first directive, and the search nudge on every grep. The working premise from Deniz and the CTO is that this makes the agent slow on small fixes. It starts at the library entrance with a 30-floor map when the book is in the next room.
 
-The one clean pair we have agrees on cost. On express B2 (`results/express-B2`), both arms made the same one-line fix in the same file. The NEAT arm cost $0.185 against $0.059 and made zero NEAT calls. Cache creation was 17,968 tokens against 1,415: the difference is context loaded at the start, not anything NEAT answered. That's one run per arm, so it's a hint, not evidence.
+The one clean pair we have agrees on cost, though not cleanly. On express B2 (`results/express-B2`), both arms made the same one-line fix in the same file. The NEAT arm cost $0.185 against $0.059, took one more turn, and made zero NEAT calls.
+- **What the gap is mostly cache writes:** 17,968 tokens against 1,415. The run without NEAT evidently found its setup already cached from an earlier run; the NEAT run's setup was new and had to be written fresh.
+- **How much is NEAT's own text:** at today's sizes, a few thousand tokens. The tool descriptions, the server instructions and the directive can't account for 3x on their own.
 
-The idea under test: read the developer's request and use the graph to see which files it points at. Then let Jev, TypeSafe's calibrated classifier, pick how much context to give the agent. Jev decides how much; the graph decides which files.
+So that pair mixes "NEAT costs more" with "this run started cold". With one run per arm it's a hint, not evidence, and it's why this experiment warms every run (see [Measuring fairly](#measuring-fairly)).
+
+Two ideas are under test:
+- **A leaner NEAT** (`lean-full`): the same NEAT with a smaller setup that's identical from session to session.
+- **A router** (`jev`): read the developer's request, use the graph to see which files it points at, and let Jev, TypeSafe's calibrated classifier, pick how much context to give. Jev decides how much; the graph decides which files.
 
 ## Arms
 
-All four arms run the same model, prompt, turn budget, built-in tools and permissions.
+All five arms run the same model, prompt, turn budget, built-in tools and permissions.
 
 | Arm | NEAT MCP tools | `GRAPH_FIRST.md` + search-nudge hook | "Start here" note |
 |---|---|---|---|
 | `bare` | no | no | no. The reference arm: no NEAT at all. |
 | `full` | yes | yes | no. Today: byte-for-byte what `harness/arms/run-arm.sh` gives its WITH arm (tested). |
+| `lean-full` | yes, without the 10 extend and connector tools, and with static server instructions | a short directive (`arms/GRAPH_FIRST.lean.md`), and the nudge once per session | no. Today's NEAT made leaner, with no router. |
 | `oracle` | yes | no | Names the files the real fix touched: the best any router could do. |
 | `jev` | yes | only when routed `full` | The router's files (and briefing, for medium). Identical to `full` when routed `full` (tested). |
 
 The note reads the same whoever chose the files, so `oracle` and `jev` differ only in which files they name. NEAT's tools stay available in every NEAT arm. A wrong guess means the agent has to look further, not that it's stuck.
+
+`lean-full` relies on three opt-in switches added in neat-technologies/neat#1611: `NEAT_SESSION_LEAD=0`, `NEAT_MCP_TOOLS=core` and `NEAT_SEARCH_NUDGE_ONCE=1`. A NEAT build without them silently ignores them, so every `arm.json` records the NEAT commit it ran against. The short directive is bench text written for this arm, not product copy. It keeps NEAT for investigation but tells the agent to fix directly when the request already points at the code.
+
+### Measuring fairly
+
+The client caches each session's setup (instructions and tool list) by exact prefix and reuses it on later turns and sessions. The one clean express pair compared a run whose setup was already cached with one whose setup was new. Three things keep that from deciding the result:
+
+- **Warm-up.** Before every measured run, `run.sh` does a one-turn throwaway run with the same flags in the same tree, so every measured run starts with its setup cached. Its cache numbers are recorded beside the run's (`WARMUP=0` turns it off).
+- **Separate numbers.** `arm.json` keeps cache writes, cache reads, uncached input, output and turns apart, and `summarize-runs.mjs` reports them apart. "Costs more because it started cold" and "costs more because the agent did more work" are different findings.
+- **Rotating order.** `arms/run-matrix.mjs` rotates the arm order by task and trial, so each arm takes each slot equally often.
 
 ## The router
 
@@ -104,10 +121,12 @@ export TYPESAFE_API_KEY=...        # from the secret store; never committed, nev
 
 node eval-router.mjs --daemon http://127.0.0.1:$REST --out ../../results/context-router/router-eval.json
 
-for arm in bare full oracle jev; do
-  VERIFY=1 bash arms/run.sh tasks/<id>.json $arm 1
-done
+node arms/run-matrix.mjs --size small --trials 3 --plan    # print the order first
+VERIFY=1 node arms/run-matrix.mjs --size small --trials 3  # 18 tasks × 5 arms × 3, each with its warm-up
+node summarize-runs.mjs                                    # by size and arm: pass rate, turns, cache writes/reads, cost
 ```
+
+One run on its own: `VERIFY=1 bash arms/run.sh tasks/<id>.json <arm> <trial>`.
 
 - **Offline eval** (`eval-router.mjs`): runs the router alone, no agent. It reports tier accuracy, the confusion matrix, and how many big tasks were sent to small. It scores whether the files the router named cover the real fix, and whether the graph's top 2 and top 5 files do, regardless of the tier Jev picked.
 - **Per-task check:** `bash arms/run.sh <task> <arm> <n> --dry-run` writes the exact `claude` argv to `cmd.json` without touching the tree.
@@ -115,19 +134,21 @@ done
   - the routed tier, reason, confidence and latency,
   - whether the oracle passed, and wall time,
   - bytes NEAT injected at start, and bytes from NEAT tool results and hook output during the run (`arms/neat-bytes.mjs`; the frozen parser records neither),
-  - tokens, cost, turns, files opened and diff size.
+  - tokens, cost, turns, files opened and diff size,
+  - cache writes, cache reads, uncached input and output as separate numbers, the warm-up's cache numbers, and the NEAT commit under test.
 
 ## What counts as a win
 
 Proposed, and fixed in the pre-registration before a scored run:
 
 - **The premise:** `oracle` beats `full` on small tasks on cost and wall time, with no drop in pass rate. If it doesn't, no router can help, and we stop.
-- **Jev:** `jev` recovers most of `oracle`'s saving on small tasks and loses no pass rate on big tasks. In the offline check it sends no more than about 1 in 20 big tasks to small.
+- **A leaner NEAT:** if `lean-full` gets most of `oracle`'s saving on small tasks without losing pass rate anywhere, the fix is making NEAT leaner by default (an ADR in the core repo), and a router isn't needed.
+- **Jev:** `jev` recovers clearly more of `oracle`'s saving than `lean-full` does, and loses no pass rate on big tasks. In the offline check it sends no more than about 1 in 20 big tasks to small.
 
 ## Status
 
 What's verified here:
-- 31 tests pass: router fallbacks and timeouts, the TypeSafe allowlist, the real SDK offline against a fake server, the arms' dry-run argv, the eval summary, and the task set's shape.
+- 36 tests pass: router fallbacks and timeouts, the TypeSafe allowlist, the real SDK offline against a fake server, every arm's dry-run argv (including `lean-full`'s switches and the warm-up), the run order, the run summary, the eval summary, and the task set's shape.
 
 Still to do on the bench box:
 - **Live calls:** the router has not yet read a live daemon or called Jev for real.
