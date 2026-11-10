@@ -1,0 +1,12 @@
+diff --git a/src/config/roles.js b/src/config/roles.js
+index dcf42c7..4f914ae 100644
+--- a/src/config/roles.js
++++ b/src/config/roles.js
+@@ -1,6 +1,6 @@
+ const allRoles = {
+   user: [],
+-  admin: ['getUsers', 'manageUsers'],
++  admin: ['getUser', 'manageUsers'],
+ };
+ 
+ const roles = Object.keys(allRoles);

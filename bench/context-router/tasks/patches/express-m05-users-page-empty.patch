@@ -1,0 +1,13 @@
+diff --git a/src/models/plugins/paginate.plugin.js b/src/models/plugins/paginate.plugin.js
+index cbe3198..1a5ee1d 100644
+--- a/src/models/plugins/paginate.plugin.js
++++ b/src/models/plugins/paginate.plugin.js
+@@ -34,7 +34,7 @@ const paginate = (schema) => {
+ 
+     const limit = options.limit && parseInt(options.limit, 10) > 0 ? parseInt(options.limit, 10) : 10;
+     const page = options.page && parseInt(options.page, 10) > 0 ? parseInt(options.page, 10) : 1;
+-    const skip = (page - 1) * limit;
++    const skip = page * limit;
+ 
+     const countPromise = this.countDocuments(filter).exec();
+     let docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit);

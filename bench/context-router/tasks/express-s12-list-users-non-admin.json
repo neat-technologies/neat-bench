@@ -1,0 +1,32 @@
+{
+  "id": "express-s12-list-users-non-admin",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in the users route file, where the prompt points by naming GET /v1/users and the missing 403.",
+  "prompt": "Any logged-in user can list all accounts: GET /v1/users returns 200 with the full list for a regular user's access token instead of 403 Forbidden.",
+  "bug_patch": "patches/express-s12-list-users-non-admin.patch",
+  "gold_files": [
+    "src/routes/v1/user.route.js"
+  ],
+  "root_cause": {
+    "file": "src/routes/v1/user.route.js",
+    "line": 12,
+    "detail": "GET /v1/users is mounted with auth() instead of auth('getUsers'), so any authenticated user passes the rights check."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/user.test.js > User routes > GET /v1/users > should return 403 if a non-admin is trying to access all users"
+    ],
+    "cmd": "npx jest tests/integration/user.test.js -t 'should return 403 if a non-admin is trying to access all users'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

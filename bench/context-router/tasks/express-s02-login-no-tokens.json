@@ -1,0 +1,32 @@
+{
+  "id": "express-s02-login-no-tokens",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in the login controller, which the prompt points at by naming POST /v1/auth/login and the missing `tokens` field.",
+  "prompt": "POST /v1/auth/login returns 200 and the user object, but the response has no `tokens` field, so the client never receives an access or refresh token. Register still returns tokens normally.",
+  "bug_patch": "patches/express-s02-login-no-tokens.patch",
+  "gold_files": [
+    "src/controllers/auth.controller.js"
+  ],
+  "root_cause": {
+    "file": "src/controllers/auth.controller.js",
+    "line": 15,
+    "detail": "login sends { user, token: tokens }, so the token pair goes out under `token` instead of `tokens`."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/login > should return 200 and login user if email and password match"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 200 and login user if email and password match'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

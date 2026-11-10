@@ -1,0 +1,13 @@
+diff --git a/src/middlewares/validate.js b/src/middlewares/validate.js
+index 1407954..45fb2e5 100644
+--- a/src/middlewares/validate.js
++++ b/src/middlewares/validate.js
+@@ -4,7 +4,7 @@ const pick = require('../utils/pick');
+ const ApiError = require('../utils/ApiError');
+ 
+ const validate = (schema) => (req, res, next) => {
+-  const validSchema = pick(schema, ['params', 'query', 'body']);
++  const validSchema = pick(schema, ['params', 'body']);
+   const object = pick(req, Object.keys(validSchema));
+   const { value, error } = Joi.compile(validSchema)
+     .prefs({ errors: { label: 'key' }, abortEarly: false })

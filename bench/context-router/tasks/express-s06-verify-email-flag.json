@@ -1,0 +1,32 @@
+{
+  "id": "express-s06-verify-email-flag",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in the verify-email endpoint's own service function, which the prompt points at by naming POST /v1/auth/verify-email and the isEmailVerified field.",
+  "prompt": "POST /v1/auth/verify-email returns 204 for a valid verification token, but the user's `isEmailVerified` stays false afterwards.",
+  "bug_patch": "patches/express-s06-verify-email-flag.patch",
+  "gold_files": [
+    "src/services/auth.service.js"
+  ],
+  "root_cause": {
+    "file": "src/services/auth.service.js",
+    "line": 87,
+    "detail": "verifyEmail updates { emailVerified: true }; the schema field is isEmailVerified, so the unknown key is ignored on save and the flag stays false."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/verify-email > should return 204 and verify the email"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 204 and verify the email'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

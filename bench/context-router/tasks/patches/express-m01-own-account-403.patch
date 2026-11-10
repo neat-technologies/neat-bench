@@ -1,0 +1,13 @@
+diff --git a/src/middlewares/auth.js b/src/middlewares/auth.js
+index 7392f55..a544658 100644
+--- a/src/middlewares/auth.js
++++ b/src/middlewares/auth.js
+@@ -12,7 +12,7 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
+   if (requiredRights.length) {
+     const userRights = roleRights.get(user.role);
+     const hasRequiredRights = requiredRights.every((requiredRight) => userRights.includes(requiredRight));
+-    if (!hasRequiredRights && req.params.userId !== user.id) {
++    if (!hasRequiredRights && req.params.userId !== user._id) {
+       return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+     }
+   }

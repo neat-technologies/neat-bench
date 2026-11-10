@@ -1,0 +1,32 @@
+{
+  "id": "express-b7-casterror-500",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "instances/runtime-rooted/express-b7-casterror-500.json (patch reconstructed from gold_patch; original in neat-agent-bench/patches/B7.patch)",
+  "size": "small",
+  "size_rationale": "Small because the one-line fix is in the login endpoint's own service function (loginUserWithEmailAndPassword), which the prompt points at by naming POST /v1/auth/login, and the getUserById(email) call is visibly wrong on reading, with no runtime information needed.",
+  "prompt": "POST /v1/auth/login returns 500 for valid credentials (not the expected 401 for bad ones).",
+  "bug_patch": "patches/express-b7-casterror-500.patch",
+  "gold_files": [
+    "src/services/auth.service.js"
+  ],
+  "root_cause": {
+    "file": "src/services/auth.service.js",
+    "line": 15,
+    "detail": "loginUserWithEmailAndPassword calls userService.getUserById(email) instead of getUserByEmail(email); findById casts the email to an ObjectId and rejects with a CastError. Note: errorConverter maps Mongoose errors to 400, so under NODE_ENV=test or development the response is 400; the 500 in the prompt is what NODE_ENV=production returns (non-operational error masked as 500)."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/login > should return 200 and login user if email and password match"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 200 and login user if email and password match'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

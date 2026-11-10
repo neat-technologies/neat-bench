@@ -1,0 +1,33 @@
+{
+  "id": "express-b2-fanin-500",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "instances/runtime-rooted/express-b2-fanin-500.json (patch reconstructed from gold_patch; original in neat-agent-bench/patches/B2.patch)",
+  "size": "medium",
+  "size_rationale": "Medium because the cause sits one step away from every endpoint the prompt lists, in the toJSON model plugin shared by all models; it is one line in one file and static reading finds it once the shared serializer is suspected, so it is not big.",
+  "prompt": "Multiple unrelated endpoints (POST /v1/auth/register, POST /v1/auth/login, GET /v1/users, GET /v1/users/:id) all return 500. Creating and reading users both fail.",
+  "bug_patch": "patches/express-b2-fanin-500.patch",
+  "gold_files": [
+    "src/models/plugins/toJSON.plugin.js"
+  ],
+  "root_cause": {
+    "file": "src/models/plugins/toJSON.plugin.js",
+    "line": 31,
+    "detail": "`ret._id.toStrng()` is not a function: the shared toJSON transform throws a TypeError whenever a document is serialized, so every endpoint that returns a user or token document responds 500."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/register > should return 201 and successfully register user if request data is ok",
+      "tests/unit/models/plugins/toJSON.plugin.test.js > toJSON plugin > should replace _id with id"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js tests/unit/models/plugins/toJSON.plugin.test.js -t 'should return 201 and successfully register user if request data is ok|should replace _id with id'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

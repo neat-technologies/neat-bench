@@ -1,0 +1,13 @@
+diff --git a/src/models/user.model.js b/src/models/user.model.js
+index 185711c..9bc2e39 100644
+--- a/src/models/user.model.js
++++ b/src/models/user.model.js
+@@ -61,7 +61,7 @@ userSchema.plugin(paginate);
+  * @returns {Promise<boolean>}
+  */
+ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
+-  const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
++  const user = await this.findOne({ email });
+   return !!user;
+ };
+ 

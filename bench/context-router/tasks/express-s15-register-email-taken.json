@@ -1,0 +1,33 @@
+{
+  "id": "express-s15-register-email-taken",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in one file, and the quoted error 'Email already taken' is thrown on the line right after the inverted check in createUser.",
+  "prompt": "POST /v1/auth/register fails with 400 'Email already taken' for every new email address, including ones that have never been registered. Admins creating users via POST /v1/users get the same error.",
+  "bug_patch": "patches/express-s15-register-email-taken.patch",
+  "gold_files": [
+    "src/services/user.service.js"
+  ],
+  "root_cause": {
+    "file": "src/services/user.service.js",
+    "line": 11,
+    "detail": "createUser's duplicate check is inverted: it throws 'Email already taken' exactly when the email is free."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/register > should return 201 and successfully register user if request data is ok",
+      "tests/integration/user.test.js > User routes > POST /v1/users > should return 201 and successfully create new user if data is ok"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js tests/integration/user.test.js -t 'should return 201 and successfully register user if request data is ok|should return 201 and successfully create new user if data is ok'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

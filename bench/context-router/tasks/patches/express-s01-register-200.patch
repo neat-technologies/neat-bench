@@ -1,0 +1,13 @@
+diff --git a/src/controllers/auth.controller.js b/src/controllers/auth.controller.js
+index 89f2c1f..6d7ebad 100644
+--- a/src/controllers/auth.controller.js
++++ b/src/controllers/auth.controller.js
+@@ -5,7 +5,7 @@ const { authService, userService, tokenService, emailService } = require('../ser
+ const register = catchAsync(async (req, res) => {
+   const user = await userService.createUser(req.body);
+   const tokens = await tokenService.generateAuthTokens(user);
+-  res.status(httpStatus.CREATED).send({ user, tokens });
++  res.status(httpStatus.OK).send({ user, tokens });
+ });
+ 
+ const login = catchAsync(async (req, res) => {

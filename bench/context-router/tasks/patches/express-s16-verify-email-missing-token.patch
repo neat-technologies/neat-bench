@@ -1,0 +1,13 @@
+diff --git a/src/validations/auth.validation.js b/src/validations/auth.validation.js
+index e562c98..d32ba0c 100644
+--- a/src/validations/auth.validation.js
++++ b/src/validations/auth.validation.js
+@@ -45,7 +45,7 @@ const resetPassword = {
+ 
+ const verifyEmail = {
+   query: Joi.object().keys({
+-    token: Joi.string().required(),
++    token: Joi.string(),
+   }),
+ };
+ 
