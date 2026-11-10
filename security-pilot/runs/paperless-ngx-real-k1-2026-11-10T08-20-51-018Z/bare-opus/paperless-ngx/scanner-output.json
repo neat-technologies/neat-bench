@@ -1,0 +1,6 @@
+{
+  "cmd": "pip-audit -f json",
+  "code": 127,
+  "stdout": "",
+  "stderr": "/bin/sh: 1: pip-audit: not found\n"
+}

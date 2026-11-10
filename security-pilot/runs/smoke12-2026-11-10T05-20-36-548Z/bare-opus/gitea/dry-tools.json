@@ -1,0 +1,37 @@
+[
+  {
+    "name": "run_shell",
+    "isError": false,
+    "preview": "exit=0 --- stdout --- total 932 drwx------ 25 <user> <user>   4096 Nov 10 05:36 . drwxrwxr-x  4 <user> <user>   4096 Nov 10 05:36 .. -rw-rw-r--  1 <user> <user>    70"
+  },
+  {
+    "name": "read_file",
+    "isError": false,
+    "preview": "{   \"type\": \"module\",   \"packageManager\": \"pnpm@12.6.0\",   \"engines\": {     \"node\": \">= 22.18.0\",     \"pnpm\": \">= 11.0.0\"   },   \"dependencies\": {     \"@citatio"
+  },
+  {
+    "name": "write_file",
+    "isError": false,
+    "preview": "wrote .bench-dry-bare-opus.txt (20 bytes)"
+  },
+  {
+    "name": "run_tests",
+    "isError": false,
+    "preview": "$ node -e \"console.log('ok 1 - smoke')\" exit=0 --- stdout --- ok 1 - smoke  --- stderr --- "
+  },
+  {
+    "name": "npm_audit",
+    "isError": false,
+    "preview": "{   \"error\": {     \"code\": \"ENOLOCK\",     \"summary\": \"This command requires an existing lockfile.\",     \"detail\": \"Try creating one first with: npm i --package-"
+  },
+  {
+    "name": "pip_audit",
+    "isError": true,
+    "preview": "/bin/sh: 1: pip-audit: not found "
+  },
+  {
+    "name": "osv_scan",
+    "isError": false,
+    "preview": "{   \"results\": [     {       \"source\": {         \"path\": \"$HOME/neat-bench/security-pilot/runs/smoke12-2026-11-10T05-20-36-548Z/_trees/gitea-bare-opus-JJN"
+  }
+]

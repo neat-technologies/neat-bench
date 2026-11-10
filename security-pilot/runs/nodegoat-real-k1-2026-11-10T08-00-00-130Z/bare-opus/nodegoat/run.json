@@ -1,0 +1,126 @@
+{
+  "pins": {
+    "model": "claude-opus-5-5",
+    "arm": "bare-opus",
+    "app": "nodegoat",
+    "repo": "github.com/OWASP/NodeGoat",
+    "commit": "c5cb68a7084e4ae7dcc60e6a98768720a81841e8",
+    "ecosystem": "npm",
+    "service": "nodegoat",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "<host>",
+    "groundTruthLocked": true,
+    "neatBase": null,
+    "appBase": "http://127.0.0.1:45069",
+    "asOf": "2026-11-10T08:00:15.163Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "npm_audit",
+      "pip_audit",
+      "osv_scan"
+    ],
+    "outcome": {
+      "pass": false,
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "pass": false,
+          "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true) | express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | swig@1.4.2 still flagged (osvAffected=true, scanner=false)"
+        },
+        {
+          "name": "no-regression",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "pass": false,
+          "detail": "missing/failing path tests: Should memo be generated, Should memo be generated, should have admin user able to login, Should new user be added to the system, Should memo be generated"
+        },
+        {
+          "name": "actually-works",
+          "pass": false,
+          "detail": "journeys failed: home fetch failed, tutorial fetch failed, login-get fetch failed, login-post-wrong fetch failed, signup-get fetch failed, contributions fetch failed, memos fetch failed, profile-get unreachable"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 9.202508,
+      "usage": {
+        "input": 2187957,
+        "output": 22534,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 336343,
+      "phase": {
+        "setupMs": 14816,
+        "baselineMs": 21,
+        "agentMs": 313034,
+        "gradeMs": 7044
+      }
+    },
+    "effort": {
+      "turns": 43,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "run_shell": 43,
+        "npm_audit": 1,
+        "write_file": 1,
+        "run_tests": 1
+      }
+    },
+    "neatUsage": {},
+    "lockfilePre": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "lockfilePost": {
+      "file": "package-lock.json",
+      "sha256": "1a44589190c72d7d95f7ac258176cb2ceeb83c2e3e7eeeaa111973aad97b83a6"
+    }
+  },
+  "grade": {
+    "app": "nodegoat",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true) | express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | swig@1.4.2 still flagged (osvAffected=true, scanner=false)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: Should memo be generated, Should memo be generated, should have admin user able to login, Should new user be added to the system, Should memo be generated"
+      },
+      {
+        "name": "actually-works",
+        "pass": false,
+        "detail": "journeys failed: home fetch failed, tutorial fetch failed, login-get fetch failed, login-post-wrong fetch failed, signup-get fetch failed, contributions fetch failed, memos fetch failed, profile-get unreachable"
+      }
+    ]
+  }
+}

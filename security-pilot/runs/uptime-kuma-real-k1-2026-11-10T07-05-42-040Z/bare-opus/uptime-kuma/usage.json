@@ -1,0 +1,17 @@
+{
+  "usage": {
+    "input": 1526376,
+    "output": 19019,
+    "cacheRead": 0,
+    "cacheCreation": 0
+  },
+  "costUsd": 6.4858839999999995,
+  "turns": 27,
+  "stopReason": "end_turn",
+  "wallMs": 471015,
+  "toolCalls": {
+    "run_shell": 26,
+    "npm_audit": 1,
+    "run_tests": 1
+  }
+}

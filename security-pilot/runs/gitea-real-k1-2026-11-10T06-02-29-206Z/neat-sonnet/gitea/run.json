@@ -1,0 +1,153 @@
+{
+  "pins": {
+    "model": "claude-sonnet-5-5",
+    "arm": "neat-sonnet",
+    "app": "gitea",
+    "repo": "github.com/go-gitea/gitea",
+    "commit": "829b49c1ae96015e345f9d2a0eb1ea7acd5f31e1",
+    "ecosystem": "Go",
+    "service": "gitea",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "<host>",
+    "groundTruthLocked": true,
+    "neatBase": "http://127.0.0.1:39951",
+    "appBase": "http://127.0.0.1:35577",
+    "asOf": "2026-11-10T06:44:17.938Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "security_scan",
+      "get_reachable_cves",
+      "is_reachable",
+      "scan_diff",
+      "ask",
+      "get_root_cause",
+      "get_blast_radius",
+      "get_dependencies",
+      "get_observed_dependencies",
+      "expand",
+      "relate",
+      "get_incident_history",
+      "get_incident_card",
+      "investigate",
+      "semantic_search",
+      "get_graph_diff",
+      "get_recent_stale_edges",
+      "get_divergences",
+      "check_policies",
+      "recon_qa",
+      "recon_flush",
+      "recon_probe"
+    ],
+    "outcome": {
+      "pass": false,
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "pass": false,
+          "detail": "golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true) | golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true)"
+        },
+        {
+          "name": "no-regression",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "pass": true,
+          "detail": "vuln-path tests persist and pass"
+        },
+        {
+          "name": "actually-works",
+          "pass": false,
+          "detail": "journeys failed: "
+        }
+      ]
+    },
+    "cost": {
+      "usd": 0.09378,
+      "usage": {
+        "input": 43310,
+        "output": 716,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 542396,
+      "phase": {
+        "setupMs": 333227,
+        "baselineMs": 22754,
+        "agentMs": 133142,
+        "gradeMs": 28404
+      }
+    },
+    "effort": {
+      "turns": 4,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "get_reachable_cves": 1,
+        "run_shell": 2,
+        "check_policies": 1,
+        "security_scan": 1,
+        "is_reachable": 1,
+        "get_divergences": 1
+      }
+    },
+    "neatUsage": {
+      "get_reachable_cves": 1,
+      "check_policies": 1,
+      "security_scan": 1,
+      "is_reachable": 1,
+      "get_divergences": 1
+    },
+    "lockfilePre": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    },
+    "lockfilePost": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    }
+  },
+  "grade": {
+    "app": "gitea",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true) | golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "pass": false,
+        "detail": "journeys failed: "
+      }
+    ]
+  }
+}

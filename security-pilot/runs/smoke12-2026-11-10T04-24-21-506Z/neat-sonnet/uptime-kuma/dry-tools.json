@@ -1,0 +1,132 @@
+[
+  {
+    "name": "run_shell",
+    "isError": false,
+    "preview": "exit=0 --- stdout --- total 928 drwx------  16 <user> <user>   4096 Nov 10 04:43 . drwxrwxr-x   4 <user> <user>   4096 Nov 10 04:42 .. -rw-rw-r--   1 <user> <user>   "
+  },
+  {
+    "name": "read_file",
+    "isError": false,
+    "preview": "{     \"name\": \"uptime-kuma\",     \"version\": \"2.5.3\",     \"license\": \"MIT\",     \"repository\": {         \"type\": \"git\",         \"url\": \"https://github.com/louisla"
+  },
+  {
+    "name": "write_file",
+    "isError": false,
+    "preview": "wrote .bench-dry-neat-sonnet.txt (20 bytes)"
+  },
+  {
+    "name": "run_tests",
+    "isError": false,
+    "preview": "$ node -e \"console.log('ok 1 - smoke')\" exit=0 --- stdout --- ok 1 - smoke  --- stderr --- "
+  },
+  {
+    "name": "security_scan",
+    "isError": false,
+    "preview": "{  \"asOf\": \"2026-11-10T00:14:44.431Z\",  \"inventory\": 1199,  \"findingCount\": 84,  \"findings\": [   {    \"id\": \"sec:GHSA-23hp-3jrh-7fpw:dep:npm:tar@6.2.1:service:u"
+  },
+  {
+    "name": "get_reachable_cves",
+    "isError": false,
+    "preview": "{  \"reachableCount\": 84,  \"reachable\": [   {    \"id\": \"sec:GHSA-23hp-3jrh-7fpw:dep:npm:tar@6.2.1:service:uptime-kuma\",    \"dependency\": {     \"name\": \"tar\",    "
+  },
+  {
+    "name": "is_reachable",
+    "isError": false,
+    "preview": "{\"found\":false,\"note\":\"no finding for that dep/cve in the scan (not flagged, or not in the tree)\"}"
+  },
+  {
+    "name": "scan_diff",
+    "isError": false,
+    "preview": "{\"advisories\":\"osv\",\"stale\":0,\"errors\":[],\"base\":{\"ref\":\"HEAD\",\"inventory\":1199},\"head\":{\"ref\":\"working tree\",\"inventory\":1199},\"asOf\":\"2026-11-10T00:14:44.431Z"
+  },
+  {
+    "name": "ask",
+    "isError": false,
+    "preview": "Nothing is failing right now — the OBSERVED incident store is empty.  Graph-wide answer (root-cause) — no entity named.  Incidents across the system:   • None r"
+  },
+  {
+    "name": "get_root_cause",
+    "isError": false,
+    "preview": "No root cause found for service:app. The node may be healthy, or it may not exist in the graph. (index still building — the first extraction pass has not finish"
+  },
+  {
+    "name": "get_blast_radius",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "get_dependencies",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "get_observed_dependencies",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "expand",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "relate",
+    "isError": false,
+    "preview": "service:app and database:127.0.0.1 are not related — node not found: service:app.  confidence: n/a · provenance: n/a project=default (no id yet) · binding=pinne"
+  },
+  {
+    "name": "get_incident_history",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "get_incident_card",
+    "isError": false,
+    "preview": "No incident card available for service:app. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it set"
+  },
+  {
+    "name": "investigate",
+    "isError": false,
+    "preview": "No incident card available for service:app. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it set"
+  },
+  {
+    "name": "semantic_search",
+    "isError": false,
+    "preview": "Found 10 matches for \"which services are failing?\" via transformers provider.    • infra:socket.io-topic:/#maintenanceList (InfraNode) — /#maintenanceList [scor"
+  },
+  {
+    "name": "get_graph_diff",
+    "isError": true,
+    "preview": "Could not load snapshot service:app: 400 Bad Request on GET /projects/default/graph/diff?against=service%3Aapp: {\"error\":\"unknown snapshot id — `against` must b"
+  },
+  {
+    "name": "get_recent_stale_edges",
+    "isError": false,
+    "preview": "No stale-edge transitions recorded yet.  confidence: n/a · provenance: n/a project=default (no id yet) · binding=pinned · daemon=http://127.0.0.1:41747"
+  },
+  {
+    "name": "get_divergences",
+    "isError": false,
+    "preview": "No divergences found between the declared (EXTRACTED) and observed (OBSERVED) views of the graph. (index still building — the first extraction pass has not fini"
+  },
+  {
+    "name": "check_policies",
+    "isError": false,
+    "preview": "No policy violations recorded.  confidence: n/a · provenance: n/a project=default (no id yet) · binding=pinned · daemon=http://127.0.0.1:41747"
+  },
+  {
+    "name": "recon_qa",
+    "isError": false,
+    "preview": "{  \"works\": true,  \"testFailures\": [],  \"journeyFailures\": [],  \"newDivergences\": [],  \"observedOk\": true }"
+  },
+  {
+    "name": "recon_flush",
+    "isError": false,
+    "preview": "{  \"freshAsOf\": \"2026-11-10T04:44:22.937Z\",  \"observed\": {   \"ok\": true,   \"nodePresent\": true,   \"observedCount\": 42,   \"freshCount\": 34,   \"message\": \"service"
+  },
+  {
+    "name": "recon_probe",
+    "isError": false,
+    "preview": "{  \"claim\": \"the dep is reachable\",  \"verdict\": \"observed\",  \"evidence\": {   \"observed\": {    \"ok\": true,    \"nodePresent\": true,    \"observedCount\": 42,    \"fr"
+  }
+]

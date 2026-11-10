@@ -1,0 +1,16 @@
+[smoke] start Tue Nov 10 03:40:28 AM GMT 2026 apps=paperless-ngx
+=== 12-config stub smoke + id-match === box=<host> node=v20.20.2 apps=paperless-ngx
+
+----- neat-opus / paperless-ngx (avail 15.9Gi) -----
+  [detail] types={"ServiceNode":2,"FileNode":746,"SymbolNode":4297,"ConfigNode":29,"RouteNode":1,"InfraNode":36,"DatabaseNode":2}
+  [detail] dbNodes=["database:redis:127.0.0.1","database:postgresql:127.0.0.1"]
+  [detail] observedRoutes=0 socketioTopics=0 symbolGrainObsEdges=102
+  [detail] symObs: (CONNECTS_TO) symbol:paperless-ngx:src/documents/migrations/0003_sender.py#move_sender_strings_to_sender_model -> database:postgresql:127.0.0.1
+  [detail] symObs: (CALLS) symbol:paperless-ngx:src/documents/migrations/0003_sender.py#move_sender_strings_to_sender_model -> infra:sql-table:documents_document
+  [detail] symObs: (CONNECTS_TO) symbol:paperless-ngx:src/documents/migrations/0014_document_checksum.py#set_checksums -> database:postgresql:127.0.0.1
+  [detail] symObs: (CALLS) symbol:paperless-ngx:src/documents/migrations/0014_document_checksum.py#set_checksums -> infra:sql-table:documents_document
+  [detail] symObs: (CONNECTS_TO) symbol:paperless-ngx:src/documents/migrations/0019_add_consumer_user.py#forwards_func -> database:postgresql:127.0.0.1
+  [detail] symObs: (CALLS) symbol:paperless-ngx:src/documents/migrations/0019_add_consumer_user.py#forwards_func -> infra:sql-table:auth_user
+  id-match paperless-ngx: produced=0 matchedExact=0/4 substringHits=0
+/tmp/smoke.sh: line 11: 2618179 Killed                     npx tsx harness/smoke-matrix.ts
+[smoke] exit=137 Tue Nov 10 04:13:53 AM GMT 2026

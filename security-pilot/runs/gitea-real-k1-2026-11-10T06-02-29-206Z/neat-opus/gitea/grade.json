@@ -1,0 +1,26 @@
+{
+  "app": "gitea",
+  "pass": false,
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "pass": false,
+      "detail": "golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true) | golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true)"
+    },
+    {
+      "name": "no-regression",
+      "pass": true,
+      "detail": "baseline-green tests still green"
+    },
+    {
+      "name": "not-degenerate",
+      "pass": true,
+      "detail": "vuln-path tests persist and pass"
+    },
+    {
+      "name": "actually-works",
+      "pass": false,
+      "detail": "journeys failed: "
+    }
+  ]
+}

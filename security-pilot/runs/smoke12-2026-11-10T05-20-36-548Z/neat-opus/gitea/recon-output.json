@@ -1,0 +1,8 @@
+{
+  "works": true,
+  "testFailures": [],
+  "journeyFailures": [],
+  "newDivergences": [],
+  "observedOk": true,
+  "detail": "service:gitea present; 298 OBSERVED edge(s), 28 fresh; journeys ok; newDivergences=0"
+}

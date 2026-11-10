@@ -1,0 +1,21 @@
+{
+  "usage": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheCreation": 0
+  },
+  "costUsd": 0,
+  "turns": 1,
+  "stopReason": "end_turn",
+  "wallMs": 0,
+  "toolCalls": {
+    "run_shell": 1,
+    "read_file": 1,
+    "write_file": 1,
+    "run_tests": 1,
+    "npm_audit": 1,
+    "pip_audit": 1,
+    "osv_scan": 1
+  }
+}

@@ -1,0 +1,286 @@
+[
+  {
+    "app": "nodegoat",
+    "arm": "neat-opus",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "25/26",
+    "observedEdges": 31,
+    "divergences": 12,
+    "nodeTypes": {
+      "ServiceNode": 2,
+      "FileNode": 56,
+      "SymbolNode": 63,
+      "DatabaseNode": 2,
+      "ConfigNode": 5,
+      "RouteNode": 31,
+      "InfraNode": 9
+    }
+  },
+  {
+    "app": "nodegoat",
+    "arm": "bare-opus",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "5/7",
+    "captureBytes": 89865
+  },
+  {
+    "app": "nodegoat",
+    "arm": "neat-sonnet",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "25/26",
+    "observedEdges": 31,
+    "divergences": 12,
+    "nodeTypes": {
+      "ServiceNode": 2,
+      "FileNode": 56,
+      "SymbolNode": 63,
+      "DatabaseNode": 2,
+      "ConfigNode": 5,
+      "RouteNode": 31,
+      "InfraNode": 9
+    }
+  },
+  {
+    "app": "uptime-kuma",
+    "arm": "neat-opus",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "jsonata@2.1.1 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: check() sets status to UP when json-query finds expected value, check() rejects when json-query path returns undefined, check() reje"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "25/26",
+    "observedEdges": 38,
+    "divergences": 2,
+    "nodeTypes": {
+      "ServiceNode": 3,
+      "FileNode": 408,
+      "SymbolNode": 1319,
+      "ConfigNode": 31,
+      "RouteNode": 28,
+      "FrontierNode": 3,
+      "InfraNode": 25
+    }
+  },
+  {
+    "app": "uptime-kuma",
+    "arm": "bare-opus",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "jsonata@2.1.1 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: check() sets status to UP when json-query finds expected value, check() rejects when json-query path returns undefined, check() reje"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "5/7",
+    "captureBytes": 468695
+  },
+  {
+    "app": "uptime-kuma",
+    "arm": "neat-sonnet",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "jsonata@2.1.1 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: check() sets status to UP when json-query finds expected value, check() rejects when json-query path returns undefined, check() reje"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "25/26",
+    "observedEdges": 38,
+    "divergences": 2,
+    "nodeTypes": {
+      "ServiceNode": 3,
+      "FileNode": 408,
+      "SymbolNode": 1319,
+      "ConfigNode": 31,
+      "RouteNode": 28,
+      "FrontierNode": 3,
+      "InfraNode": 25
+    }
+  },
+  {
+    "app": "gitea",
+    "arm": "neat-opus",
+    "pass": null,
+    "criteria": [],
+    "toolsAnswered": "25/26",
+    "observedEdges": 61,
+    "divergences": 4,
+    "nodeTypes": {
+      "ServiceNode": 1,
+      "FileNode": 3610,
+      "SymbolNode": 17158,
+      "ConfigNode": 196,
+      "InfraNode": 21,
+      "DatabaseNode": 1
+    },
+    "error": "Error: govulncheck unavailable/failed: /bin/sh: 1: govulncheck: not found"
+  },
+  {
+    "app": "gitea",
+    "arm": "bare-opus",
+    "pass": null,
+    "criteria": [],
+    "toolsAnswered": "5/7",
+    "captureBytes": 1296131,
+    "error": "Error: govulncheck unavailable/failed: /bin/sh: 1: govulncheck: not found"
+  },
+  {
+    "app": "gitea",
+    "arm": "neat-sonnet",
+    "pass": null,
+    "criteria": [],
+    "toolsAnswered": "25/26",
+    "observedEdges": 53,
+    "divergences": 5,
+    "nodeTypes": {
+      "ServiceNode": 1,
+      "FileNode": 3621,
+      "SymbolNode": 18280,
+      "ConfigNode": 196,
+      "InfraNode": 18,
+      "DatabaseNode": 1
+    },
+    "error": "Error: govulncheck unavailable/failed: /bin/sh: 1: govulncheck: not found"
+  },
+  {
+    "app": "paperless-ngx",
+    "arm": "neat-opus",
+    "pass": null,
+    "criteria": [],
+    "toolsAnswered": "n/a",
+    "error": "BLOCKED: neat security scan unviable on paperless 274 deps via api.osv.dev 49s-without-advisories vs over-28min-with; plus pytest needs in-container exec. Needs neat-core OSV batch/mirror/cap."
+  },
+  {
+    "app": "paperless-ngx",
+    "arm": "bare-opus",
+    "pass": null,
+    "criteria": [],
+    "toolsAnswered": "4/7",
+    "captureBytes": 1498397,
+    "error": "Error: pip-audit JSON parse failed"
+  },
+  {
+    "app": "paperless-ngx",
+    "arm": "neat-sonnet",
+    "pass": null,
+    "criteria": [],
+    "toolsAnswered": "n/a",
+    "error": "BLOCKED: neat security scan unviable on paperless 274 deps via api.osv.dev 49s-without-advisories vs over-28min-with; plus pytest needs in-container exec. Needs neat-core OSV batch/mirror/cap."
+  }
+]

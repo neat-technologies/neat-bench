@@ -1,0 +1,8 @@
+{
+  "works": true,
+  "testFailures": [],
+  "journeyFailures": [],
+  "newDivergences": [],
+  "observedOk": true,
+  "detail": "service:nodegoat present; 33 OBSERVED edge(s), 27 fresh; journeys ok; newDivergences=0"
+}

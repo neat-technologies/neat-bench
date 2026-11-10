@@ -1,0 +1,129 @@
+{
+  "pins": {
+    "model": "claude-opus-5-5",
+    "arm": "bare-opus",
+    "app": "nodegoat",
+    "repo": "github.com/OWASP/NodeGoat",
+    "commit": "c5cb68a7084e4ae7dcc60e6a98768720a81841e8",
+    "ecosystem": "npm",
+    "service": "nodegoat",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "<host>",
+    "groundTruthLocked": true,
+    "neatBase": null,
+    "appBase": "http://127.0.0.1:44315",
+    "asOf": "2026-11-10T04:25:14.900Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "npm_audit",
+      "pip_audit",
+      "osv_scan"
+    ],
+    "outcome": {
+      "pass": false,
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "pass": false,
+          "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true)"
+        },
+        {
+          "name": "no-regression",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "pass": true,
+          "detail": "vuln-path tests persist and pass"
+        },
+        {
+          "name": "actually-works",
+          "pass": true,
+          "detail": "journeys correct, no new divergence"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 0,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 5798,
+      "phase": {
+        "setupMs": 0,
+        "baselineMs": 22,
+        "agentMs": 1279,
+        "gradeMs": 3002
+      }
+    },
+    "effort": {
+      "turns": 1,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "run_shell": 1,
+        "read_file": 1,
+        "write_file": 1,
+        "run_tests": 1,
+        "npm_audit": 1,
+        "pip_audit": 1,
+        "osv_scan": 1
+      }
+    },
+    "neatUsage": {},
+    "lockfilePre": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "lockfilePost": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    }
+  },
+  "grade": {
+    "app": "nodegoat",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+[app-real uptime-kuma] start Tue Nov 10 07:05:41 AM GMT 2026 keyset=yes
+=== uptime-kuma REAL k=1 === runLabel=uptime-kuma-real-k1-2026-11-10T07-05-42-040Z arms=bare-opus,neat-opus,neat-sonnet
+[runner] worker 0 starting bare-opus/uptime-kuma#0 (avail 22.8Gi)
+[runner] done bare-opus/uptime-kuma#0: pass=false
+[runner] worker 0 starting neat-opus/uptime-kuma#0 (avail 22.7Gi)
+[runner] done neat-opus/uptime-kuma#0: pass=false
+[runner] worker 0 starting neat-sonnet/uptime-kuma#0 (avail 22.7Gi)
+[runner] done neat-sonnet/uptime-kuma#0: pass=false
+
+=== uptime-kuma REAL k=1 COMPLETE ===
+bare-opus uptime-kuma pass=false
+   [PASS] vuln-gone: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)
+   [PASS] no-regression: baseline-green tests still green
+   [FAIL] not-degenerate: missing/failing path tests: check() sets status to UP when json-query finds expected value, check() rejects when json-query path returns undefined, check() reje
+   [PASS] actually-works: journeys correct, no new divergence
+   cost=$6.486 in=1526376 out=19019 turns=27 stop=end_turn
+   totalMs=946357 phase={"setupMs":44393,"baselineMs":106324,"agentMs":471017,"gradeMs":216701}
+neat-opus uptime-kuma pass=false
+   [PASS] vuln-gone: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)
+   [PASS] no-regression: baseline-green tests still green
+   [FAIL] not-degenerate: missing/failing path tests: check() sets status to UP when json-query finds expected value, check() rejects when json-query path returns undefined, check() reje
+   [PASS] actually-works: journeys correct, no new divergence
+   cost=$14.036 in=3420525 out=17701 turns=25 stop=end_turn
+   totalMs=1074365 phase={"setupMs":58106,"baselineMs":105679,"agentMs":584211,"gradeMs":217175}
+   neatUsage={"get_reachable_cves":2,"security_scan":1,"check_policies":2,"is_reachable":4,"scan_diff":1,"recon_qa":1}
+neat-sonnet uptime-kuma pass=false
+   [PASS] vuln-gone: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)
+   [FAIL] no-regression: regressed: check() sets status to UP when MSSQL server is reachable, MSSQL Monitor
+   [FAIL] not-degenerate: missing/failing path tests: check() sets status to UP when json-query finds expected value, check() rejects when json-query path returns undefined, check() reje
+   [PASS] actually-works: journeys correct, no new divergence
+   cost=$1.950 in=951268 out=4744 turns=15 stop=end_turn
+   totalMs=792878 phase={"setupMs":57586,"baselineMs":105470,"agentMs":309585,"gradeMs":207171}
+   neatUsage={"get_reachable_cves":1,"check_policies":1,"security_scan":1}
+
+artifacts: $HOME/neat-bench/security-pilot/runs/uptime-kuma-real-k1-2026-11-10T07-05-42-040Z
+[app-real uptime-kuma] exit=0 Tue Nov 10 07:52:40 AM GMT 2026

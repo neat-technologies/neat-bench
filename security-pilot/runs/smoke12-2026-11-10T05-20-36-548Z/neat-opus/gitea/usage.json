@@ -1,0 +1,40 @@
+{
+  "usage": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheCreation": 0
+  },
+  "costUsd": 0,
+  "turns": 1,
+  "stopReason": "end_turn",
+  "wallMs": 0,
+  "toolCalls": {
+    "run_shell": 1,
+    "read_file": 1,
+    "write_file": 1,
+    "run_tests": 1,
+    "security_scan": 1,
+    "get_reachable_cves": 1,
+    "is_reachable": 1,
+    "scan_diff": 1,
+    "ask": 1,
+    "get_root_cause": 1,
+    "get_blast_radius": 1,
+    "get_dependencies": 1,
+    "get_observed_dependencies": 1,
+    "expand": 1,
+    "relate": 1,
+    "get_incident_history": 1,
+    "get_incident_card": 1,
+    "investigate": 1,
+    "semantic_search": 1,
+    "get_graph_diff": 1,
+    "get_recent_stale_edges": 1,
+    "get_divergences": 1,
+    "check_policies": 1,
+    "recon_qa": 1,
+    "recon_flush": 1,
+    "recon_probe": 1
+  }
+}

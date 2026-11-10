@@ -1,0 +1,18 @@
+# Paperless-ngx 3.4.2 + NEAT's Python attachment. The only delta from upstream:
+# neat-otel (main@c2aaa93: Django #1596 + celery #1598 handler entry) and the OTel
+# instrumentations Paperless's stack needs. Every Python process in the container
+# is auto-instrumented through OTel's sitecustomize on PYTHONPATH, so the s6 run
+# scripts are untouched.
+FROM ghcr.io/paperless-ngx/paperless-ngx:3.4.2
+COPY python/neat-otel /tmp/neat-otel
+RUN uv pip install --system --no-cache --prerelease=allow /tmp/neat-otel \
+      opentelemetry-instrumentation-django opentelemetry-instrumentation-asgi \
+      opentelemetry-instrumentation-psycopg opentelemetry-instrumentation-redis \
+      opentelemetry-instrumentation-celery opentelemetry-instrumentation-requests \
+      opentelemetry-instrumentation-httpx \
+ && python3 -c "import opentelemetry.instrumentation.auto_instrumentation as a, os; print(os.path.dirname(a.__file__))" > /neat-otel-autopath
+# The Django instrumentor touches settings from the sitecustomize, before the
+# script directory is on sys.path, so the source dir and settings module are
+# named up front.
+ENV PYTHONPATH=/usr/src/paperless/src:/usr/local/lib/python3.14/site-packages/opentelemetry/instrumentation/auto_instrumentation \
+    DJANGO_SETTINGS_MODULE=paperless.settings

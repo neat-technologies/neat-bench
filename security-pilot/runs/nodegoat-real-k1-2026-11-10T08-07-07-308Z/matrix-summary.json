@@ -1,0 +1,18 @@
+{
+  "runLabel": "nodegoat-real-k1-2026-11-10T08-07-07-308Z",
+  "asOf": "2026-11-10T08:13:49.327Z",
+  "ramFloorGi": 4,
+  "concurrency": 1,
+  "trials": [
+    {
+      "arm": "neat-opus",
+      "app": "nodegoat",
+      "pass": false
+    },
+    {
+      "arm": "neat-sonnet",
+      "app": "nodegoat",
+      "pass": false
+    }
+  ]
+}

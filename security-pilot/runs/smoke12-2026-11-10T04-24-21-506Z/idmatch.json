@@ -1,0 +1,73 @@
+[
+  {
+    "app": "nodegoat",
+    "testCmd": "npm run test:ci",
+    "wantCount": 5,
+    "producedIdCount": 0,
+    "sampleIds": [],
+    "matchedExact": [],
+    "missingExact": [
+      "Should memo be generated",
+      "Should memo be generated",
+      "should have admin user able to login",
+      "Should new user be added to the system",
+      "Should memo be generated"
+    ],
+    "missingButSubstringPresent": []
+  },
+  {
+    "app": "uptime-kuma",
+    "testCmd": "node test/test-backend.mjs",
+    "wantCount": 3,
+    "producedIdCount": 0,
+    "sampleIds": [],
+    "matchedExact": [],
+    "missingExact": [
+      "check() sets status to UP when json-query finds expected value",
+      "check() rejects when json-query path returns undefined",
+      "check() rejects when json-query value does not match expected value"
+    ],
+    "missingButSubstringPresent": []
+  },
+  {
+    "app": "gitea",
+    "testCmd": "go test ./modules/markup/...",
+    "wantCount": 8,
+    "producedIdCount": 331,
+    "sampleIds": [
+      "gitea.dev/modules/markup/internal TestRenderInternalAttrs",
+      "TestRenderInternalAttrs",
+      "gitea.dev/modules/markup/internal TestRenderInternalExtraHead/HeadExists",
+      "TestRenderInternalExtraHead/HeadExists",
+      "gitea.dev/modules/markup/internal TestRenderInternalExtraHead/HeadNotExists",
+      "TestRenderInternalExtraHead/HeadNotExists"
+    ],
+    "matchedExact": [
+      "TestPostProcess",
+      "TestRender_Commits",
+      "TestRender_links",
+      "TestRender_emoji",
+      "TestSanitizer",
+      "TestPostProcess",
+      "TestIssue16020",
+      "TestIssue18471"
+    ],
+    "missingExact": [],
+    "missingButSubstringPresent": []
+  },
+  {
+    "app": "paperless-ngx",
+    "testCmd": "pytest src/documents/tests/test_file_handling.py src/documents/tests/test_api_objects.py",
+    "wantCount": 4,
+    "producedIdCount": 0,
+    "sampleIds": [],
+    "matchedExact": [],
+    "missingExact": [
+      "test_dynamic_path",
+      "test_dynamic_path_with_none",
+      "test_dynamic_path_remove_none",
+      "test_test_storage_path"
+    ],
+    "missingButSubstringPresent": []
+  }
+]

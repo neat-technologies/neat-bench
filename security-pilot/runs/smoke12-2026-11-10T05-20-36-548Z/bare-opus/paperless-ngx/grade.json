@@ -1,0 +1,26 @@
+{
+  "app": "paperless-ngx",
+  "pass": false,
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "pass": false,
+      "detail": "jinja2@3.1.5 still flagged (osvAffected=true, scanner=true)"
+    },
+    {
+      "name": "no-regression",
+      "pass": true,
+      "detail": "baseline-green tests still green"
+    },
+    {
+      "name": "not-degenerate",
+      "pass": false,
+      "detail": "missing/failing path tests: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+    },
+    {
+      "name": "actually-works",
+      "pass": true,
+      "detail": "journeys correct, no new divergence"
+    }
+  ]
+}

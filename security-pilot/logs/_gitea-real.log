@@ -1,0 +1,37 @@
+[gitea-real] start Tue Nov 10 06:02:28 AM GMT 2026 keyset=yes govulncheck=$HOME/go/bin/govulncheck
+=== GITEA REAL k=1 === runLabel=gitea-real-k1-2026-11-10T06-02-29-206Z arms=bare-opus,neat-opus,neat-sonnet
+[runner] worker 0 starting bare-opus/gitea#0 (avail 22.8Gi)
+[runner] done bare-opus/gitea#0: pass=false
+[runner] worker 0 starting neat-opus/gitea#0 (avail 22.7Gi)
+[runner] done neat-opus/gitea#0: pass=false
+[runner] worker 0 starting neat-sonnet/gitea#0 (avail 22.9Gi)
+[runner] done neat-sonnet/gitea#0: pass=false
+
+=== GITEA REAL k=1 COMPLETE ===
+bare-opus gitea pass=false
+   [FAIL] vuln-gone: golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true) | golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true)
+   [PASS] no-regression: baseline-green tests still green
+   [PASS] not-degenerate: vuln-path tests persist and pass
+   [PASS] actually-works: journeys correct, no new divergence
+   cost=$13.8585 usage={"input":3348690,"output":23189,"cacheRead":0,"cacheCreation":0} turns=55 stop=end_turn
+   timeMs=1210802 phase={"setupMs":121227,"baselineMs":2357,"agentMs":1034650,"gradeMs":29444}
+   neatUsage={}
+neat-opus gitea pass=false
+   [FAIL] vuln-gone: golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true) | golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true)
+   [PASS] no-regression: baseline-green tests still green
+   [PASS] not-degenerate: vuln-path tests persist and pass
+   [FAIL] actually-works: journeys failed: 
+   cost=$1.5612 usage={"input":355757,"output":6908,"cacheRead":0,"cacheCreation":0} turns=18 stop=end_turn
+   timeMs=962059 phase={"setupMs":348884,"baselineMs":21065,"agentMs":538298,"gradeMs":28797}
+   neatUsage={"security_scan":1,"get_reachable_cves":1,"check_policies":2,"recon_qa":1,"get_incident_history":1,"scan_diff":1}
+neat-sonnet gitea pass=false
+   [FAIL] vuln-gone: golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true) | golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true)
+   [PASS] no-regression: baseline-green tests still green
+   [PASS] not-degenerate: vuln-path tests persist and pass
+   [FAIL] actually-works: journeys failed: 
+   cost=$0.0938 usage={"input":43310,"output":716,"cacheRead":0,"cacheCreation":0} turns=4 stop=end_turn
+   timeMs=542396 phase={"setupMs":333227,"baselineMs":22754,"agentMs":133142,"gradeMs":28404}
+   neatUsage={"get_reachable_cves":1,"check_policies":1,"security_scan":1,"is_reachable":1,"get_divergences":1}
+
+artifacts: $HOME/neat-bench/security-pilot/runs/gitea-real-k1-2026-11-10T06-02-29-206Z
+[gitea-real] exit=0 Tue Nov 10 06:47:48 AM GMT 2026

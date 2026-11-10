@@ -1,0 +1,10 @@
+{
+  "works": false,
+  "testFailures": [],
+  "journeyFailures": [],
+  "newDivergences": [
+    "observed-failing:symbol:gitea:services/webhook/deliver.go#Deliver->symbol:gitea:services/webhook/deliver.go#Deliver"
+  ],
+  "observedOk": true,
+  "detail": "service:gitea present; 298 OBSERVED edge(s), 28 fresh; journeys ok; newDivergences=1"
+}

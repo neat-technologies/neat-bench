@@ -1,0 +1,126 @@
+{
+  "pins": {
+    "model": "claude-opus-5-5",
+    "arm": "bare-opus",
+    "app": "gitea",
+    "repo": "github.com/go-gitea/gitea",
+    "commit": "829b49c1ae96015e345f9d2a0eb1ea7acd5f31e1",
+    "ecosystem": "Go",
+    "service": "gitea",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "<host>",
+    "groundTruthLocked": true,
+    "neatBase": null,
+    "appBase": "http://127.0.0.1:43065",
+    "asOf": "2026-11-10T06:04:30.661Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "npm_audit",
+      "pip_audit",
+      "osv_scan"
+    ],
+    "outcome": {
+      "pass": false,
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "pass": false,
+          "detail": "golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true) | golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true)"
+        },
+        {
+          "name": "no-regression",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "pass": true,
+          "detail": "vuln-path tests persist and pass"
+        },
+        {
+          "name": "actually-works",
+          "pass": true,
+          "detail": "journeys correct, no new divergence"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 13.85854,
+      "usage": {
+        "input": 3348690,
+        "output": 23189,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 1210802,
+      "phase": {
+        "setupMs": 121227,
+        "baselineMs": 2357,
+        "agentMs": 1034650,
+        "gradeMs": 29444
+      }
+    },
+    "effort": {
+      "turns": 55,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "run_shell": 55,
+        "osv_scan": 1,
+        "npm_audit": 1,
+        "run_tests": 1
+      }
+    },
+    "neatUsage": {},
+    "lockfilePre": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    },
+    "lockfilePost": {
+      "file": "go.sum",
+      "sha256": "4b2279082630c312172ed1764b4b7451f7952516df3a96dc674ef38674383530"
+    }
+  },
+  "grade": {
+    "app": "gitea",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true) | golang.org/x/net@v0.62.0 still flagged (osvAffected=false, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ]
+  }
+}

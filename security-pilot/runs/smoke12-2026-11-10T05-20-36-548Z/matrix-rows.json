@@ -1,0 +1,152 @@
+[
+  {
+    "app": "gitea",
+    "arm": "neat-opus",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true) | golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: TestPostProcess, TestRender_Commits, TestRender_links, TestRender_emoji, TestSanitizer, TestPostProcess, TestIssue16020, TestIssue18"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "25/26",
+    "observedEdges": 69,
+    "divergences": 5,
+    "nodeTypes": {
+      "ServiceNode": 1,
+      "FileNode": 3622,
+      "SymbolNode": 18280,
+      "ConfigNode": 196,
+      "InfraNode": 22,
+      "DatabaseNode": 1
+    }
+  },
+  {
+    "app": "gitea",
+    "arm": "bare-opus",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true) | golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: TestPostProcess, TestRender_Commits, TestRender_links, TestRender_emoji, TestSanitizer, TestPostProcess, TestIssue16020, TestIssue18"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "6/7",
+    "captureBytes": 1294350
+  },
+  {
+    "app": "gitea",
+    "arm": "neat-sonnet",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true) | golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: TestPostProcess, TestRender_Commits, TestRender_links, TestRender_emoji, TestSanitizer, TestPostProcess, TestIssue16020, TestIssue18"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "25/26",
+    "observedEdges": 73,
+    "divergences": 5,
+    "nodeTypes": {
+      "ServiceNode": 1,
+      "FileNode": 3621,
+      "SymbolNode": 18280,
+      "ConfigNode": 196,
+      "InfraNode": 22,
+      "DatabaseNode": 1
+    }
+  },
+  {
+    "app": "paperless-ngx",
+    "arm": "neat-opus",
+    "pass": null,
+    "criteria": [],
+    "toolsAnswered": "n/a",
+    "error": "BLOCKED: neat security scan unviable on paperless 274 deps via api.osv.dev"
+  },
+  {
+    "app": "paperless-ngx",
+    "arm": "bare-opus",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "jinja2@3.1.5 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ],
+    "toolsAnswered": "5/7",
+    "captureBytes": 1495195
+  },
+  {
+    "app": "paperless-ngx",
+    "arm": "neat-sonnet",
+    "pass": null,
+    "criteria": [],
+    "toolsAnswered": "n/a",
+    "error": "BLOCKED: neat security scan unviable on paperless 274 deps via api.osv.dev"
+  }
+]

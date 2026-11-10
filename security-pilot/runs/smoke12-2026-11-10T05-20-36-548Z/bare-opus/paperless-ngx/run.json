@@ -1,0 +1,129 @@
+{
+  "pins": {
+    "model": "claude-opus-5-5",
+    "arm": "bare-opus",
+    "app": "paperless-ngx",
+    "repo": "github.com/paperless-ngx/paperless-ngx",
+    "commit": "e6253caa198cd6a91f3a4de1eb13799d17dd1c68",
+    "ecosystem": "PyPI",
+    "service": "paperless-ngx",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "uv.lock",
+      "sha256": "c10d14089db02af870f4e7dad7d38192a3e8e41838fbc6f84ea1e864031e288e"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "<host>",
+    "groundTruthLocked": true,
+    "neatBase": null,
+    "appBase": "http://127.0.0.1:39663",
+    "asOf": "2026-11-10T05:52:00.937Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "npm_audit",
+      "pip_audit",
+      "osv_scan"
+    ],
+    "outcome": {
+      "pass": false,
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "pass": false,
+          "detail": "jinja2@3.1.5 still flagged (osvAffected=true, scanner=true)"
+        },
+        {
+          "name": "no-regression",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "pass": false,
+          "detail": "missing/failing path tests: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+        },
+        {
+          "name": "actually-works",
+          "pass": true,
+          "detail": "journeys correct, no new divergence"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 0,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 46323,
+      "phase": {
+        "setupMs": 0,
+        "baselineMs": 23,
+        "agentMs": 974,
+        "gradeMs": 45033
+      }
+    },
+    "effort": {
+      "turns": 1,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "run_shell": 1,
+        "read_file": 1,
+        "write_file": 1,
+        "run_tests": 1,
+        "npm_audit": 1,
+        "pip_audit": 1,
+        "osv_scan": 1
+      }
+    },
+    "neatUsage": {},
+    "lockfilePre": {
+      "file": "uv.lock",
+      "sha256": "c10d14089db02af870f4e7dad7d38192a3e8e41838fbc6f84ea1e864031e288e"
+    },
+    "lockfilePost": {
+      "file": "uv.lock",
+      "sha256": "c10d14089db02af870f4e7dad7d38192a3e8e41838fbc6f84ea1e864031e288e"
+    }
+  },
+  "grade": {
+    "app": "paperless-ngx",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "jinja2@3.1.5 still flagged (osvAffected=true, scanner=true)"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ]
+  }
+}

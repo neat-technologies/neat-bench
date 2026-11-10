@@ -1,0 +1,10 @@
+{
+  "testCmd": "node -e \"console.log('ok 1 - smoke')\"",
+  "baselineGreen": [
+    "suite:pass"
+  ],
+  "postPatchGreen": [
+    "suite:pass"
+  ],
+  "regressed": []
+}

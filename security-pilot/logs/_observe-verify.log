@@ -1,0 +1,53 @@
+=== observe-verify (eb330c2 daemon) app=nodegoat box=<host> ===
+neatBase=http://127.0.0.1:43091 nodes=168 edges=207 divergences=12
+node types: {"ServiceNode":2,"FileNode":56,"SymbolNode":63,"DatabaseNode":2,"ConfigNode":5,"RouteNode":31,"InfraNode":9}
+database nodes (2):
+  database:mongodb:mongo [DatabaseNode] mongo
+  database:mongodb:127.0.0.1 [DatabaseNode] 127.0.0.1
+route nodes (31); with an OBSERVED edge: 13
+  route:owasp-nodejs-goat:GET /
+  route:owasp-nodejs-goat:GET /login
+  route:owasp-nodejs-goat:POST /login
+  route:owasp-nodejs-goat:GET /signup
+  route:owasp-nodejs-goat:POST /signup
+  route:owasp-nodejs-goat:GET /logout
+  route:owasp-nodejs-goat:GET /dashboard
+  route:owasp-nodejs-goat:GET /profile
+  route:owasp-nodejs-goat:POST /profile
+  route:owasp-nodejs-goat:GET /contributions
+  route:owasp-nodejs-goat:POST /contributions
+  route:owasp-nodejs-goat:GET /benefits
+  route:owasp-nodejs-goat:POST /benefits
+  route:owasp-nodejs-goat:GET /allocations/:userId
+  route:owasp-nodejs-goat:GET /memos
+  route:owasp-nodejs-goat:POST /memos
+  route:owasp-nodejs-goat:GET /learn
+  route:owasp-nodejs-goat:GET /research
+  route:nodegoat:GET /login [OBSERVED]
+  route:nodegoat:POST /login [OBSERVED]
+  route:nodegoat:GET /dashboard [OBSERVED]
+  route:nodegoat:GET /profile [OBSERVED]
+  route:nodegoat:GET /contributions [OBSERVED]
+  route:nodegoat:GET /allocations/:userId [OBSERVED]
+  route:nodegoat:GET /memos [OBSERVED]
+OBSERVED edges total=31; fromService=31
+OBSERVED edge types: {"CONTAINS":19,"CONNECTS_TO":6,"CALLS":6}
+sample OBSERVED edges:
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /login
+  (CONTAINS) service:nodegoat -> route:nodegoat:POST /login
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /dashboard
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /profile
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /contributions
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /allocations/:userId
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /memos
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /learn
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /benefits
+  (CONTAINS) service:nodegoat -> route:nodegoat:GET /tutorial
+  (CONTAINS) service:nodegoat -> route:nodegoat:POST /contributions
+  (CONTAINS) service:nodegoat -> route:nodegoat:POST /memos
+  (CONTAINS) service:nodegoat -> route:nodegoat:POST /profile
+  (CONTAINS) service:nodegoat -> file:nodegoat:app/data/user-dao.js
+  (CONNECTS_TO) file:nodegoat:app/data/user-dao.js -> database:mongodb:127.0.0.1
+graph dumped: $HOME/neat-bench/security-pilot/runs/observe-verify/graph-nodegoat.json
+torn down
+[observe-verify] exit=0

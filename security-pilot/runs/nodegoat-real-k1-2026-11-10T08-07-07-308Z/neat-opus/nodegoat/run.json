@@ -1,0 +1,156 @@
+{
+  "pins": {
+    "model": "claude-opus-5-5",
+    "arm": "neat-opus",
+    "app": "nodegoat",
+    "repo": "github.com/OWASP/NodeGoat",
+    "commit": "c5cb68a7084e4ae7dcc60e6a98768720a81841e8",
+    "ecosystem": "npm",
+    "service": "nodegoat",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "<host>",
+    "groundTruthLocked": true,
+    "neatBase": "http://127.0.0.1:34489",
+    "appBase": "http://127.0.0.1:41453",
+    "asOf": "2026-11-10T08:07:24.804Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "security_scan",
+      "get_reachable_cves",
+      "is_reachable",
+      "scan_diff",
+      "ask",
+      "get_root_cause",
+      "get_blast_radius",
+      "get_dependencies",
+      "get_observed_dependencies",
+      "expand",
+      "relate",
+      "get_incident_history",
+      "get_incident_card",
+      "investigate",
+      "semantic_search",
+      "get_graph_diff",
+      "get_recent_stale_edges",
+      "get_divergences",
+      "check_policies",
+      "recon_qa",
+      "recon_flush",
+      "recon_probe"
+    ],
+    "outcome": {
+      "pass": false,
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "pass": false,
+          "detail": "underscore@1.13.8 still flagged (osvAffected=false, scanner=true) | express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | swig removed from the resolved tree"
+        },
+        {
+          "name": "no-regression",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "pass": false,
+          "detail": "missing/failing path tests: Should memo be generated, Should memo be generated, should have admin user able to login, Should new user be added to the system, Should memo be generated"
+        },
+        {
+          "name": "actually-works",
+          "pass": true,
+          "detail": "journeys correct, no new divergence"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 5.815344,
+      "usage": {
+        "input": 1386481,
+        "output": 13471,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 193771,
+      "phase": {
+        "setupMs": 17285,
+        "baselineMs": 32,
+        "agentMs": 169943,
+        "gradeMs": 3354
+      }
+    },
+    "effort": {
+      "turns": 24,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "security_scan": 1,
+        "get_reachable_cves": 2,
+        "run_shell": 19,
+        "check_policies": 2,
+        "is_reachable": 7,
+        "run_tests": 2,
+        "recon_qa": 2,
+        "scan_diff": 1
+      }
+    },
+    "neatUsage": {
+      "security_scan": 1,
+      "get_reachable_cves": 2,
+      "check_policies": 2,
+      "is_reachable": 7,
+      "recon_qa": 2,
+      "scan_diff": 1
+    },
+    "lockfilePre": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "lockfilePost": {
+      "file": "package-lock.json",
+      "sha256": "c3a8b7c27d02823ab7075e7ac4c57b08f5379e0c56bc0e975076d71d0e06e55f"
+    }
+  },
+  "grade": {
+    "app": "nodegoat",
+    "pass": false,
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "pass": false,
+        "detail": "underscore@1.13.8 still flagged (osvAffected=false, scanner=true) | express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | swig removed from the resolved tree"
+      },
+      {
+        "name": "no-regression",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "pass": false,
+        "detail": "missing/failing path tests: Should memo be generated, Should memo be generated, should have admin user able to login, Should new user be added to the system, Should memo be generated"
+      },
+      {
+        "name": "actually-works",
+        "pass": true,
+        "detail": "journeys correct, no new divergence"
+      }
+    ]
+  }
+}

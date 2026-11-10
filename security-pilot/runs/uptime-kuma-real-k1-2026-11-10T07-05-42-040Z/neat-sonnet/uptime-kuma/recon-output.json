@@ -1,0 +1,8 @@
+{
+  "works": true,
+  "testFailures": [],
+  "journeyFailures": [],
+  "newDivergences": [],
+  "observedOk": true,
+  "detail": "service:uptime-kuma present; 42 OBSERVED edge(s), 2 fresh; journeys ok; newDivergences=0"
+}

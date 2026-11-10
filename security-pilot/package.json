@@ -1,0 +1,21 @@
+{
+  "name": "@neat-bench/security-pilot",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "NEAT security-remediation bench harness (bench-internal, box-only)",
+  "scripts": {
+    "trial": "tsx harness/trial.ts",
+    "run-matrix": "tsx harness/runner.ts",
+    "dry": "tsx harness/dry-run.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.7.0",
+    "@modelcontextprotocol/sdk": "^1.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

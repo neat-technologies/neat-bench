@@ -1,0 +1,114 @@
+[smoke10] start Tue Nov 10 04:24:20 AM GMT 2026
+=== 12-config stub smoke + id-match === box=<host> node=v20.20.2 apps=nodegoat,uptime-kuma,gitea,paperless-ngx
+
+----- neat-opus / nodegoat (avail 15.9Gi) -----
+  [detail] types={"ServiceNode":2,"FileNode":56,"SymbolNode":63,"DatabaseNode":2,"ConfigNode":5,"RouteNode":31,"InfraNode":9}
+  [detail] dbNodes=["database:mongodb:mongo","database:mongodb:127.0.0.1"]
+  [detail] observedRoutes=13 socketioTopics=0 symbolGrainObsEdges=0
+  id-match nodegoat: produced=0 matchedExact=0/5 substringHits=0
+  pass=false tools=25/26 criteria=vuln-gone:false,no-regression:true,not-degenerate:true,actually-works:true
+
+----- bare-opus / nodegoat (avail 15.9Gi) -----
+  pass=false tools=5/7 criteria=vuln-gone:false,no-regression:true,not-degenerate:true,actually-works:true
+
+----- neat-sonnet / nodegoat (avail 15.8Gi) -----
+  [detail] types={"ServiceNode":2,"FileNode":56,"SymbolNode":63,"DatabaseNode":2,"ConfigNode":5,"RouteNode":31,"InfraNode":9}
+  [detail] dbNodes=["database:mongodb:mongo","database:mongodb:127.0.0.1"]
+  [detail] observedRoutes=13 socketioTopics=0 symbolGrainObsEdges=0
+  pass=false tools=25/26 criteria=vuln-gone:false,no-regression:true,not-degenerate:true,actually-works:true
+
+----- neat-opus / uptime-kuma (avail 15.9Gi) -----
+  [detail] types={"ServiceNode":3,"FileNode":408,"SymbolNode":1319,"ConfigNode":31,"RouteNode":28,"FrontierNode":3,"InfraNode":25}
+  [detail] dbNodes=[]
+  [detail] observedRoutes=1 socketioTopics=25 symbolGrainObsEdges=28
+  [detail] sioTopics=["infra:socket.io-topic:/#info","infra:socket.io-topic:/#setup","infra:socket.io-topic:/#loginRequired","infra:socket.io-topic:/#connection","infra:socket.io-topic:/#needSetup","infra:socket.io-topic:/#monitorList","infra:socket.io-topic:/#monitorTypeList","infra:socket.io-topic:/#maintenanceList","infra:socket.io-topic:/#notificationList","infra:socket.io-topic:/#proxyList","infra:socket.io-topic:/#dockerHostList","infra:socket.io-topic:/#apiKeyList"]
+  [detail] symObs: (PUBLISHES_TO) symbol:uptime-kuma:server/client.js#sendInfo -> infra:socket.io-topic:/#info
+  [detail] symObs: (CONTAINS) file:uptime-kuma:server/server.js -> symbol:uptime-kuma:server/server.js#Namespace.<anonymous>
+  [detail] symObs: (PUBLISHES_TO) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#setup
+  [detail] symObs: (PUBLISHES_TO) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#loginRequired
+  [detail] symObs: (CONSUMES_FROM) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#needSetup
+  [detail] symObs: (CONSUMES_FROM) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#setup
+  id-match uptime-kuma: produced=0 matchedExact=0/3 substringHits=0
+  pass=false tools=25/26 criteria=vuln-gone:false,no-regression:true,not-degenerate:false,actually-works:true
+
+----- bare-opus / uptime-kuma (avail 16.4Gi) -----
+  pass=false tools=5/7 criteria=vuln-gone:false,no-regression:true,not-degenerate:false,actually-works:true
+
+----- neat-sonnet / uptime-kuma (avail 16.5Gi) -----
+  [detail] types={"ServiceNode":3,"FileNode":408,"SymbolNode":1319,"ConfigNode":31,"RouteNode":28,"FrontierNode":3,"InfraNode":25}
+  [detail] dbNodes=[]
+  [detail] observedRoutes=1 socketioTopics=25 symbolGrainObsEdges=28
+  [detail] sioTopics=["infra:socket.io-topic:/#info","infra:socket.io-topic:/#setup","infra:socket.io-topic:/#loginRequired","infra:socket.io-topic:/#connection","infra:socket.io-topic:/#needSetup","infra:socket.io-topic:/#monitorList","infra:socket.io-topic:/#monitorTypeList","infra:socket.io-topic:/#maintenanceList","infra:socket.io-topic:/#notificationList","infra:socket.io-topic:/#proxyList","infra:socket.io-topic:/#dockerHostList","infra:socket.io-topic:/#apiKeyList"]
+  [detail] symObs: (PUBLISHES_TO) symbol:uptime-kuma:server/client.js#sendInfo -> infra:socket.io-topic:/#info
+  [detail] symObs: (CONTAINS) file:uptime-kuma:server/server.js -> symbol:uptime-kuma:server/server.js#Namespace.<anonymous>
+  [detail] symObs: (PUBLISHES_TO) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#setup
+  [detail] symObs: (PUBLISHES_TO) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#loginRequired
+  [detail] symObs: (CONSUMES_FROM) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#needSetup
+  [detail] symObs: (CONSUMES_FROM) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#setup
+  pass=false tools=25/26 criteria=vuln-gone:false,no-regression:true,not-degenerate:false,actually-works:true
+
+----- neat-opus / gitea (avail 16.4Gi) -----
+  [detail] types={"ServiceNode":1,"FileNode":3610,"SymbolNode":17158,"ConfigNode":196,"InfraNode":21,"DatabaseNode":1}
+  [detail] dbNodes=["database:sqlite:sqlite3"]
+  [detail] observedRoutes=0 socketioTopics=0 symbolGrainObsEdges=43
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:cmd/migrate.go#runMigrate -> database:sqlite:sqlite3
+  [detail] symObs: (CALLS) symbol:gitea:cmd/migrate.go#runMigrate -> infra:sql-table:sqlite_master
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:modelmigration/migrations.go#Migrate -> database:sqlite:sqlite3
+  [detail] symObs: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:sqlite_master
+  [detail] symObs: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:version
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:routers/common/db.go#InitDBEngine -> database:sqlite:sqlite3
+  id-match gitea: produced=331 matchedExact=8/8 substringHits=0
+  pass=null tools=25/26 criteria=
+
+----- bare-opus / gitea (avail 16.4Gi) -----
+  pass=null tools=5/7 criteria=
+
+----- neat-sonnet / gitea (avail 16.6Gi) -----
+  [detail] types={"ServiceNode":1,"FileNode":3621,"SymbolNode":18280,"ConfigNode":196,"InfraNode":18,"DatabaseNode":1}
+  [detail] dbNodes=["database:sqlite:sqlite3"]
+  [detail] observedRoutes=0 socketioTopics=0 symbolGrainObsEdges=37
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:cmd/migrate.go#runMigrate -> database:sqlite:sqlite3
+  [detail] symObs: (CALLS) symbol:gitea:cmd/migrate.go#runMigrate -> infra:sql-table:sqlite_master
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:modelmigration/migrations.go#Migrate -> database:sqlite:sqlite3
+  [detail] symObs: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:sqlite_master
+  [detail] symObs: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:version
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:routers/common/db.go#InitDBEngine -> database:sqlite:sqlite3
+  pass=null tools=25/26 criteria=
+
+----- neat-opus / paperless-ngx SKIPPED (blocked) -----
+
+----- bare-opus / paperless-ngx (avail 16.6Gi) -----
+  id-match paperless-ngx: produced=0 matchedExact=0/4 substringHits=0
+  pass=null tools=4/7 criteria=
+
+----- neat-sonnet / paperless-ngx SKIPPED (blocked) -----
+
+================= 12-CONFIG MATRIX =================
+fail neat-opus    nodegoat       tools=25/26 obs=31 div=12 | vuln-gone=F no-regression=P not-degenerate=P actually-works=P
+fail bare-opus    nodegoat       tools=5/7 cap=89865B | vuln-gone=F no-regression=P not-degenerate=P actually-works=P
+fail neat-sonnet  nodegoat       tools=25/26 obs=31 div=12 | vuln-gone=F no-regression=P not-degenerate=P actually-works=P
+fail neat-opus    uptime-kuma    tools=25/26 obs=38 div=2 | vuln-gone=F no-regression=P not-degenerate=F actually-works=P
+fail bare-opus    uptime-kuma    tools=5/7 cap=468695B | vuln-gone=F no-regression=P not-degenerate=F actually-works=P
+fail neat-sonnet  uptime-kuma    tools=25/26 obs=38 div=2 | vuln-gone=F no-regression=P not-degenerate=F actually-works=P
+ERR  neat-opus    gitea          tools=25/26 obs=61 div=4 |  | ERROR: Error: govulncheck unavailable/failed: /bin/sh: 1: govulncheck: not found
+ERR  bare-opus    gitea          tools=5/7 cap=1296131B |  | ERROR: Error: govulncheck unavailable/failed: /bin/sh: 1: govulncheck: not found
+ERR  neat-sonnet  gitea          tools=25/26 obs=53 div=5 |  | ERROR: Error: govulncheck unavailable/failed: /bin/sh: 1: govulncheck: not found
+ERR  neat-opus    paperless-ngx  tools=n/a obs=- div=- |  | ERROR: BLOCKED: neat security scan unviable on paperless 274 deps via api.osv.dev 49s-without-advisories vs over-28min-with; plus pytest needs in-container exec. Needs neat-core OSV batch/mirror/cap.
+ERR  bare-opus    paperless-ngx  tools=4/7 cap=1498397B |  | ERROR: Error: pip-audit JSON parse failed
+ERR  neat-sonnet  paperless-ngx  tools=n/a obs=- div=- |  | ERROR: BLOCKED: neat security scan unviable on paperless 274 deps via api.osv.dev 49s-without-advisories vs over-28min-with; plus pytest needs in-container exec. Needs neat-core OSV batch/mirror/cap.
+
+================= ID-MATCH =================
+nodegoat: testCmd="npm run test:ci" produced=0 exact=0/5 substring=0
+   sampleIds=[]
+   missingExact=["Should memo be generated","Should memo be generated","should have admin user able to login","Should new user be added to the system","Should memo be generated"]
+uptime-kuma: testCmd="node test/test-backend.mjs" produced=0 exact=0/3 substring=0
+   sampleIds=[]
+   missingExact=["check() sets status to UP when json-query finds expected value","check() rejects when json-query path returns undefined","check() rejects when json-query value does not match expected value"]
+gitea: testCmd="go test ./modules/markup/..." produced=331 exact=8/8 substring=0
+   sampleIds=["gitea.dev/modules/markup/internal TestRenderInternalAttrs","TestRenderInternalAttrs","gitea.dev/modules/markup/internal TestRenderInternalExtraHead/HeadExists","TestRenderInternalExtraHead/HeadExists","gitea.dev/modules/markup/internal TestRenderInternalExtraHead/HeadNotExists","TestRenderInternalExtraHead/HeadNotExists"]
+paperless-ngx: testCmd="pytest src/documents/tests/test_file_handling.py src/documents/tests/test_api_objects.py" produced=0 exact=0/4 substring=0
+   sampleIds=[]
+   missingExact=["test_dynamic_path","test_dynamic_path_with_none","test_dynamic_path_remove_none","test_test_storage_path"]
+
+artifacts: $HOME/neat-bench/security-pilot/runs/smoke12-2026-11-10T04-24-21-506Z
+[smoke10] exit=0 Tue Nov 10 05:13:40 AM GMT 2026

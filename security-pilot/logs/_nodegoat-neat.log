@@ -1,0 +1,28 @@
+[nodegoat neat] start Tue Nov 10 08:07:06 AM GMT 2026
+[app-real] testCmd overridden -> node -e "console.log(0)" (native suite UNVERIFIED-infra)
+=== nodegoat REAL k=1 === runLabel=nodegoat-real-k1-2026-11-10T08-07-07-308Z arms=neat-opus,neat-sonnet
+[runner] worker 0 starting neat-opus/nodegoat#0 (avail 22.8Gi)
+[runner] done neat-opus/nodegoat#0: pass=false
+[runner] worker 0 starting neat-sonnet/nodegoat#0 (avail 22.7Gi)
+[runner] done neat-sonnet/nodegoat#0: pass=false
+
+=== nodegoat REAL k=1 COMPLETE ===
+neat-opus nodegoat pass=false
+   [FAIL] vuln-gone: underscore@1.13.8 still flagged (osvAffected=false, scanner=true) | express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | body-parser@1.2
+   [PASS] no-regression: baseline-green tests still green
+   [FAIL] not-degenerate: missing/failing path tests: Should memo be generated, Should memo be generated, should have admin user able to login, Should new user be added to the system, Sh
+   [PASS] actually-works: journeys correct, no new divergence
+   cost=$5.815 in=1386481 out=13471 turns=24 stop=end_turn
+   totalMs=193771 phase={"setupMs":17285,"baselineMs":32,"agentMs":169943,"gradeMs":3354}
+   neatUsage={"security_scan":1,"get_reachable_cves":2,"check_policies":2,"is_reachable":7,"recon_qa":2,"scan_diff":1}
+neat-sonnet nodegoat pass=false
+   [FAIL] vuln-gone: underscore@1.13.8 still flagged (osvAffected=false, scanner=true) | express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | body-parser@1.2
+   [PASS] no-regression: baseline-green tests still green
+   [FAIL] not-degenerate: missing/failing path tests: Should memo be generated, Should memo be generated, should have admin user able to login, Should new user be added to the system, Sh
+   [PASS] actually-works: journeys correct, no new divergence
+   cost=$1.879 in=898182 out=8280 turns=30 stop=end_turn
+   totalMs=205221 phase={"setupMs":16875,"baselineMs":33,"agentMs":182027,"gradeMs":3285}
+   neatUsage={"get_reachable_cves":1,"check_policies":1,"security_scan":3,"recon_qa":1}
+
+artifacts: $HOME/neat-bench/security-pilot/runs/nodegoat-real-k1-2026-11-10T08-07-07-308Z
+[nodegoat neat] exit=0 Tue Nov 10 08:13:49 AM GMT 2026

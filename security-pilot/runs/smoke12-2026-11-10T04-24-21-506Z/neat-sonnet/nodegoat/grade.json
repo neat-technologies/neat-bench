@@ -1,0 +1,26 @@
+{
+  "app": "nodegoat",
+  "pass": false,
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "pass": false,
+      "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true)"
+    },
+    {
+      "name": "no-regression",
+      "pass": true,
+      "detail": "baseline-green tests still green"
+    },
+    {
+      "name": "not-degenerate",
+      "pass": true,
+      "detail": "vuln-path tests persist and pass"
+    },
+    {
+      "name": "actually-works",
+      "pass": true,
+      "detail": "journeys correct, no new divergence"
+    }
+  ]
+}

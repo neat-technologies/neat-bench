@@ -1,0 +1,26 @@
+{
+  "app": "nodegoat",
+  "pass": false,
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "pass": false,
+      "detail": "underscore@1.9.1 still flagged (osvAffected=true, scanner=true) | express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | swig@1.4.2 still flagged (osvAffected=true, scanner=false)"
+    },
+    {
+      "name": "no-regression",
+      "pass": true,
+      "detail": "baseline-green tests still green"
+    },
+    {
+      "name": "not-degenerate",
+      "pass": false,
+      "detail": "missing/failing path tests: Should memo be generated, Should memo be generated, should have admin user able to login, Should new user be added to the system, Should memo be generated"
+    },
+    {
+      "name": "actually-works",
+      "pass": false,
+      "detail": "journeys failed: home fetch failed, tutorial fetch failed, login-get fetch failed, login-post-wrong fetch failed, signup-get fetch failed, contributions fetch failed, memos fetch failed, profile-get unreachable"
+    }
+  ]
+}

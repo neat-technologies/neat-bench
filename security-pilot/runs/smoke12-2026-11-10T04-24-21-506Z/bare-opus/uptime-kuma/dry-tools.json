@@ -1,0 +1,37 @@
+[
+  {
+    "name": "run_shell",
+    "isError": false,
+    "preview": "exit=0 --- stdout --- total 928 drwx------  15 <user> <user>   4096 Nov 10 04:42 . drwxrwxr-x   4 <user> <user>   4096 Nov 10 04:42 .. -rw-rw-r--   1 <user> <user>   "
+  },
+  {
+    "name": "read_file",
+    "isError": false,
+    "preview": "{     \"name\": \"uptime-kuma\",     \"version\": \"2.5.3\",     \"license\": \"MIT\",     \"repository\": {         \"type\": \"git\",         \"url\": \"https://github.com/louisla"
+  },
+  {
+    "name": "write_file",
+    "isError": false,
+    "preview": "wrote .bench-dry-bare-opus.txt (20 bytes)"
+  },
+  {
+    "name": "run_tests",
+    "isError": false,
+    "preview": "$ node -e \"console.log('ok 1 - smoke')\" exit=0 --- stdout --- ok 1 - smoke  --- stderr --- "
+  },
+  {
+    "name": "npm_audit",
+    "isError": false,
+    "preview": "{   \"auditReportVersion\": 2,   \"vulnerabilities\": {     \"@actions/github\": {       \"name\": \"@actions/github\",       \"severity\": \"moderate\",       \"isDirect\": tr"
+  },
+  {
+    "name": "pip_audit",
+    "isError": true,
+    "preview": "/bin/sh: 1: pip-audit: not found "
+  },
+  {
+    "name": "osv_scan",
+    "isError": true,
+    "preview": "/bin/sh: 1: osv-scanner: not found "
+  }
+]

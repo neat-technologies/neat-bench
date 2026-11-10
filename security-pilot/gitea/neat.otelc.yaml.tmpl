@@ -1,0 +1,96 @@
+version: "v1.0.0"
+
+# NEAT call-site stamp (ADR-A spike step 2). Every CLIENT/PRODUCER span the SDK
+# creates gets code.file.path / code.line.number / code.function.name from the
+# first stack frame under the service root, whatever instrumentation started it.
+# __DBSKIP__ is a |-separated list of path fragments for the app's own query
+# wrappers (Gitea: /models/db/), so the stamp lands on the code that called them.
+# Inline code only: --rules needs no go.mod entry for inject_code.
+neat_callsite_stamp:
+  target: go.opentelemetry.io/otel/sdk/trace
+  where:
+    func: newRecordingSpan
+    recv: "*tracer"
+    pattern: "^return s$"
+    placement: before
+  imports:
+    neatrt: "runtime"
+    neatstr: "strings"
+    neatattr: "go.opentelemetry.io/otel/attribute"
+  do:
+    - inject_code:
+        raw: |-
+          if s.spanKind == trace.SpanKindClient || s.spanKind == trace.SpanKindProducer {
+          	func() {
+          		pcs := make([]uintptr, 64)
+          		n := neatrt.Callers(3, pcs)
+          		frames := neatrt.CallersFrames(pcs[:n])
+          		for {
+          			fr, more := frames.Next()
+          			skip := false
+          			for _, sk := range neatstr.Split("__DBSKIP__", "|") {
+          				if sk != "" && neatstr.Contains(fr.File, sk) {
+          					skip = true
+          					break
+          				}
+          			}
+          			if !skip && fr.File != "" && neatstr.HasPrefix(fr.File, "__ROOT__/") && !neatstr.Contains(fr.File, "/vendor/") && !neatstr.Contains(fr.File, "/.otelc-build/") {
+          				s.SetAttributes(neatattr.String("code.file.path", fr.File), neatattr.Int("code.line.number", fr.Line), neatattr.String("code.function.name", fr.Function))
+          				return
+          			}
+          			if !more {
+          				return
+          			}
+          		}
+          	}()
+          }
+
+# chi handler attribution: wrap each handler at registration, capturing the
+# registration frame (skipping chi and the app's router-wrapper package); at
+# serve time stamp the SERVER span with it and set http.route to chi's matched
+# route template.
+neat_chi_handler_entry:
+  target: github.com/go-chi/chi/v5
+  where:
+    func: handle
+    recv: "*Mux"
+  imports:
+    neatrt: "runtime"
+    neatstr: "strings"
+    neatattr: "go.opentelemetry.io/otel/attribute"
+    neattrace: "go.opentelemetry.io/otel/trace"
+  do:
+    - inject_code:
+        raw: |-
+          {{.FuncArgument 2}} = func(neatH http.Handler) http.Handler {
+          	neatFile, neatLine, neatFn := "", 0, ""
+          	pcs := make([]uintptr, 64)
+          	n := neatrt.Callers(2, pcs)
+          	frames := neatrt.CallersFrames(pcs[:n])
+          	for {
+          		fr, more := frames.Next()
+          		if fr.File != "" && neatstr.HasPrefix(fr.File, "__ROOT__/") && !neatstr.Contains(fr.File, "__SKIP__") && !neatstr.Contains(fr.File, "/vendor/") {
+          			neatFile, neatLine, neatFn = fr.File, fr.Line, fr.Function
+          			break
+          		}
+          		if !more {
+          			break
+          		}
+          	}
+          	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+          		if sp := neattrace.SpanFromContext(r.Context()); sp.IsRecording() {
+          			if ks, ok := sp.(interface{ SpanKind() neattrace.SpanKind }); ok && ks.SpanKind() == neattrace.SpanKindServer {
+          				if rc := RouteContext(r.Context()); rc != nil {
+          					if p := rc.RoutePattern(); p != "" {
+          						sp.SetAttributes(neatattr.String("http.route", p))
+          						sp.SetName(r.Method + " " + p)
+          					}
+          				}
+          				if neatFile != "" {
+          					sp.SetAttributes(neatattr.String("code.file.path", neatFile), neatattr.Int("code.line.number", neatLine), neatattr.String("code.function.name", neatFn))
+          				}
+          			}
+          		}
+          		neatH.ServeHTTP(w, r)
+          	})
+          }({{.FuncArgument 2}})

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "run_shell",
+    "isError": false,
+    "preview": "exit=0 --- stdout --- total 712 drwx------ 11 <user> <user>   4096 Nov 10 05:51 . drwxrwxr-x  4 <user> <user>   4096 Nov 10 05:51 .. -rw-rw-r--  1 <user> <user>   103"
+  },
+  {
+    "name": "read_file",
+    "isError": true,
+    "preview": "read failed: Error: ENOENT: no such file or directory, open '$HOME/neat-bench/security-pilot/runs/smoke12-2026-11-10T05-20-36-548Z/_trees/paperless-ngx-ba"
+  },
+  {
+    "name": "write_file",
+    "isError": false,
+    "preview": "wrote .bench-dry-bare-opus.txt (20 bytes)"
+  },
+  {
+    "name": "run_tests",
+    "isError": false,
+    "preview": "$ node -e \"console.log('ok 1 - smoke')\" exit=0 --- stdout --- ok 1 - smoke  --- stderr --- "
+  },
+  {
+    "name": "npm_audit",
+    "isError": false,
+    "preview": "{   \"auditReportVersion\": 2,   \"vulnerabilities\": {},   \"metadata\": {     \"vulnerabilities\": {       \"info\": 0,       \"low\": 0,       \"moderate\": 0,       \"high"
+  },
+  {
+    "name": "pip_audit",
+    "isError": true,
+    "preview": "/bin/sh: 1: pip-audit: not found "
+  },
+  {
+    "name": "osv_scan",
+    "isError": false,
+    "preview": "{   \"results\": [],   \"experimental_config\": {     \"licenses\": {       \"summary\": false,       \"allowlist\": null     }   } } "
+  }
+]

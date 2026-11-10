@@ -1,0 +1,17 @@
+[nodegoat bare-opus] start Tue Nov 10 07:59:59 AM GMT 2026
+[app-real] testCmd overridden -> node -e "console.log(0)" (native suite UNVERIFIED-infra)
+=== nodegoat REAL k=1 === runLabel=nodegoat-real-k1-2026-11-10T08-00-00-130Z arms=bare-opus
+[runner] worker 0 starting bare-opus/nodegoat#0 (avail 22.7Gi)
+[runner] done bare-opus/nodegoat#0: pass=false
+
+=== nodegoat REAL k=1 COMPLETE ===
+bare-opus nodegoat pass=false
+   [FAIL] vuln-gone: underscore@1.9.1 still flagged (osvAffected=true, scanner=true) | express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | body-parser@1.20.
+   [PASS] no-regression: baseline-green tests still green
+   [FAIL] not-degenerate: missing/failing path tests: Should memo be generated, Should memo be generated, should have admin user able to login, Should new user be added to the system, Sh
+   [FAIL] actually-works: journeys failed: home fetch failed, tutorial fetch failed, login-get fetch failed, login-post-wrong fetch failed, signup-get fetch failed, contributions fetch f
+   cost=$9.203 in=2187957 out=22534 turns=43 stop=end_turn
+   totalMs=336343 phase={"setupMs":14816,"baselineMs":21,"agentMs":313034,"gradeMs":7044}
+
+artifacts: $HOME/neat-bench/security-pilot/runs/nodegoat-real-k1-2026-11-10T08-00-00-130Z
+[nodegoat bare-opus] exit=0 Tue Nov 10 08:05:38 AM GMT 2026

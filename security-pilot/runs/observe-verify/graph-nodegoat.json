@@ -1,0 +1,4768 @@
+{
+ "nodes": [
+  {
+   "id": "service:owasp-nodejs-goat",
+   "type": "ServiceNode",
+   "name": "owasp-nodejs-goat",
+   "language": "javascript",
+   "version": "1.3.0",
+   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.15.1",
+    "consolidate": "^0.14.1",
+    "csurf": "^1.8.3",
+    "dont-sniff-mimetype": "^1.0.0",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "forever": "^2.0.0",
+    "helmet": "^2.0.0",
+    "marked": "0.3.5",
+    "mongodb": "^2.1.18",
+    "needle": "2.2.4",
+    "node-esapi": "0.0.1",
+    "serve-favicon": "^2.3.0",
+    "swig": "^1.4.2",
+    "underscore": "^1.8.3"
+   },
+   "repoPath": "",
+   "discoveredVia": "static",
+   "dbConnectionTarget": "mongo"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:Gruntfile.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "Gruntfile.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/assets/js/chart/chart-data-morris.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/assets/js/chart/chart-data-morris.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/assets/js/tour/redirects-steps.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/assets/js/tour/redirects-steps.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/data/allocations-dao.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/data/benefits-dao.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/data/benefits-dao.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/data/contributions-dao.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/data/memos-dao.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/data/memos-dao.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/data/profile-dao.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/data/profile-dao.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/data/research-dao.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/data/research-dao.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/data/user-dao.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/allocations.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/allocations.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/benefits.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/benefits.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/contributions.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/contributions.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/error.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/error.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/index.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/index.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/memos.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/memos.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/profile.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/profile.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/research.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/research.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/session.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/session.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app/routes/tutorial.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app/routes/tutorial.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "artifacts/db-reset.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:config/config.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "config/config.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:config/env/all.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "config/env/all.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:config/env/development.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "config/env/development.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:config/env/production.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "config/env/production.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:config/env/test.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "config/env/test.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:server.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "server.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/allocations_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/allocations_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/benefits_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/benefits_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/contributions_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/contributions_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/dashboard_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/dashboard_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/general_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/general_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/learn_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/learn_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/login_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/login_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/logout_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/logout_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/memos_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/memos_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/profile_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/profile_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/research_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/research_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/signup_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/signup_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/integration/tutorial_spec.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/integration/tutorial_spec.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/plugins/index.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/plugins/index.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/support/commands.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/support/commands.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/e2e/support/index.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/e2e/support/index.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:test/security/profile-test.js",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "test/security/profile-test.js",
+   "language": "javascript",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:Gruntfile.js#module.exports",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "module.exports",
+   "span": {
+    "startLine": 14,
+    "endLine": 194,
+    "startByte": 318,
+    "endByte": 6357
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "Gruntfile.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/allocations-dao.js#AllocationsDAO",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "AllocationsDAO",
+   "span": {
+    "startLine": 4,
+    "endLine": 112,
+    "startByte": 132,
+    "endByte": 3877
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/allocations-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/allocations-dao.js#this.update",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.update",
+   "span": {
+    "startLine": 18,
+    "endLine": 55,
+    "startByte": 620,
+    "endByte": 1665
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/allocations-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/allocations-dao.js#this.getByUserIdAndThreshold",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getByUserIdAndThreshold",
+   "span": {
+    "startLine": 57,
+    "endLine": 110,
+    "startByte": 1672,
+    "endByte": 3873
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/allocations-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/allocations-dao.js#searchCriteria",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "searchCriteria",
+   "span": {
+    "startLine": 60,
+    "endLine": 84,
+    "startByte": 1800,
+    "endByte": 2954
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/allocations-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/benefits-dao.js#BenefitsDAO",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "BenefitsDAO",
+   "span": {
+    "startLine": 2,
+    "endLine": 41,
+    "startByte": 75,
+    "endByte": 1204
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/benefits-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/benefits-dao.js#this.getAllNonAdminUsers",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getAllNonAdminUsers",
+   "span": {
+    "startLine": 15,
+    "endLine": 21,
+    "startByte": 501,
+    "endByte": 695
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/benefits-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/benefits-dao.js#this.updateBenefits",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.updateBenefits",
+   "span": {
+    "startLine": 23,
+    "endLine": 40,
+    "startByte": 702,
+    "endByte": 1201
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/benefits-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/contributions-dao.js#ContributionsDAO",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "ContributionsDAO",
+   "span": {
+    "startLine": 4,
+    "endLine": 84,
+    "startByte": 128,
+    "endByte": 2749
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/contributions-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/contributions-dao.js#this.update",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.update",
+   "span": {
+    "startLine": 17,
+    "endLine": 54,
+    "startByte": 625,
+    "endByte": 1815
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/contributions-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/contributions-dao.js#this.getByUserId",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getByUserId",
+   "span": {
+    "startLine": 56,
+    "endLine": 83,
+    "startByte": 1822,
+    "endByte": 2746
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/contributions-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/memos-dao.js#MemosDAO",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "MemosDAO",
+   "span": {
+    "startLine": 2,
+    "endLine": 37,
+    "startByte": 72,
+    "endByte": 1073
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/memos-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/memos-dao.js#this.insert",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.insert",
+   "span": {
+    "startLine": 15,
+    "endLine": 24,
+    "startByte": 486,
+    "endByte": 757
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/memos-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/memos-dao.js#this.getAllMemos",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getAllMemos",
+   "span": {
+    "startLine": 26,
+    "endLine": 35,
+    "startByte": 764,
+    "endByte": 1069
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/memos-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/profile-dao.js#ProfileDAO",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "ProfileDAO",
+   "span": {
+    "startLine": 2,
+    "endLine": 111,
+    "startByte": 74,
+    "endByte": 3471
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/profile-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/profile-dao.js#this.updateUser",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.updateUser",
+   "span": {
+    "startLine": 42,
+    "endLine": 92,
+    "startByte": 1657,
+    "endByte": 2907
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/profile-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/profile-dao.js#this.getByUserId",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getByUserId",
+   "span": {
+    "startLine": 94,
+    "endLine": 110,
+    "startByte": 2914,
+    "endByte": 3468
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/profile-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/research-dao.js#ResearchDAO",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "ResearchDAO",
+   "span": {
+    "startLine": 2,
+    "endLine": 25,
+    "startByte": 75,
+    "endByte": 714
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/research-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/research-dao.js#this.getBySymbol",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getBySymbol",
+   "span": {
+    "startLine": 13,
+    "endLine": 24,
+    "startByte": 455,
+    "endByte": 711
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/research-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/research-dao.js#searchCriteria",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "searchCriteria",
+   "span": {
+    "startLine": 15,
+    "endLine": 23,
+    "startByte": 513,
+    "endByte": 704
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/research-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#UserDAO",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "UserDAO",
+   "span": {
+    "startLine": 4,
+    "endLine": 121,
+    "startByte": 113,
+    "endByte": 4045
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.addUser",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.addUser",
+   "span": {
+    "startLine": 17,
+    "endLine": 47,
+    "startByte": 523,
+    "endByte": 1498
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getRandomFutureDate",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getRandomFutureDate",
+   "span": {
+    "startLine": 49,
+    "endLine": 55,
+    "startByte": 1505,
+    "endByte": 1887
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.validateLogin",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.validateLogin",
+   "span": {
+    "startLine": 57,
+    "endLine": 94,
+    "startByte": 1894,
+    "endByte": 3340
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#comparePassword",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "comparePassword",
+   "span": {
+    "startLine": 60,
+    "endLine": 67,
+    "startByte": 2014,
+    "endByte": 2298
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#validateUserDoc",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "validateUserDoc",
+   "span": {
+    "startLine": 70,
+    "endLine": 89,
+    "startByte": 2385,
+    "endByte": 3245
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getUserById",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getUserById",
+   "span": {
+    "startLine": 97,
+    "endLine": 101,
+    "startByte": 3398,
+    "endByte": 3529
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getUserByUserName",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getUserByUserName",
+   "span": {
+    "startLine": 103,
+    "endLine": 107,
+    "startByte": 3536,
+    "endByte": 3672
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getNextSequence",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.getNextSequence",
+   "span": {
+    "startLine": 109,
+    "endLine": 120,
+    "startByte": 3679,
+    "endByte": 4042
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/data/user-dao.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/allocations.js#AllocationsHandler",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "AllocationsHandler",
+   "span": {
+    "startLine": 6,
+    "endLine": 32,
+    "startByte": 144,
+    "endByte": 876
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/allocations.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/allocations.js#this.displayAllocations",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayAllocations",
+   "span": {
+    "startLine": 11,
+    "endLine": 31,
+    "startByte": 253,
+    "endByte": 873
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/allocations.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/benefits.js#BenefitsHandler",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "BenefitsHandler",
+   "span": {
+    "startLine": 8,
+    "endLine": 55,
+    "startByte": 131,
+    "endByte": 1304
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/benefits.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/benefits.js#this.displayBenefits",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayBenefits",
+   "span": {
+    "startLine": 13,
+    "endLine": 27,
+    "startByte": 231,
+    "endByte": 596
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/benefits.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/benefits.js#this.updateBenefits",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.updateBenefits",
+   "span": {
+    "startLine": 29,
+    "endLine": 54,
+    "startByte": 603,
+    "endByte": 1301
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/benefits.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/contributions.js#ContributionsHandler",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "ContributionsHandler",
+   "span": {
+    "startLine": 7,
+    "endLine": 78,
+    "startByte": 221,
+    "endByte": 2444
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/contributions.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/contributions.js#this.displayContributions",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayContributions",
+   "span": {
+    "startLine": 12,
+    "endLine": 26,
+    "startByte": 336,
+    "endByte": 767
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/contributions.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/contributions.js#this.handleContributionsUpdate",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.handleContributionsUpdate",
+   "span": {
+    "startLine": 28,
+    "endLine": 76,
+    "startByte": 774,
+    "endByte": 2440
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/contributions.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/error.js#errorHandler",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "errorHandler",
+   "span": {
+    "startLine": 3,
+    "endLine": 13,
+    "startByte": 36,
+    "endByte": 243
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/error.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/index.js#index",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "index",
+   "span": {
+    "startLine": 11,
+    "endLine": 83,
+    "startByte": 442,
+    "endByte": 3122
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/index.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/memos.js#MemosHandler",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "MemosHandler",
+   "span": {
+    "startLine": 6,
+    "endLine": 35,
+    "startByte": 126,
+    "endByte": 791
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/memos.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/memos.js#this.addMemos",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.addMemos",
+   "span": {
+    "startLine": 11,
+    "endLine": 17,
+    "startByte": 217,
+    "endByte": 415
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/memos.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/memos.js#this.displayMemos",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayMemos",
+   "span": {
+    "startLine": 19,
+    "endLine": 33,
+    "startByte": 422,
+    "endByte": 787
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/memos.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/profile.js#ProfileHandler",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "ProfileHandler",
+   "span": {
+    "startLine": 8,
+    "endLine": 109,
+    "startByte": 234,
+    "endByte": 3598
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/profile.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/profile.js#this.displayProfile",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayProfile",
+   "span": {
+    "startLine": 13,
+    "endLine": 38,
+    "startByte": 328,
+    "endByte": 1329
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/profile.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/profile.js#this.handleProfileUpdate",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.handleProfileUpdate",
+   "span": {
+    "startLine": 40,
+    "endLine": 107,
+    "startByte": 1336,
+    "endByte": 3594
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/profile.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/research.js#ResearchHandler",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "ResearchHandler",
+   "span": {
+    "startLine": 7,
+    "endLine": 36,
+    "startByte": 169,
+    "endByte": 1035
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/research.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/research.js#this.displayResearch",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayResearch",
+   "span": {
+    "startLine": 12,
+    "endLine": 34,
+    "startByte": 269,
+    "endByte": 1031
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/research.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#SessionHandler",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "SessionHandler",
+   "span": {
+    "startLine": 8,
+    "endLine": 275,
+    "startByte": 262,
+    "endByte": 10164
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#prepareUserData",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "prepareUserData",
+   "span": {
+    "startLine": 14,
+    "endLine": 23,
+    "startByte": 410,
+    "endByte": 782
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#this.isAdminUserMiddleware",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.isAdminUserMiddleware",
+   "span": {
+    "startLine": 25,
+    "endLine": 34,
+    "startByte": 789,
+    "endByte": 1144
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#this.isLoggedInMiddleware",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.isLoggedInMiddleware",
+   "span": {
+    "startLine": 36,
+    "endLine": 42,
+    "startByte": 1151,
+    "endByte": 1361
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#this.displayLoginPage",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayLoginPage",
+   "span": {
+    "startLine": 44,
+    "endLine": 51,
+    "startByte": 1368,
+    "endByte": 1581
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#this.handleLoginRequest",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.handleLoginRequest",
+   "span": {
+    "startLine": 53,
+    "endLine": 119,
+    "startByte": 1588,
+    "endByte": 5274
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#this.displayLogoutPage",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayLogoutPage",
+   "span": {
+    "startLine": 121,
+    "endLine": 123,
+    "startByte": 5281,
+    "endByte": 5381
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#this.displaySignupPage",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displaySignupPage",
+   "span": {
+    "startLine": 125,
+    "endLine": 136,
+    "startByte": 5388,
+    "endByte": 5704
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#validateSignup",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "validateSignup",
+   "span": {
+    "startLine": 138,
+    "endLine": 187,
+    "startByte": 5717,
+    "endByte": 7427
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#this.handleSignup",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.handleSignup",
+   "span": {
+    "startLine": 189,
+    "endLine": 254,
+    "startByte": 7434,
+    "endByte": 9611
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:app/routes/session.js#this.displayWelcomePage",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "this.displayWelcomePage",
+   "span": {
+    "startLine": 256,
+    "endLine": 274,
+    "startByte": 9618,
+    "endByte": 10161
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "app/routes/session.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:artifacts/db-reset.js#tryDropCollection",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "tryDropCollection",
+   "span": {
+    "startLine": 39,
+    "endLine": 48,
+    "startByte": 1193,
+    "endByte": 1475
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "artifacts/db-reset.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:artifacts/db-reset.js#parseResponse",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "parseResponse",
+   "span": {
+    "startLine": 50,
+    "endLine": 59,
+    "startByte": 1484,
+    "endByte": 1730
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "artifacts/db-reset.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:test/e2e/plugins/index.js#module.exports",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "module.exports",
+   "span": {
+    "startLine": 17,
+    "endLine": 23,
+    "startByte": 666,
+    "endByte": 786
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "test/e2e/plugins/index.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:test/security/profile-test.js#onCompletion",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "onCompletion",
+   "span": {
+    "startLine": 109,
+    "endLine": 127,
+    "startByte": 4419,
+    "endByte": 5231
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "test/security/profile-test.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "symbol:owasp-nodejs-goat:test/security/profile-test.js#status",
+   "type": "SymbolNode",
+   "kind": "function",
+   "qualname": "status",
+   "span": {
+    "startLine": 226,
+    "endLine": 244,
+    "startByte": 9708,
+    "endByte": 10771
+   },
+   "service": "owasp-nodejs-goat",
+   "relPath": "test/security/profile-test.js",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "database:mongodb:mongo",
+   "type": "DatabaseNode",
+   "name": "mongo",
+   "engine": "mongodb",
+   "engineVersion": "4.4",
+   "compatibleDrivers": [
+    {
+     "name": "mongoose",
+     "minVersion": "7.0.0"
+    },
+    {
+     "name": "pymongo",
+     "minVersion": "4.0.0"
+    }
+   ],
+   "host": "mongo",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:docker-compose.yml",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "docker-compose.yml",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "config:docker-compose.yml",
+   "type": "ConfigNode",
+   "name": "docker-compose.yml",
+   "path": "docker-compose.yml",
+   "fileType": "yml"
+  },
+  {
+   "id": "config:.github/workflows/e2e-test.yml",
+   "type": "ConfigNode",
+   "name": "e2e-test.yml",
+   "path": ".github/workflows/e2e-test.yml",
+   "fileType": "yml"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:.github/workflows/e2e-test.yml",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": ".github/workflows/e2e-test.yml",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "config:.github/workflows/lint.yml",
+   "type": "ConfigNode",
+   "name": "lint.yml",
+   "path": ".github/workflows/lint.yml",
+   "fileType": "yml"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:.github/workflows/lint.yml",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": ".github/workflows/lint.yml",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "config:.travis.yml",
+   "type": "ConfigNode",
+   "name": ".travis.yml",
+   "path": ".travis.yml",
+   "fileType": "yml"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:.travis.yml",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": ".travis.yml",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "config:app.json",
+   "type": "ConfigNode",
+   "name": "app.json",
+   "path": "app.json",
+   "fileType": "json"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:app.json",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "app.json",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /",
+   "type": "RouteNode",
+   "name": "GET /",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/",
+   "path": "app/routes/index.js",
+   "line": 30,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /login",
+   "type": "RouteNode",
+   "name": "GET /login",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/login",
+   "path": "app/routes/index.js",
+   "line": 33,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:POST /login",
+   "type": "RouteNode",
+   "name": "POST /login",
+   "service": "owasp-nodejs-goat",
+   "method": "POST",
+   "pathTemplate": "/login",
+   "path": "app/routes/index.js",
+   "line": 34,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /signup",
+   "type": "RouteNode",
+   "name": "GET /signup",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/signup",
+   "path": "app/routes/index.js",
+   "line": 37,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:POST /signup",
+   "type": "RouteNode",
+   "name": "POST /signup",
+   "service": "owasp-nodejs-goat",
+   "method": "POST",
+   "pathTemplate": "/signup",
+   "path": "app/routes/index.js",
+   "line": 38,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /logout",
+   "type": "RouteNode",
+   "name": "GET /logout",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/logout",
+   "path": "app/routes/index.js",
+   "line": 41,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /dashboard",
+   "type": "RouteNode",
+   "name": "GET /dashboard",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/dashboard",
+   "path": "app/routes/index.js",
+   "line": 44,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /profile",
+   "type": "RouteNode",
+   "name": "GET /profile",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/profile",
+   "path": "app/routes/index.js",
+   "line": 47,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:POST /profile",
+   "type": "RouteNode",
+   "name": "POST /profile",
+   "service": "owasp-nodejs-goat",
+   "method": "POST",
+   "pathTemplate": "/profile",
+   "path": "app/routes/index.js",
+   "line": 48,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /contributions",
+   "type": "RouteNode",
+   "name": "GET /contributions",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/contributions",
+   "path": "app/routes/index.js",
+   "line": 51,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:POST /contributions",
+   "type": "RouteNode",
+   "name": "POST /contributions",
+   "service": "owasp-nodejs-goat",
+   "method": "POST",
+   "pathTemplate": "/contributions",
+   "path": "app/routes/index.js",
+   "line": 52,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /benefits",
+   "type": "RouteNode",
+   "name": "GET /benefits",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/benefits",
+   "path": "app/routes/index.js",
+   "line": 55,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:POST /benefits",
+   "type": "RouteNode",
+   "name": "POST /benefits",
+   "service": "owasp-nodejs-goat",
+   "method": "POST",
+   "pathTemplate": "/benefits",
+   "path": "app/routes/index.js",
+   "line": 56,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /allocations/:userId",
+   "type": "RouteNode",
+   "name": "GET /allocations/:userId",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/allocations/:userId",
+   "path": "app/routes/index.js",
+   "line": 63,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /memos",
+   "type": "RouteNode",
+   "name": "GET /memos",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/memos",
+   "path": "app/routes/index.js",
+   "line": 66,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:POST /memos",
+   "type": "RouteNode",
+   "name": "POST /memos",
+   "service": "owasp-nodejs-goat",
+   "method": "POST",
+   "pathTemplate": "/memos",
+   "path": "app/routes/index.js",
+   "line": 67,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /learn",
+   "type": "RouteNode",
+   "name": "GET /learn",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/learn",
+   "path": "app/routes/index.js",
+   "line": 70,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "route:owasp-nodejs-goat:GET /research",
+   "type": "RouteNode",
+   "name": "GET /research",
+   "service": "owasp-nodejs-goat",
+   "method": "GET",
+   "pathTemplate": "/research",
+   "path": "app/routes/index.js",
+   "line": 76,
+   "framework": "express",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "infra:mongodb-collection:users",
+   "type": "InfraNode",
+   "name": "users",
+   "provider": "self",
+   "kind": "mongodb-collection"
+  },
+  {
+   "id": "infra:mongodb-collection:allocations",
+   "type": "InfraNode",
+   "name": "allocations",
+   "provider": "self",
+   "kind": "mongodb-collection"
+  },
+  {
+   "id": "infra:mongodb-collection:counters",
+   "type": "InfraNode",
+   "name": "counters",
+   "provider": "self",
+   "kind": "mongodb-collection"
+  },
+  {
+   "id": "infra:container:web",
+   "type": "InfraNode",
+   "name": "web",
+   "provider": "self",
+   "kind": "container"
+  },
+  {
+   "id": "infra:mongodb:mongo",
+   "type": "InfraNode",
+   "name": "mongo",
+   "provider": "self",
+   "kind": "mongodb"
+  },
+  {
+   "id": "infra:container-image:node:12-alpine",
+   "type": "InfraNode",
+   "name": "node:12-alpine",
+   "provider": "self",
+   "kind": "container-image"
+  },
+  {
+   "id": "file:owasp-nodejs-goat:Dockerfile",
+   "type": "FileNode",
+   "service": "owasp-nodejs-goat",
+   "path": "Dockerfile",
+   "discoveredVia": "static"
+  },
+  {
+   "id": "infra:port:4000",
+   "type": "InfraNode",
+   "name": "4000",
+   "provider": "self",
+   "kind": "port"
+  },
+  {
+   "id": "service:nodegoat",
+   "type": "ServiceNode",
+   "name": "nodegoat",
+   "language": "unknown",
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /login",
+   "type": "RouteNode",
+   "name": "GET /login",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/login",
+   "path": "app/routes/index.js",
+   "line": 33,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:POST /login",
+   "type": "RouteNode",
+   "name": "POST /login",
+   "service": "nodegoat",
+   "method": "POST",
+   "pathTemplate": "/login",
+   "path": "app/routes/index.js",
+   "line": 34,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /dashboard",
+   "type": "RouteNode",
+   "name": "GET /dashboard",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/dashboard",
+   "path": "app/routes/index.js",
+   "line": 44,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /profile",
+   "type": "RouteNode",
+   "name": "GET /profile",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/profile",
+   "path": "app/routes/index.js",
+   "line": 47,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /contributions",
+   "type": "RouteNode",
+   "name": "GET /contributions",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/contributions",
+   "path": "app/routes/index.js",
+   "line": 51,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /allocations/:userId",
+   "type": "RouteNode",
+   "name": "GET /allocations/:userId",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/allocations/:userId",
+   "path": "app/routes/index.js",
+   "line": 63,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /memos",
+   "type": "RouteNode",
+   "name": "GET /memos",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/memos",
+   "path": "app/routes/index.js",
+   "line": 66,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /learn",
+   "type": "RouteNode",
+   "name": "GET /learn",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/learn",
+   "path": "app/routes/index.js",
+   "line": 70,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /benefits",
+   "type": "RouteNode",
+   "name": "GET /benefits",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/benefits",
+   "path": "app/routes/index.js",
+   "line": 55,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:GET /tutorial",
+   "type": "RouteNode",
+   "name": "GET /tutorial",
+   "service": "nodegoat",
+   "method": "GET",
+   "pathTemplate": "/tutorial",
+   "path": "app/routes/index.js",
+   "line": 79,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:POST /contributions",
+   "type": "RouteNode",
+   "name": "POST /contributions",
+   "service": "nodegoat",
+   "method": "POST",
+   "pathTemplate": "/contributions",
+   "path": "app/routes/index.js",
+   "line": 52,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:POST /memos",
+   "type": "RouteNode",
+   "name": "POST /memos",
+   "service": "nodegoat",
+   "method": "POST",
+   "pathTemplate": "/memos",
+   "path": "app/routes/index.js",
+   "line": 67,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "route:nodegoat:POST /profile",
+   "type": "RouteNode",
+   "name": "POST /profile",
+   "service": "nodegoat",
+   "method": "POST",
+   "pathTemplate": "/profile",
+   "path": "app/routes/index.js",
+   "line": 48,
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "database:mongodb:127.0.0.1",
+   "type": "DatabaseNode",
+   "name": "127.0.0.1",
+   "engine": "mongodb",
+   "engineVersion": "unknown",
+   "compatibleDrivers": [],
+   "host": "127.0.0.1",
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "file:nodegoat:app/data/user-dao.js",
+   "type": "FileNode",
+   "service": "nodegoat",
+   "path": "app/data/user-dao.js",
+   "language": "javascript",
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "file:nodegoat:app/data/profile-dao.js",
+   "type": "FileNode",
+   "service": "nodegoat",
+   "path": "app/data/profile-dao.js",
+   "language": "javascript",
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "file:nodegoat:app/data/contributions-dao.js",
+   "type": "FileNode",
+   "service": "nodegoat",
+   "path": "app/data/contributions-dao.js",
+   "language": "javascript",
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "infra:mongodb-collection:contributions",
+   "type": "InfraNode",
+   "name": "contributions",
+   "provider": "self",
+   "kind": "mongodb-collection"
+  },
+  {
+   "id": "file:nodegoat:app/data/allocations-dao.js",
+   "type": "FileNode",
+   "service": "nodegoat",
+   "path": "app/data/allocations-dao.js",
+   "language": "javascript",
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "file:nodegoat:app/data/memos-dao.js",
+   "type": "FileNode",
+   "service": "nodegoat",
+   "path": "app/data/memos-dao.js",
+   "language": "javascript",
+   "discoveredVia": "otel"
+  },
+  {
+   "id": "infra:mongodb-collection:memos",
+   "type": "InfraNode",
+   "name": "memos",
+   "provider": "self",
+   "kind": "mongodb-collection"
+  },
+  {
+   "id": "file:nodegoat:app/data/benefits-dao.js",
+   "type": "FileNode",
+   "service": "nodegoat",
+   "path": "app/data/benefits-dao.js",
+   "language": "javascript",
+   "discoveredVia": "otel"
+  }
+ ],
+ "edges": [
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:Gruntfile.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:Gruntfile.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "Gruntfile.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/assets/js/chart/chart-data-morris.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/assets/js/chart/chart-data-morris.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/assets/js/chart/chart-data-morris.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/assets/js/tour/redirects-steps.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/assets/js/tour/redirects-steps.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/assets/js/tour/redirects-steps.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/allocations-dao.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/data/benefits-dao.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/data/benefits-dao.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/benefits-dao.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/contributions-dao.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/data/memos-dao.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/data/memos-dao.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/memos-dao.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/data/profile-dao.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/data/profile-dao.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/profile-dao.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/data/research-dao.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/data/research-dao.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/research-dao.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/data/user-dao.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/allocations.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/allocations.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/allocations.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/benefits.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/benefits.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/benefits.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/contributions.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/contributions.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/contributions.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/error.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/error.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/error.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/index.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/index.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/memos.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/memos.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/memos.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/profile.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/profile.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/profile.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/research.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/research.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/research.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/session.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/session.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app/routes/tutorial.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app/routes/tutorial.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/tutorial.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "artifacts/db-reset.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:config/config.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "config/config.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:config/env/all.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:config/env/all.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "config/env/all.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:config/env/development.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:config/env/development.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "config/env/development.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:config/env/production.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:config/env/production.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "config/env/production.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:config/env/test.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:config/env/test.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "config/env/test.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:server.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:server.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "server.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/allocations_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/allocations_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/allocations_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/benefits_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/benefits_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/benefits_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/contributions_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/contributions_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/contributions_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/dashboard_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/dashboard_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/dashboard_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/general_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/general_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/general_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/learn_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/learn_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/learn_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/login_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/login_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/login_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/logout_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/logout_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/logout_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/memos_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/memos_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/memos_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/profile_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/profile_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/profile_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/research_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/research_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/research_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/signup_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/signup_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/signup_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/integration/tutorial_spec.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/integration/tutorial_spec.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/integration/tutorial_spec.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/plugins/index.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/plugins/index.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/plugins/index.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/support/commands.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/support/commands.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/support/commands.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/e2e/support/index.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/e2e/support/index.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/support/index.js"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:test/security/profile-test.js",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:test/security/profile-test.js",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/security/profile-test.js"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:Gruntfile.js->symbol:owasp-nodejs-goat:Gruntfile.js#module.exports",
+   "source": "file:owasp-nodejs-goat:Gruntfile.js",
+   "target": "symbol:owasp-nodejs-goat:Gruntfile.js#module.exports",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "Gruntfile.js",
+    "line": 14,
+    "snippet": "module.exports = function(grunt) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/allocations-dao.js->symbol:owasp-nodejs-goat:app/data/allocations-dao.js#AllocationsDAO",
+   "source": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/allocations-dao.js#AllocationsDAO",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/allocations-dao.js",
+    "line": 4,
+    "snippet": "const AllocationsDAO = function(db){"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/allocations-dao.js->symbol:owasp-nodejs-goat:app/data/allocations-dao.js#this.update",
+   "source": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/allocations-dao.js#this.update",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/allocations-dao.js",
+    "line": 18,
+    "snippet": "this.update = (userId, stocks, funds, bonds, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/allocations-dao.js->symbol:owasp-nodejs-goat:app/data/allocations-dao.js#this.getByUserIdAndThreshold",
+   "source": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/allocations-dao.js#this.getByUserIdAndThreshold",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/allocations-dao.js",
+    "line": 57,
+    "snippet": "this.getByUserIdAndThreshold = (userId, threshold, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/allocations-dao.js->symbol:owasp-nodejs-goat:app/data/allocations-dao.js#searchCriteria",
+   "source": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/allocations-dao.js#searchCriteria",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/allocations-dao.js",
+    "line": 60,
+    "snippet": "const searchCriteria = () => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/benefits-dao.js->symbol:owasp-nodejs-goat:app/data/benefits-dao.js#BenefitsDAO",
+   "source": "file:owasp-nodejs-goat:app/data/benefits-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/benefits-dao.js#BenefitsDAO",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/benefits-dao.js",
+    "line": 2,
+    "snippet": "function BenefitsDAO(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/benefits-dao.js->symbol:owasp-nodejs-goat:app/data/benefits-dao.js#this.getAllNonAdminUsers",
+   "source": "file:owasp-nodejs-goat:app/data/benefits-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/benefits-dao.js#this.getAllNonAdminUsers",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/benefits-dao.js",
+    "line": 15,
+    "snippet": "this.getAllNonAdminUsers = callback => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/benefits-dao.js->symbol:owasp-nodejs-goat:app/data/benefits-dao.js#this.updateBenefits",
+   "source": "file:owasp-nodejs-goat:app/data/benefits-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/benefits-dao.js#this.updateBenefits",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/benefits-dao.js",
+    "line": 23,
+    "snippet": "this.updateBenefits = (userId, startDate, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/contributions-dao.js->symbol:owasp-nodejs-goat:app/data/contributions-dao.js#ContributionsDAO",
+   "source": "file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/contributions-dao.js#ContributionsDAO",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/contributions-dao.js",
+    "line": 4,
+    "snippet": "function ContributionsDAO(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/contributions-dao.js->symbol:owasp-nodejs-goat:app/data/contributions-dao.js#this.update",
+   "source": "file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/contributions-dao.js#this.update",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/contributions-dao.js",
+    "line": 17,
+    "snippet": "this.update = (userId, preTax, afterTax, roth, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/contributions-dao.js->symbol:owasp-nodejs-goat:app/data/contributions-dao.js#this.getByUserId",
+   "source": "file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/contributions-dao.js#this.getByUserId",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/contributions-dao.js",
+    "line": 56,
+    "snippet": "this.getByUserId = (userId, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/memos-dao.js->symbol:owasp-nodejs-goat:app/data/memos-dao.js#MemosDAO",
+   "source": "file:owasp-nodejs-goat:app/data/memos-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/memos-dao.js#MemosDAO",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/memos-dao.js",
+    "line": 2,
+    "snippet": "function MemosDAO(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/memos-dao.js->symbol:owasp-nodejs-goat:app/data/memos-dao.js#this.insert",
+   "source": "file:owasp-nodejs-goat:app/data/memos-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/memos-dao.js#this.insert",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/memos-dao.js",
+    "line": 15,
+    "snippet": "this.insert = (memo, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/memos-dao.js->symbol:owasp-nodejs-goat:app/data/memos-dao.js#this.getAllMemos",
+   "source": "file:owasp-nodejs-goat:app/data/memos-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/memos-dao.js#this.getAllMemos",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/memos-dao.js",
+    "line": 26,
+    "snippet": "this.getAllMemos = (callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/profile-dao.js->symbol:owasp-nodejs-goat:app/data/profile-dao.js#ProfileDAO",
+   "source": "file:owasp-nodejs-goat:app/data/profile-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/profile-dao.js#ProfileDAO",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/profile-dao.js",
+    "line": 2,
+    "snippet": "function ProfileDAO(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/profile-dao.js->symbol:owasp-nodejs-goat:app/data/profile-dao.js#this.updateUser",
+   "source": "file:owasp-nodejs-goat:app/data/profile-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/profile-dao.js#this.updateUser",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/profile-dao.js",
+    "line": 42,
+    "snippet": "this.updateUser = (userId, firstName, lastName, ssn, dob, address, bankAcc, bankRouting, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/profile-dao.js->symbol:owasp-nodejs-goat:app/data/profile-dao.js#this.getByUserId",
+   "source": "file:owasp-nodejs-goat:app/data/profile-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/profile-dao.js#this.getByUserId",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/profile-dao.js",
+    "line": 94,
+    "snippet": "this.getByUserId = (userId, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/research-dao.js->symbol:owasp-nodejs-goat:app/data/research-dao.js#ResearchDAO",
+   "source": "file:owasp-nodejs-goat:app/data/research-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/research-dao.js#ResearchDAO",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/research-dao.js",
+    "line": 2,
+    "snippet": "function ResearchDAO(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/research-dao.js->symbol:owasp-nodejs-goat:app/data/research-dao.js#this.getBySymbol",
+   "source": "file:owasp-nodejs-goat:app/data/research-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/research-dao.js#this.getBySymbol",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/research-dao.js",
+    "line": 13,
+    "snippet": "this.getBySymbol = (symbol, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/research-dao.js->symbol:owasp-nodejs-goat:app/data/research-dao.js#searchCriteria",
+   "source": "file:owasp-nodejs-goat:app/data/research-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/research-dao.js#searchCriteria",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/research-dao.js",
+    "line": 15,
+    "snippet": "const searchCriteria = () => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#UserDAO",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#UserDAO",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 4,
+    "snippet": "function UserDAO(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#this.addUser",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.addUser",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 17,
+    "snippet": "this.addUser = (userName, firstName, lastName, password, email, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getRandomFutureDate",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getRandomFutureDate",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 49,
+    "snippet": "this.getRandomFutureDate = () => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#this.validateLogin",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.validateLogin",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 57,
+    "snippet": "this.validateLogin = (userName, password, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#comparePassword",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#comparePassword",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 60,
+    "snippet": "const comparePassword = (fromDB, fromUser) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#validateUserDoc",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#validateUserDoc",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 70,
+    "snippet": "const validateUserDoc = (err, user) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getUserById",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getUserById",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 97,
+    "snippet": "this.getUserById = (userId, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getUserByUserName",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getUserByUserName",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 103,
+    "snippet": "this.getUserByUserName = (userName, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/data/user-dao.js->symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getNextSequence",
+   "source": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "target": "symbol:owasp-nodejs-goat:app/data/user-dao.js#this.getNextSequence",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 109,
+    "snippet": "this.getNextSequence = (name, callback) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/allocations.js->symbol:owasp-nodejs-goat:app/routes/allocations.js#AllocationsHandler",
+   "source": "file:owasp-nodejs-goat:app/routes/allocations.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/allocations.js#AllocationsHandler",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/allocations.js",
+    "line": 6,
+    "snippet": "function AllocationsHandler(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/allocations.js->symbol:owasp-nodejs-goat:app/routes/allocations.js#this.displayAllocations",
+   "source": "file:owasp-nodejs-goat:app/routes/allocations.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/allocations.js#this.displayAllocations",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/allocations.js",
+    "line": 11,
+    "snippet": "this.displayAllocations = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/benefits.js->symbol:owasp-nodejs-goat:app/routes/benefits.js#BenefitsHandler",
+   "source": "file:owasp-nodejs-goat:app/routes/benefits.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/benefits.js#BenefitsHandler",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/benefits.js",
+    "line": 8,
+    "snippet": "function BenefitsHandler(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/benefits.js->symbol:owasp-nodejs-goat:app/routes/benefits.js#this.displayBenefits",
+   "source": "file:owasp-nodejs-goat:app/routes/benefits.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/benefits.js#this.displayBenefits",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/benefits.js",
+    "line": 13,
+    "snippet": "this.displayBenefits = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/benefits.js->symbol:owasp-nodejs-goat:app/routes/benefits.js#this.updateBenefits",
+   "source": "file:owasp-nodejs-goat:app/routes/benefits.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/benefits.js#this.updateBenefits",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/benefits.js",
+    "line": 29,
+    "snippet": "this.updateBenefits = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/contributions.js->symbol:owasp-nodejs-goat:app/routes/contributions.js#ContributionsHandler",
+   "source": "file:owasp-nodejs-goat:app/routes/contributions.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/contributions.js#ContributionsHandler",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/contributions.js",
+    "line": 7,
+    "snippet": "function ContributionsHandler(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/contributions.js->symbol:owasp-nodejs-goat:app/routes/contributions.js#this.displayContributions",
+   "source": "file:owasp-nodejs-goat:app/routes/contributions.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/contributions.js#this.displayContributions",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/contributions.js",
+    "line": 12,
+    "snippet": "this.displayContributions = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/contributions.js->symbol:owasp-nodejs-goat:app/routes/contributions.js#this.handleContributionsUpdate",
+   "source": "file:owasp-nodejs-goat:app/routes/contributions.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/contributions.js#this.handleContributionsUpdate",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/contributions.js",
+    "line": 28,
+    "snippet": "this.handleContributionsUpdate = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/error.js->symbol:owasp-nodejs-goat:app/routes/error.js#errorHandler",
+   "source": "file:owasp-nodejs-goat:app/routes/error.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/error.js#errorHandler",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/error.js",
+    "line": 3,
+    "snippet": "const errorHandler = (err, req, res,next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/index.js->symbol:owasp-nodejs-goat:app/routes/index.js#index",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/index.js#index",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 11,
+    "snippet": "const index = (app, db) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/memos.js->symbol:owasp-nodejs-goat:app/routes/memos.js#MemosHandler",
+   "source": "file:owasp-nodejs-goat:app/routes/memos.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/memos.js#MemosHandler",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/memos.js",
+    "line": 6,
+    "snippet": "function MemosHandler(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/memos.js->symbol:owasp-nodejs-goat:app/routes/memos.js#this.addMemos",
+   "source": "file:owasp-nodejs-goat:app/routes/memos.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/memos.js#this.addMemos",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/memos.js",
+    "line": 11,
+    "snippet": "this.addMemos = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/memos.js->symbol:owasp-nodejs-goat:app/routes/memos.js#this.displayMemos",
+   "source": "file:owasp-nodejs-goat:app/routes/memos.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/memos.js#this.displayMemos",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/memos.js",
+    "line": 19,
+    "snippet": "this.displayMemos = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/profile.js->symbol:owasp-nodejs-goat:app/routes/profile.js#ProfileHandler",
+   "source": "file:owasp-nodejs-goat:app/routes/profile.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/profile.js#ProfileHandler",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/profile.js",
+    "line": 8,
+    "snippet": "function ProfileHandler(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/profile.js->symbol:owasp-nodejs-goat:app/routes/profile.js#this.displayProfile",
+   "source": "file:owasp-nodejs-goat:app/routes/profile.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/profile.js#this.displayProfile",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/profile.js",
+    "line": 13,
+    "snippet": "this.displayProfile = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/profile.js->symbol:owasp-nodejs-goat:app/routes/profile.js#this.handleProfileUpdate",
+   "source": "file:owasp-nodejs-goat:app/routes/profile.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/profile.js#this.handleProfileUpdate",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/profile.js",
+    "line": 40,
+    "snippet": "this.handleProfileUpdate = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/research.js->symbol:owasp-nodejs-goat:app/routes/research.js#ResearchHandler",
+   "source": "file:owasp-nodejs-goat:app/routes/research.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/research.js#ResearchHandler",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/research.js",
+    "line": 7,
+    "snippet": "function ResearchHandler(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/research.js->symbol:owasp-nodejs-goat:app/routes/research.js#this.displayResearch",
+   "source": "file:owasp-nodejs-goat:app/routes/research.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/research.js#this.displayResearch",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/research.js",
+    "line": 12,
+    "snippet": "this.displayResearch = (req, res) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#SessionHandler",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#SessionHandler",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 8,
+    "snippet": "function SessionHandler(db) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#prepareUserData",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#prepareUserData",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 14,
+    "snippet": "const prepareUserData = (user, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#this.isAdminUserMiddleware",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#this.isAdminUserMiddleware",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 25,
+    "snippet": "this.isAdminUserMiddleware = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#this.isLoggedInMiddleware",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#this.isLoggedInMiddleware",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 36,
+    "snippet": "this.isLoggedInMiddleware = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#this.displayLoginPage",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#this.displayLoginPage",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 44,
+    "snippet": "this.displayLoginPage = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#this.handleLoginRequest",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#this.handleLoginRequest",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 53,
+    "snippet": "this.handleLoginRequest = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#this.displayLogoutPage",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#this.displayLogoutPage",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 121,
+    "snippet": "this.displayLogoutPage = (req, res) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#this.displaySignupPage",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#this.displaySignupPage",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 125,
+    "snippet": "this.displaySignupPage = (req, res) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#validateSignup",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#validateSignup",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 138,
+    "snippet": "const validateSignup = (userName, firstName, lastName, password, verify, email, errors) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#this.handleSignup",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#this.handleSignup",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 189,
+    "snippet": "this.handleSignup = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:app/routes/session.js->symbol:owasp-nodejs-goat:app/routes/session.js#this.displayWelcomePage",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "symbol:owasp-nodejs-goat:app/routes/session.js#this.displayWelcomePage",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 256,
+    "snippet": "this.displayWelcomePage = (req, res, next) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:artifacts/db-reset.js->symbol:owasp-nodejs-goat:artifacts/db-reset.js#tryDropCollection",
+   "source": "file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "target": "symbol:owasp-nodejs-goat:artifacts/db-reset.js#tryDropCollection",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "artifacts/db-reset.js",
+    "line": 39,
+    "snippet": "const tryDropCollection = (db, name) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:artifacts/db-reset.js->symbol:owasp-nodejs-goat:artifacts/db-reset.js#parseResponse",
+   "source": "file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "target": "symbol:owasp-nodejs-goat:artifacts/db-reset.js#parseResponse",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "artifacts/db-reset.js",
+    "line": 50,
+    "snippet": "const parseResponse = (err, res, comm) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:test/e2e/plugins/index.js->symbol:owasp-nodejs-goat:test/e2e/plugins/index.js#module.exports",
+   "source": "file:owasp-nodejs-goat:test/e2e/plugins/index.js",
+   "target": "symbol:owasp-nodejs-goat:test/e2e/plugins/index.js#module.exports",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/plugins/index.js",
+    "line": 17,
+    "snippet": "module.exports = (on, config) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:test/security/profile-test.js->symbol:owasp-nodejs-goat:test/security/profile-test.js#onCompletion",
+   "source": "file:owasp-nodejs-goat:test/security/profile-test.js",
+   "target": "symbol:owasp-nodejs-goat:test/security/profile-test.js#onCompletion",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/security/profile-test.js",
+    "line": 109,
+    "snippet": "var onCompletion = function(error, resultsFromAllAsyncSeriesFunctions) {"
+   }
+  },
+  {
+   "id": "CONTAINS:file:owasp-nodejs-goat:test/security/profile-test.js->symbol:owasp-nodejs-goat:test/security/profile-test.js#status",
+   "source": "file:owasp-nodejs-goat:test/security/profile-test.js",
+   "target": "symbol:owasp-nodejs-goat:test/security/profile-test.js#status",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/security/profile-test.js",
+    "line": 226,
+    "snippet": "function status() {"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/data/allocations-dao.js->file:owasp-nodejs-goat:app/data/user-dao.js",
+   "source": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "target": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/allocations-dao.js",
+    "line": 1,
+    "snippet": "require(\"./user-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/data/contributions-dao.js->file:owasp-nodejs-goat:app/data/user-dao.js",
+   "source": "file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "target": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/data/contributions-dao.js",
+    "line": 1,
+    "snippet": "require(\"./user-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/allocations.js->file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "source": "file:owasp-nodejs-goat:app/routes/allocations.js",
+   "target": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/allocations.js",
+    "line": 1,
+    "snippet": "require(\"../data/allocations-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/allocations.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:app/routes/allocations.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/allocations.js",
+    "line": 4,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/benefits.js->file:owasp-nodejs-goat:app/data/benefits-dao.js",
+   "source": "file:owasp-nodejs-goat:app/routes/benefits.js",
+   "target": "file:owasp-nodejs-goat:app/data/benefits-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/benefits.js",
+    "line": 3,
+    "snippet": "require(\"../data/benefits-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/benefits.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:app/routes/benefits.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/benefits.js",
+    "line": 6,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/contributions.js->file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "source": "file:owasp-nodejs-goat:app/routes/contributions.js",
+   "target": "file:owasp-nodejs-goat:app/data/contributions-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/contributions.js",
+    "line": 1,
+    "snippet": "require(\"../data/contributions-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/contributions.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:app/routes/contributions.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/contributions.js",
+    "line": 4,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/session.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/session.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 1,
+    "snippet": "require(\"./session\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/profile.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/profile.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 2,
+    "snippet": "require(\"./profile\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/benefits.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/benefits.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 3,
+    "snippet": "require(\"./benefits\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/contributions.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/contributions.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 4,
+    "snippet": "require(\"./contributions\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/allocations.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/allocations.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 5,
+    "snippet": "require(\"./allocations\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/memos.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/memos.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 6,
+    "snippet": "require(\"./memos\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/research.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/research.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 7,
+    "snippet": "require(\"./research\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/tutorial.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/tutorial.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 8,
+    "snippet": "require(\"./tutorial\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/index.js->file:owasp-nodejs-goat:app/routes/error.js",
+   "source": "file:owasp-nodejs-goat:app/routes/index.js",
+   "target": "file:owasp-nodejs-goat:app/routes/error.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 9,
+    "snippet": "require(\"./error\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/memos.js->file:owasp-nodejs-goat:app/data/memos-dao.js",
+   "source": "file:owasp-nodejs-goat:app/routes/memos.js",
+   "target": "file:owasp-nodejs-goat:app/data/memos-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/memos.js",
+    "line": 1,
+    "snippet": "require(\"../data/memos-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/memos.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:app/routes/memos.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/memos.js",
+    "line": 4,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/profile.js->file:owasp-nodejs-goat:app/data/profile-dao.js",
+   "source": "file:owasp-nodejs-goat:app/routes/profile.js",
+   "target": "file:owasp-nodejs-goat:app/data/profile-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/profile.js",
+    "line": 1,
+    "snippet": "require(\"../data/profile-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/profile.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:app/routes/profile.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/profile.js",
+    "line": 5,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/research.js->file:owasp-nodejs-goat:app/data/research-dao.js",
+   "source": "file:owasp-nodejs-goat:app/routes/research.js",
+   "target": "file:owasp-nodejs-goat:app/data/research-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/research.js",
+    "line": 1,
+    "snippet": "require(\"../data/research-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/research.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:app/routes/research.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/research.js",
+    "line": 5,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/session.js->file:owasp-nodejs-goat:app/data/user-dao.js",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "file:owasp-nodejs-goat:app/data/user-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 1,
+    "snippet": "require(\"../data/user-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/session.js->file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "file:owasp-nodejs-goat:app/data/allocations-dao.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 2,
+    "snippet": "require(\"../data/allocations-dao\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/session.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:app/routes/session.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/session.js",
+    "line": 5,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:app/routes/tutorial.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:app/routes/tutorial.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/tutorial.js",
+    "line": 4,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:artifacts/db-reset.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "artifacts/db-reset.js",
+    "line": 10,
+    "snippet": "require(\"../config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:server.js->file:owasp-nodejs-goat:app/routes/index.js",
+   "source": "file:owasp-nodejs-goat:server.js",
+   "target": "file:owasp-nodejs-goat:app/routes/index.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "server.js",
+    "line": 16,
+    "snippet": "require(\"./app/routes\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:server.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:server.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "server.js",
+    "line": 17,
+    "snippet": "require(\"./config/config\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:test/e2e/plugins/index.js->file:owasp-nodejs-goat:config/env/all.js",
+   "source": "file:owasp-nodejs-goat:test/e2e/plugins/index.js",
+   "target": "file:owasp-nodejs-goat:config/env/all.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/plugins/index.js",
+    "line": 11,
+    "snippet": "require(\"../../../config/env/all\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:test/e2e/support/index.js->file:owasp-nodejs-goat:test/e2e/support/commands.js",
+   "source": "file:owasp-nodejs-goat:test/e2e/support/index.js",
+   "target": "file:owasp-nodejs-goat:test/e2e/support/commands.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/e2e/support/index.js",
+    "line": 2,
+    "snippet": "require(\"./commands.js\")"
+   }
+  },
+  {
+   "id": "IMPORTS:file:owasp-nodejs-goat:test/security/profile-test.js->file:owasp-nodejs-goat:config/config.js",
+   "source": "file:owasp-nodejs-goat:test/security/profile-test.js",
+   "target": "file:owasp-nodejs-goat:config/config.js",
+   "type": "IMPORTS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "test/security/profile-test.js",
+    "line": 1,
+    "snippet": "require(\"../../config/config\")"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:docker-compose.yml",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:docker-compose.yml",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "docker-compose.yml"
+   }
+  },
+  {
+   "id": "CONNECTS_TO:file:owasp-nodejs-goat:docker-compose.yml->database:mongodb:mongo",
+   "source": "file:owasp-nodejs-goat:docker-compose.yml",
+   "target": "database:mongodb:mongo",
+   "type": "CONNECTS_TO",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "docker-compose.yml"
+   }
+  },
+  {
+   "id": "CONFIGURED_BY:service:owasp-nodejs-goat->config:docker-compose.yml",
+   "source": "service:owasp-nodejs-goat",
+   "target": "config:docker-compose.yml",
+   "type": "CONFIGURED_BY",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "docker-compose.yml"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:.github/workflows/e2e-test.yml",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:.github/workflows/e2e-test.yml",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": ".github/workflows/e2e-test.yml"
+   }
+  },
+  {
+   "id": "CONFIGURED_BY:file:owasp-nodejs-goat:.github/workflows/e2e-test.yml->config:.github/workflows/e2e-test.yml",
+   "source": "file:owasp-nodejs-goat:.github/workflows/e2e-test.yml",
+   "target": "config:.github/workflows/e2e-test.yml",
+   "type": "CONFIGURED_BY",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": ".github/workflows/e2e-test.yml"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:.github/workflows/lint.yml",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:.github/workflows/lint.yml",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": ".github/workflows/lint.yml"
+   }
+  },
+  {
+   "id": "CONFIGURED_BY:file:owasp-nodejs-goat:.github/workflows/lint.yml->config:.github/workflows/lint.yml",
+   "source": "file:owasp-nodejs-goat:.github/workflows/lint.yml",
+   "target": "config:.github/workflows/lint.yml",
+   "type": "CONFIGURED_BY",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": ".github/workflows/lint.yml"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:.travis.yml",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:.travis.yml",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": ".travis.yml"
+   }
+  },
+  {
+   "id": "CONFIGURED_BY:file:owasp-nodejs-goat:.travis.yml->config:.travis.yml",
+   "source": "file:owasp-nodejs-goat:.travis.yml",
+   "target": "config:.travis.yml",
+   "type": "CONFIGURED_BY",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": ".travis.yml"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:app.json",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:app.json",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app.json"
+   }
+  },
+  {
+   "id": "CONFIGURED_BY:file:owasp-nodejs-goat:app.json->config:app.json",
+   "source": "file:owasp-nodejs-goat:app.json",
+   "target": "config:app.json",
+   "type": "CONFIGURED_BY",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app.json"
+   }
+  },
+  {
+   "id": "CONFIGURED_BY:file:owasp-nodejs-goat:docker-compose.yml->config:docker-compose.yml",
+   "source": "file:owasp-nodejs-goat:docker-compose.yml",
+   "target": "config:docker-compose.yml",
+   "type": "CONFIGURED_BY",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "docker-compose.yml"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 30,
+    "snippet": "app.get(\"/\", sessionHandler.displayWelcomePage);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /login",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /login",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 33,
+    "snippet": "app.get(\"/login\", sessionHandler.displayLoginPage);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:POST /login",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:POST /login",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 34,
+    "snippet": "app.post(\"/login\", sessionHandler.handleLoginRequest);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /signup",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /signup",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 37,
+    "snippet": "app.get(\"/signup\", sessionHandler.displaySignupPage);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:POST /signup",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:POST /signup",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 38,
+    "snippet": "app.post(\"/signup\", sessionHandler.handleSignup);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /logout",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /logout",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 41,
+    "snippet": "app.get(\"/logout\", sessionHandler.displayLogoutPage);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /dashboard",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /dashboard",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 44,
+    "snippet": "app.get(\"/dashboard\", isLoggedIn, sessionHandler.displayWelcomePage);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /profile",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /profile",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 47,
+    "snippet": "app.get(\"/profile\", isLoggedIn, profileHandler.displayProfile);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:POST /profile",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:POST /profile",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 48,
+    "snippet": "app.post(\"/profile\", isLoggedIn, profileHandler.handleProfileUpdate);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /contributions",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /contributions",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 51,
+    "snippet": "app.get(\"/contributions\", isLoggedIn, contributionsHandler.displayContributions);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:POST /contributions",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:POST /contributions",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 52,
+    "snippet": "app.post(\"/contributions\", isLoggedIn, contributionsHandler.handleContributionsUpdate);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /benefits",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /benefits",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 55,
+    "snippet": "app.get(\"/benefits\", isLoggedIn, benefitsHandler.displayBenefits);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:POST /benefits",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:POST /benefits",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 56,
+    "snippet": "app.post(\"/benefits\", isLoggedIn, benefitsHandler.updateBenefits);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /allocations/:userId",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /allocations/:userId",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 63,
+    "snippet": "app.get(\"/allocations/:userId\", isLoggedIn, allocationsHandler.displayAllocations);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /memos",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /memos",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 66,
+    "snippet": "app.get(\"/memos\", isLoggedIn, memosHandler.displayMemos);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:POST /memos",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:POST /memos",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 67,
+    "snippet": "app.post(\"/memos\", isLoggedIn, memosHandler.addMemos);"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /learn",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /learn",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 70,
+    "snippet": "app.get(\"/learn\", isLoggedIn, (req, res) => {"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->route:owasp-nodejs-goat:GET /research",
+   "source": "service:owasp-nodejs-goat",
+   "target": "route:owasp-nodejs-goat:GET /research",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "app/routes/index.js",
+    "line": 76,
+    "snippet": "app.get(\"/research\", isLoggedIn, researchHandler.displayResearch);"
+   }
+  },
+  {
+   "id": "CALLS:file:owasp-nodejs-goat:artifacts/db-reset.js->infra:mongodb-collection:users",
+   "source": "file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "target": "infra:mongodb-collection:users",
+   "type": "CALLS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "artifacts/db-reset.js",
+    "line": 85,
+    "snippet": "const usersCol = db.collection(\"users\");"
+   }
+  },
+  {
+   "id": "CALLS:file:owasp-nodejs-goat:artifacts/db-reset.js->infra:mongodb-collection:allocations",
+   "source": "file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "target": "infra:mongodb-collection:allocations",
+   "type": "CALLS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "artifacts/db-reset.js",
+    "line": 86,
+    "snippet": "const allocationsCol = db.collection(\"allocations\");"
+   }
+  },
+  {
+   "id": "CALLS:file:owasp-nodejs-goat:artifacts/db-reset.js->infra:mongodb-collection:counters",
+   "source": "file:owasp-nodejs-goat:artifacts/db-reset.js",
+   "target": "infra:mongodb-collection:counters",
+   "type": "CALLS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "artifacts/db-reset.js",
+    "line": 87,
+    "snippet": "const countersCol = db.collection(\"counters\");"
+   }
+  },
+  {
+   "id": "CONTAINS:service:owasp-nodejs-goat->file:owasp-nodejs-goat:Dockerfile",
+   "source": "service:owasp-nodejs-goat",
+   "target": "file:owasp-nodejs-goat:Dockerfile",
+   "type": "CONTAINS",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "Dockerfile"
+   }
+  },
+  {
+   "id": "RUNS_ON:file:owasp-nodejs-goat:Dockerfile->infra:container-image:node:12-alpine",
+   "source": "file:owasp-nodejs-goat:Dockerfile",
+   "target": "infra:container-image:node:12-alpine",
+   "type": "RUNS_ON",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "Dockerfile"
+   }
+  },
+  {
+   "id": "CONNECTS_TO:file:owasp-nodejs-goat:Dockerfile->infra:port:4000",
+   "source": "file:owasp-nodejs-goat:Dockerfile",
+   "target": "infra:port:4000",
+   "type": "CONNECTS_TO",
+   "provenance": "EXTRACTED",
+   "confidence": 0.85,
+   "evidence": {
+    "file": "Dockerfile",
+    "snippet": "EXPOSE 4000"
+   }
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /login",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /login",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.422,
+   "lastObserved": "2026-11-10T02:18:24.024Z",
+   "callCount": 2,
+   "signal": {
+    "spanCount": 2,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "179": 1,
+     "213": 1
+    },
+    "latencyMs": {
+     "p50": 2.31,
+     "p95": 10.25
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:POST /login",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:POST /login",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.035Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "211": 1
+    },
+    "latencyMs": {
+     "p50": 9.25,
+     "p95": 9.25
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /dashboard",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /dashboard",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.051Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "192": 1
+    },
+    "latencyMs": {
+     "p50": 3.94,
+     "p95": 3.94
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /profile",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /profile",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.060Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "186": 1
+    },
+    "latencyMs": {
+     "p50": 3.19,
+     "p95": 3.19
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /contributions",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /contributions",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.069Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "192": 1
+    },
+    "latencyMs": {
+     "p50": 3.94,
+     "p95": 3.94
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /allocations/:userId",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /allocations/:userId",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.079Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "192": 1
+    },
+    "latencyMs": {
+     "p50": 3.94,
+     "p95": 3.94
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /memos",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /memos",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.089Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "184": 1
+    },
+    "latencyMs": {
+     "p50": 2.94,
+     "p95": 2.94
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /learn",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /learn",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.097Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "163": 1
+    },
+    "latencyMs": {
+     "p50": 1.16,
+     "p95": 1.16
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /benefits",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /benefits",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.104Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "188": 1
+    },
+    "latencyMs": {
+     "p50": 3.44,
+     "p95": 3.44
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:GET /tutorial",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:GET /tutorial",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.113Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "179": 1
+    },
+    "latencyMs": {
+     "p50": 2.31,
+     "p95": 2.31
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:POST /contributions",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:POST /contributions",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.121Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "242": 1
+    },
+    "latencyMs": {
+     "p50": 35,
+     "p95": 35
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:POST /memos",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:POST /memos",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.161Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "242": 1
+    },
+    "latencyMs": {
+     "p50": 35,
+     "p95": 35
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->route:nodegoat:POST /profile",
+   "source": "service:nodegoat",
+   "target": "route:nodegoat:POST /profile",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.203Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "188": 1
+    },
+    "latencyMs": {
+     "p50": 3.44,
+     "p95": 3.44
+    }
+   },
+   "grain": "service"
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->file:nodegoat:app/data/user-dao.js",
+   "source": "service:nodegoat",
+   "target": "file:nodegoat:app/data/user-dao.js",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED"
+  },
+  {
+   "id": "CONNECTS_TO:OBSERVED:file:nodegoat:app/data/user-dao.js->database:mongodb:127.0.0.1",
+   "source": "file:nodegoat:app/data/user-dao.js",
+   "target": "database:mongodb:127.0.0.1",
+   "type": "CONNECTS_TO",
+   "provenance": "OBSERVED",
+   "confidence": 0.489,
+   "lastObserved": "2026-11-10T02:18:24.153Z",
+   "callCount": 5,
+   "signal": {
+    "spanCount": 5,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "138": 1,
+     "141": 1,
+     "147": 1,
+     "148": 1,
+     "167": 1
+    },
+    "latencyMs": {
+     "p50": 0.58,
+     "p95": 1.41
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 91
+   }
+  },
+  {
+   "id": "CALLS:OBSERVED:file:nodegoat:app/data/user-dao.js->infra:mongodb-collection:users",
+   "source": "file:nodegoat:app/data/user-dao.js",
+   "target": "infra:mongodb-collection:users",
+   "type": "CALLS",
+   "provenance": "OBSERVED",
+   "confidence": 0.489,
+   "lastObserved": "2026-11-10T02:18:24.153Z",
+   "callCount": 5,
+   "signal": {
+    "spanCount": 5,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "138": 1,
+     "141": 1,
+     "147": 1,
+     "148": 1,
+     "167": 1
+    },
+    "latencyMs": {
+     "p50": 0.58,
+     "p95": 1.41
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/user-dao.js",
+    "line": 91
+   }
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->file:nodegoat:app/data/profile-dao.js",
+   "source": "service:nodegoat",
+   "target": "file:nodegoat:app/data/profile-dao.js",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED"
+  },
+  {
+   "id": "CONNECTS_TO:OBSERVED:file:nodegoat:app/data/profile-dao.js->database:mongodb:127.0.0.1",
+   "source": "file:nodegoat:app/data/profile-dao.js",
+   "target": "database:mongodb:127.0.0.1",
+   "type": "CONNECTS_TO",
+   "provenance": "OBSERVED",
+   "confidence": 0.422,
+   "lastObserved": "2026-11-10T02:18:24.204Z",
+   "callCount": 2,
+   "signal": {
+    "spanCount": 2,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "145": 1,
+     "154": 1
+    },
+    "latencyMs": {
+     "p50": 0.52,
+     "p95": 0.8
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/profile-dao.js",
+    "line": 95
+   }
+  },
+  {
+   "id": "CALLS:OBSERVED:file:nodegoat:app/data/profile-dao.js->infra:mongodb-collection:users",
+   "source": "file:nodegoat:app/data/profile-dao.js",
+   "target": "infra:mongodb-collection:users",
+   "type": "CALLS",
+   "provenance": "OBSERVED",
+   "confidence": 0.422,
+   "lastObserved": "2026-11-10T02:18:24.204Z",
+   "callCount": 2,
+   "signal": {
+    "spanCount": 2,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "145": 1,
+     "154": 1
+    },
+    "latencyMs": {
+     "p50": 0.52,
+     "p95": 0.8
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/profile-dao.js",
+    "line": 95
+   }
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->file:nodegoat:app/data/contributions-dao.js",
+   "source": "service:nodegoat",
+   "target": "file:nodegoat:app/data/contributions-dao.js",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED"
+  },
+  {
+   "id": "CONNECTS_TO:OBSERVED:file:nodegoat:app/data/contributions-dao.js->database:mongodb:127.0.0.1",
+   "source": "file:nodegoat:app/data/contributions-dao.js",
+   "target": "database:mongodb:127.0.0.1",
+   "type": "CONNECTS_TO",
+   "provenance": "OBSERVED",
+   "confidence": 0.422,
+   "lastObserved": "2026-11-10T02:18:24.122Z",
+   "callCount": 2,
+   "signal": {
+    "spanCount": 2,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "147": 1,
+     "239": 1
+    },
+    "latencyMs": {
+     "p50": 0.58,
+     "p95": 30.5
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/contributions-dao.js",
+    "line": 57
+   }
+  },
+  {
+   "id": "CALLS:OBSERVED:file:nodegoat:app/data/contributions-dao.js->infra:mongodb-collection:contributions",
+   "source": "file:nodegoat:app/data/contributions-dao.js",
+   "target": "infra:mongodb-collection:contributions",
+   "type": "CALLS",
+   "provenance": "OBSERVED",
+   "confidence": 0.422,
+   "lastObserved": "2026-11-10T02:18:24.122Z",
+   "callCount": 2,
+   "signal": {
+    "spanCount": 2,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "147": 1,
+     "239": 1
+    },
+    "latencyMs": {
+     "p50": 0.58,
+     "p95": 30.5
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/contributions-dao.js",
+    "line": 57
+   }
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->file:nodegoat:app/data/allocations-dao.js",
+   "source": "service:nodegoat",
+   "target": "file:nodegoat:app/data/allocations-dao.js",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED"
+  },
+  {
+   "id": "CONNECTS_TO:OBSERVED:file:nodegoat:app/data/allocations-dao.js->database:mongodb:127.0.0.1",
+   "source": "file:nodegoat:app/data/allocations-dao.js",
+   "target": "database:mongodb:127.0.0.1",
+   "type": "CONNECTS_TO",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.080Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "148": 1
+    },
+    "latencyMs": {
+     "p50": 0.61,
+     "p95": 0.61
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/allocations-dao.js",
+    "line": 86
+   }
+  },
+  {
+   "id": "CALLS:OBSERVED:file:nodegoat:app/data/allocations-dao.js->infra:mongodb-collection:allocations",
+   "source": "file:nodegoat:app/data/allocations-dao.js",
+   "target": "infra:mongodb-collection:allocations",
+   "type": "CALLS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.080Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "148": 1
+    },
+    "latencyMs": {
+     "p50": 0.61,
+     "p95": 0.61
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/allocations-dao.js",
+    "line": 86
+   }
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->file:nodegoat:app/data/memos-dao.js",
+   "source": "service:nodegoat",
+   "target": "file:nodegoat:app/data/memos-dao.js",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED"
+  },
+  {
+   "id": "CONNECTS_TO:OBSERVED:file:nodegoat:app/data/memos-dao.js->database:mongodb:127.0.0.1",
+   "source": "file:nodegoat:app/data/memos-dao.js",
+   "target": "database:mongodb:127.0.0.1",
+   "type": "CONNECTS_TO",
+   "provenance": "OBSERVED",
+   "confidence": 0.444,
+   "lastObserved": "2026-11-10T02:18:24.193Z",
+   "callCount": 3,
+   "signal": {
+    "spanCount": 3,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "147": 1,
+     "150": 1,
+     "238": 1
+    },
+    "latencyMs": {
+     "p50": 0.67,
+     "p95": 29.5
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/memos-dao.js",
+    "line": 28
+   }
+  },
+  {
+   "id": "CALLS:OBSERVED:file:nodegoat:app/data/memos-dao.js->infra:mongodb-collection:memos",
+   "source": "file:nodegoat:app/data/memos-dao.js",
+   "target": "infra:mongodb-collection:memos",
+   "type": "CALLS",
+   "provenance": "OBSERVED",
+   "confidence": 0.444,
+   "lastObserved": "2026-11-10T02:18:24.193Z",
+   "callCount": 3,
+   "signal": {
+    "spanCount": 3,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "147": 1,
+     "150": 1,
+     "238": 1
+    },
+    "latencyMs": {
+     "p50": 0.67,
+     "p95": 29.5
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/memos-dao.js",
+    "line": 28
+   }
+  },
+  {
+   "id": "CONTAINS:OBSERVED:service:nodegoat->file:nodegoat:app/data/benefits-dao.js",
+   "source": "service:nodegoat",
+   "target": "file:nodegoat:app/data/benefits-dao.js",
+   "type": "CONTAINS",
+   "provenance": "OBSERVED"
+  },
+  {
+   "id": "CONNECTS_TO:OBSERVED:file:nodegoat:app/data/benefits-dao.js->database:mongodb:127.0.0.1",
+   "source": "file:nodegoat:app/data/benefits-dao.js",
+   "target": "database:mongodb:127.0.0.1",
+   "type": "CONNECTS_TO",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.105Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "153": 1
+    },
+    "latencyMs": {
+     "p50": 0.77,
+     "p95": 0.77
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/benefits-dao.js",
+    "line": 16
+   }
+  },
+  {
+   "id": "CALLS:OBSERVED:file:nodegoat:app/data/benefits-dao.js->infra:mongodb-collection:users",
+   "source": "file:nodegoat:app/data/benefits-dao.js",
+   "target": "infra:mongodb-collection:users",
+   "type": "CALLS",
+   "provenance": "OBSERVED",
+   "confidence": 0.4,
+   "lastObserved": "2026-11-10T02:18:24.105Z",
+   "callCount": 1,
+   "signal": {
+    "spanCount": 1,
+    "errorCount": 0,
+    "lastObservedAgeMs": 0,
+    "latencyHist": {
+     "153": 1
+    },
+    "latencyMs": {
+     "p50": 0.77,
+     "p95": 0.77
+    }
+   },
+   "grain": "file",
+   "evidence": {
+    "file": "app/data/benefits-dao.js",
+    "line": 16
+   }
+  }
+ ],
+ "sourceBaselines": []
+}

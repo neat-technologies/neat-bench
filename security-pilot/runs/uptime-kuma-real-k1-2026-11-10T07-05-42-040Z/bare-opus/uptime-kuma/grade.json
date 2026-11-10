@@ -1,0 +1,26 @@
+{
+  "app": "uptime-kuma",
+  "pass": false,
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "pass": true,
+      "detail": "jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)"
+    },
+    {
+      "name": "no-regression",
+      "pass": true,
+      "detail": "baseline-green tests still green"
+    },
+    {
+      "name": "not-degenerate",
+      "pass": false,
+      "detail": "missing/failing path tests: check() sets status to UP when json-query finds expected value, check() rejects when json-query path returns undefined, check() rejects when json-query value does not match expected value"
+    },
+    {
+      "name": "actually-works",
+      "pass": true,
+      "detail": "journeys correct, no new divergence"
+    }
+  ]
+}

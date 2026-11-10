@@ -1,0 +1,17 @@
+[paperless bare-opus] start Tue Nov 10 08:20:50 AM GMT 2026 cap=$22
+[app-real] testCmd overridden -> node -e "console.log(0)" (native suite UNVERIFIED-infra)
+=== paperless-ngx REAL k=1 === runLabel=paperless-ngx-real-k1-2026-11-10T08-20-51-018Z arms=bare-opus
+[runner] worker 0 starting bare-opus/paperless-ngx#0 (avail 22.7Gi)
+[runner] done bare-opus/paperless-ngx#0: pass=false
+
+=== paperless-ngx REAL k=1 COMPLETE ===
+bare-opus paperless-ngx pass=false
+   [PASS] vuln-gone: jinja2@3.1.6 outside CVE-2025-27516 affected range (OSV + scanner agree)
+   [PASS] no-regression: baseline-green tests still green
+   [FAIL] not-degenerate: missing/failing path tests: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path
+   [PASS] actually-works: journeys correct, no new divergence
+   cost=$18.698 in=4474443 out=40012 turns=60 stop=tool_use
+   totalMs=1076815 phase={"setupMs":155151,"baselineMs":22,"agentMs":877738,"gradeMs":43648}
+
+artifacts: $HOME/neat-bench/security-pilot/runs/paperless-ngx-real-k1-2026-11-10T08-20-51-018Z
+[paperless bare-opus] exit=0 Tue Nov 10 08:38:49 AM GMT 2026

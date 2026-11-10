@@ -1,0 +1,36 @@
+[verify-kuma] start Tue Nov 10 02:37:33 AM GMT 2026
+=== observe-verify (eb330c2) app=uptime-kuma service=uptime-kuma box=<host> avail=11.6Gi ===
+
+######### NEAT arm #########
+neatBase=http://127.0.0.1:36973 nodes=1817 edges=2515
+OBSERVED edges from service:uptime-kuma: 38
+/graph/divergences answered: 2
+node types: {"ServiceNode":3,"FileNode":408,"SymbolNode":1319,"ConfigNode":31,"RouteNode":28,"FrontierNode":3,"InfraNode":25}
+DatabaseNodes (0): (none)
+route nodes: 28; OBSERVED routes: 1
+  OBSERVED route: route:uptime-kuma:GET /
+socket.io event-grain nodes (<ns>#<event>) (1344): symbol:uptime-kuma:config/vite.config.js#manualChunks, symbol:uptime-kuma:db/knex_init_db.js#createTables, symbol:uptime-kuma:db/knex_migrations/2023-08-16-0000-create-uptime.js#exports.up, symbol:uptime-kuma:db/knex_migrations/2023-08-16-0000-create-uptime.js#exports.down, symbol:uptime-kuma:db/knex_migrations/2023-08-18-0301-heartbeat.js#exports.up, symbol:uptime-kuma:db/knex_migrations/2023-08-18-0301-heartbeat.js#exports.down, symbol:uptime-kuma:db/knex_migrations/2023-09-29-0000-heartbeat-retires.js#exports.up, symbol:uptime-kuma:db/knex_migrations/2023-09-29-0000-heartbeat-retires.js#exports.down, symbol:uptime-kuma:db/knex_migrations/2023-10-08-0000-mqtt-query.js#exports.up, symbol:uptime-kuma:db/knex_migrations/2023-10-08-0000-mqtt-query.js#exports.down, symbol:uptime-kuma:db/knex_migrations/2023-10-11-1915-push-token-to-32.js#exports.up, symbol:uptime-kuma:db/knex_migrations/2023-10-11-1915-push-token-to-32.js#exports.down, symbol:uptime-kuma:db/knex_migrations/2023-10-16-0000-create-remote-browsers.js#exports.up, symbol:uptime-kuma:db/knex_migrations/2023-10-16-0000-create-remote-browsers.js#exports.down, symbol:uptime-kuma:db/knex_migrations/2023-12-20-0000-alter-status-page.js#exports.up
+symbol nodes: 1319; OBSERVED edges touching a symbol: 28
+  sym OBSERVED: (PUBLISHES_TO) symbol:uptime-kuma:server/client.js#sendInfo -> infra:socket.io-topic:/#info
+  sym OBSERVED: (CONTAINS) file:uptime-kuma:server/server.js -> symbol:uptime-kuma:server/server.js#Namespace.<anonymous>
+  sym OBSERVED: (PUBLISHES_TO) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#setup
+  sym OBSERVED: (PUBLISHES_TO) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#loginRequired
+  sym OBSERVED: (CONSUMES_FROM) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#needSetup
+  sym OBSERVED: (CONSUMES_FROM) symbol:uptime-kuma:server/server.js#Namespace.<anonymous> -> infra:socket.io-topic:/#setup
+  sym OBSERVED: (PUBLISHES_TO) symbol:uptime-kuma:server/uptime-kuma-server.js#UptimeKumaServer.sendMonitorList -> infra:socket.io-topic:/#monitorList
+  sym OBSERVED: (PUBLISHES_TO) symbol:uptime-kuma:server/client.js#sendMonitorTypeList -> infra:socket.io-topic:/#monitorTypeList
+  sym OBSERVED: (PUBLISHES_TO) symbol:uptime-kuma:server/uptime-kuma-server.js#UptimeKumaServer.sendMaintenanceListByUserID -> infra:socket.io-topic:/#maintenanceList
+  sym OBSERVED: (PUBLISHES_TO) symbol:uptime-kuma:server/client.js#sendNotificationList -> infra:socket.io-topic:/#notificationList
+OBSERVED edge types: {"CALLS":3,"CONTAINS":9,"PUBLISHES_TO":18,"CONSUMES_FROM":8}
+graph dumped: $HOME/neat-bench/security-pilot/runs/verify-uptime-kuma-2026-11-10T02-37-34-375Z/graph-uptime-kuma.json
+[neat] torn down
+
+######### BARE arm #########
+appBase=http://127.0.0.1:46137 otelCaptureDir=$HOME/neat-bench/security-pilot/runs/verify-uptime-kuma-2026-11-10T02-37-34-375Z/_trees/uptime-kuma-bare-opus-L06K0p__work/otel-capture
+  capture logs.jsonl: 0 bytes
+  capture traces.jsonl: 469839 bytes
+bare capture total: 469839 bytes across 2 file(s)
+[bare] torn down
+
+=== observe-verify complete ===
+[verify-kuma] exit=0 Tue Nov 10 02:39:21 AM GMT 2026

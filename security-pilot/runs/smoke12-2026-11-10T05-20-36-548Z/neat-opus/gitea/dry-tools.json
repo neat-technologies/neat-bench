@@ -1,0 +1,132 @@
+[
+  {
+    "name": "run_shell",
+    "isError": false,
+    "preview": "exit=0 --- stdout --- total 936 drwx------ 26 <user> <user>   4096 Nov 10 05:25 . drwxrwxr-x  4 <user> <user>   4096 Nov 10 05:21 .. -rw-rw-r--  1 <user> <user>    70"
+  },
+  {
+    "name": "read_file",
+    "isError": false,
+    "preview": "{   \"type\": \"module\",   \"packageManager\": \"pnpm@12.6.0\",   \"engines\": {     \"node\": \">= 22.18.0\",     \"pnpm\": \">= 11.0.0\"   },   \"dependencies\": {     \"@citatio"
+  },
+  {
+    "name": "write_file",
+    "isError": false,
+    "preview": "wrote .bench-dry-neat-opus.txt (20 bytes)"
+  },
+  {
+    "name": "run_tests",
+    "isError": false,
+    "preview": "$ node -e \"console.log('ok 1 - smoke')\" exit=0 --- stdout --- ok 1 - smoke  --- stderr --- "
+  },
+  {
+    "name": "security_scan",
+    "isError": false,
+    "preview": "{  \"asOf\": \"2026-11-10T03:45:14.365Z\",  \"inventory\": 15,  \"findingCount\": 0,  \"findings\": [] }"
+  },
+  {
+    "name": "get_reachable_cves",
+    "isError": false,
+    "preview": "{  \"reachableCount\": 0,  \"reachable\": [],  \"excluded\": [] }"
+  },
+  {
+    "name": "is_reachable",
+    "isError": false,
+    "preview": "{\"found\":false,\"note\":\"no finding for that dep/cve in the scan (not flagged, or not in the tree)\"}"
+  },
+  {
+    "name": "scan_diff",
+    "isError": false,
+    "preview": "{\"advisories\":\"osv\",\"stale\":0,\"errors\":[],\"base\":{\"ref\":\"HEAD\",\"inventory\":15},\"head\":{\"ref\":\"working tree\",\"inventory\":15},\"asOf\":\"2026-11-10T03:45:14.365Z\",\"i"
+  },
+  {
+    "name": "ask",
+    "isError": false,
+    "preview": "No root cause surfaced for file:gitea:services/actions/approve_test.go — it may be healthy, or the failure isn't recorded. Nearest context: blast radius — 1 dep"
+  },
+  {
+    "name": "get_root_cause",
+    "isError": false,
+    "preview": "No root cause found for service:app. The node may be healthy, or it may not exist in the graph. (index still building — the first extraction pass has not finish"
+  },
+  {
+    "name": "get_blast_radius",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "get_dependencies",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "get_observed_dependencies",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "expand",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "relate",
+    "isError": false,
+    "preview": "service:app and database:127.0.0.1 are not related — node not found: service:app.  confidence: n/a · provenance: n/a project=default (no id yet) · binding=pinne"
+  },
+  {
+    "name": "get_incident_history",
+    "isError": false,
+    "preview": "Node service:app not found in the graph. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it settle"
+  },
+  {
+    "name": "get_incident_card",
+    "isError": false,
+    "preview": "No incident card available for service:app. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it set"
+  },
+  {
+    "name": "investigate",
+    "isError": false,
+    "preview": "No incident card available for service:app. (index still building — the first extraction pass has not finished yet, so this may be incomplete; retry once it set"
+  },
+  {
+    "name": "semantic_search",
+    "isError": false,
+    "preview": "Found 10 matches for \"which services are failing?\" via transformers provider.    • file:gitea:services/issue/issue.go (FileNode) — file:gitea:services/issue/iss"
+  },
+  {
+    "name": "get_graph_diff",
+    "isError": true,
+    "preview": "Could not load snapshot service:app: 400 Bad Request on GET /projects/default/graph/diff?against=service%3Aapp: {\"error\":\"unknown snapshot id — `against` must b"
+  },
+  {
+    "name": "get_recent_stale_edges",
+    "isError": false,
+    "preview": "No stale-edge transitions recorded yet.  confidence: n/a · provenance: n/a project=default (no id yet) · binding=pinned · daemon=http://127.0.0.1:45109"
+  },
+  {
+    "name": "get_divergences",
+    "isError": false,
+    "preview": "No divergences found between the declared (EXTRACTED) and observed (OBSERVED) views of the graph. (index still building — the first extraction pass has not fini"
+  },
+  {
+    "name": "check_policies",
+    "isError": false,
+    "preview": "No policy violations recorded.  confidence: n/a · provenance: n/a project=default (no id yet) · binding=pinned · daemon=http://127.0.0.1:45109"
+  },
+  {
+    "name": "recon_qa",
+    "isError": false,
+    "preview": "{  \"works\": true,  \"testFailures\": [],  \"journeyFailures\": [],  \"newDivergences\": [],  \"observedOk\": true }"
+  },
+  {
+    "name": "recon_flush",
+    "isError": false,
+    "preview": "{  \"freshAsOf\": \"2026-11-10T05:32:03.333Z\",  \"observed\": {   \"ok\": true,   \"nodePresent\": true,   \"observedCount\": 298,   \"freshCount\": 28,   \"message\": \"servic"
+  },
+  {
+    "name": "recon_probe",
+    "isError": false,
+    "preview": "{  \"claim\": \"the dep is reachable\",  \"verdict\": \"observed\",  \"evidence\": {   \"observed\": {    \"ok\": true,    \"nodePresent\": true,    \"observedCount\": 298,    \"f"
+  }
+]

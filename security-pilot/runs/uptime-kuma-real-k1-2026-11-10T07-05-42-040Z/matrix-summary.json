@@ -1,0 +1,23 @@
+{
+  "runLabel": "uptime-kuma-real-k1-2026-11-10T07-05-42-040Z",
+  "asOf": "2026-11-10T07:52:40.314Z",
+  "ramFloorGi": 4,
+  "concurrency": 1,
+  "trials": [
+    {
+      "arm": "bare-opus",
+      "app": "uptime-kuma",
+      "pass": false
+    },
+    {
+      "arm": "neat-opus",
+      "app": "uptime-kuma",
+      "pass": false
+    },
+    {
+      "arm": "neat-sonnet",
+      "app": "uptime-kuma",
+      "pass": false
+    }
+  ]
+}

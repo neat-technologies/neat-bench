@@ -1,0 +1,35 @@
+[verify-gitea] start Tue Nov 10 03:23:09 AM GMT 2026
+=== observe-verify (eb330c2) app=gitea service=gitea box=<host> avail=16.0Gi ===
+
+######### NEAT arm #########
+neatBase=http://127.0.0.1:38839 nodes=22122 edges=23391
+OBSERVED edges from service:gitea: 69
+/graph/divergences answered: 5
+node types: {"ServiceNode":1,"FileNode":3622,"SymbolNode":18280,"ConfigNode":196,"InfraNode":22,"DatabaseNode":1}
+DatabaseNodes (1): database:sqlite:sqlite3
+route nodes: 0; OBSERVED routes: 0
+socket.io event-grain nodes (<ns>#<event>) (18280): symbol:gitea:cmd/actions.go#newActionsCommand, symbol:gitea:cmd/actions.go#newActionsGenerateRunnerTokenCommand, symbol:gitea:cmd/actions.go#runGenerateActionsRunnerToken, symbol:gitea:cmd/admin.go#newAdminCommand, symbol:gitea:cmd/admin.go#newRepoSyncReleasesCommand, symbol:gitea:cmd/admin.go#newRegenerateCommand, symbol:gitea:cmd/admin.go#newAuthCommand, symbol:gitea:cmd/admin.go#newSendMailCommand, symbol:gitea:cmd/admin.go#idFlag, symbol:gitea:cmd/admin.go#runRepoSyncReleases, symbol:gitea:cmd/admin.go#getReleaseCount, symbol:gitea:cmd/admin_auth.go#newAuthDeleteCommand, symbol:gitea:cmd/admin_auth.go#newAuthListCommand, symbol:gitea:cmd/admin_auth.go#runListAuth, symbol:gitea:cmd/admin_auth.go#runDeleteAuth
+symbol nodes: 18280; OBSERVED edges touching a symbol: 47
+  sym OBSERVED: (CONNECTS_TO) symbol:gitea:cmd/migrate.go#runMigrate -> database:sqlite:sqlite3
+  sym OBSERVED: (CALLS) symbol:gitea:cmd/migrate.go#runMigrate -> infra:sql-table:sqlite_master
+  sym OBSERVED: (CONNECTS_TO) symbol:gitea:modelmigration/migrations.go#Migrate -> database:sqlite:sqlite3
+  sym OBSERVED: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:sqlite_master
+  sym OBSERVED: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:version
+  sym OBSERVED: (CONNECTS_TO) symbol:gitea:routers/common/db.go#InitDBEngine -> database:sqlite:sqlite3
+  sym OBSERVED: (CALLS) symbol:gitea:routers/common/db.go#InitDBEngine -> infra:sql-table:sqlite_master
+  sym OBSERVED: (CONNECTS_TO) symbol:gitea:services/auth/source/oauth2/init.go#initOAuth2Sources -> database:sqlite:sqlite3
+  sym OBSERVED: (CALLS) symbol:gitea:services/auth/source/oauth2/init.go#initOAuth2Sources -> infra:sql-table:login_source
+  sym OBSERVED: (CONNECTS_TO) symbol:gitea:models/auth/oauth2.go#Init -> database:sqlite:sqlite3
+OBSERVED edge types: {"CONTAINS":22,"CONNECTS_TO":25,"CALLS":22}
+graph dumped: $HOME/neat-bench/security-pilot/runs/verify-gitea-2026-11-10T03-23-09-897Z/graph-gitea.json
+[neat] torn down
+
+######### BARE arm #########
+appBase=http://127.0.0.1:43197 otelCaptureDir=$HOME/neat-bench/security-pilot/runs/verify-gitea-2026-11-10T03-23-09-897Z/_trees/gitea-bare-opus-xsjToK__work/otel-capture
+  capture logs.jsonl: 0 bytes
+  capture traces.jsonl: 1300515 bytes
+bare capture total: 1300515 bytes across 2 file(s)
+[bare] torn down
+
+=== observe-verify complete ===
+[verify-gitea] exit=0 Tue Nov 10 03:29:37 AM GMT 2026

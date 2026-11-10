@@ -1,0 +1,56 @@
+[smoke-fix] start Tue Nov 10 05:20:35 AM GMT 2026 govulncheck=$HOME/go/bin/govulncheck
+=== 12-config stub smoke + id-match === box=<host> node=v20.20.2 apps=gitea,paperless-ngx
+
+----- neat-opus / gitea (avail 16.3Gi) -----
+  [detail] types={"ServiceNode":1,"FileNode":3622,"SymbolNode":18280,"ConfigNode":196,"InfraNode":22,"DatabaseNode":1}
+  [detail] dbNodes=["database:sqlite:sqlite3"]
+  [detail] observedRoutes=0 socketioTopics=0 symbolGrainObsEdges=47
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:cmd/migrate.go#runMigrate -> database:sqlite:sqlite3
+  [detail] symObs: (CALLS) symbol:gitea:cmd/migrate.go#runMigrate -> infra:sql-table:sqlite_master
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:modelmigration/migrations.go#Migrate -> database:sqlite:sqlite3
+  [detail] symObs: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:sqlite_master
+  [detail] symObs: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:version
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:routers/common/db.go#InitDBEngine -> database:sqlite:sqlite3
+  id-match gitea: produced=331 matchedExact=8/8 substringHits=0
+  pass=false tools=25/26 criteria=vuln-gone:false,no-regression:true,not-degenerate:false,actually-works:true
+
+----- bare-opus / gitea (avail 20.0Gi) -----
+  pass=false tools=6/7 criteria=vuln-gone:false,no-regression:true,not-degenerate:false,actually-works:true
+
+----- neat-sonnet / gitea (avail 22.9Gi) -----
+  [detail] types={"ServiceNode":1,"FileNode":3621,"SymbolNode":18280,"ConfigNode":196,"InfraNode":22,"DatabaseNode":1}
+  [detail] dbNodes=["database:sqlite:sqlite3"]
+  [detail] observedRoutes=0 socketioTopics=0 symbolGrainObsEdges=49
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:cmd/migrate.go#runMigrate -> database:sqlite:sqlite3
+  [detail] symObs: (CALLS) symbol:gitea:cmd/migrate.go#runMigrate -> infra:sql-table:sqlite_master
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:modelmigration/migrations.go#Migrate -> database:sqlite:sqlite3
+  [detail] symObs: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:sqlite_master
+  [detail] symObs: (CALLS) symbol:gitea:modelmigration/migrations.go#Migrate -> infra:sql-table:version
+  [detail] symObs: (CONNECTS_TO) symbol:gitea:routers/common/db.go#InitDBEngine -> database:sqlite:sqlite3
+  pass=false tools=25/26 criteria=vuln-gone:false,no-regression:true,not-degenerate:false,actually-works:true
+
+----- neat-opus / paperless-ngx SKIPPED (blocked) -----
+
+----- bare-opus / paperless-ngx (avail 22.9Gi) -----
+  id-match paperless-ngx: produced=0 matchedExact=0/4 substringHits=0
+  pass=false tools=5/7 criteria=vuln-gone:false,no-regression:true,not-degenerate:false,actually-works:true
+
+----- neat-sonnet / paperless-ngx SKIPPED (blocked) -----
+
+================= 12-CONFIG MATRIX =================
+fail neat-opus    gitea          tools=25/26 obs=69 div=5 | vuln-gone=F no-regression=P not-degenerate=F actually-works=P
+fail bare-opus    gitea          tools=6/7 cap=1294350B | vuln-gone=F no-regression=P not-degenerate=F actually-works=P
+fail neat-sonnet  gitea          tools=25/26 obs=73 div=5 | vuln-gone=F no-regression=P not-degenerate=F actually-works=P
+ERR  neat-opus    paperless-ngx  tools=n/a obs=- div=- |  | ERROR: BLOCKED: neat security scan unviable on paperless 274 deps via api.osv.dev
+fail bare-opus    paperless-ngx  tools=5/7 cap=1495195B | vuln-gone=F no-regression=P not-degenerate=F actually-works=P
+ERR  neat-sonnet  paperless-ngx  tools=n/a obs=- div=- |  | ERROR: BLOCKED: neat security scan unviable on paperless 274 deps via api.osv.dev
+
+================= ID-MATCH =================
+gitea: testCmd="go test ./modules/markup/..." produced=331 exact=8/8 substring=0
+   sampleIds=["gitea.dev/modules/markup/internal TestRenderInternalAttrs","TestRenderInternalAttrs","gitea.dev/modules/markup/internal TestRenderInternalExtraHead/HeadExists","TestRenderInternalExtraHead/HeadExists","gitea.dev/modules/markup/internal TestRenderInternalExtraHead/HeadNotExists","TestRenderInternalExtraHead/HeadNotExists"]
+paperless-ngx: testCmd="pytest src/documents/tests/test_file_handling.py src/documents/tests/test_api_objects.py" produced=0 exact=0/4 substring=0
+   sampleIds=[]
+   missingExact=["test_dynamic_path","test_dynamic_path_with_none","test_dynamic_path_remove_none","test_test_storage_path"]
+
+artifacts: $HOME/neat-bench/security-pilot/runs/smoke12-2026-11-10T05-20-36-548Z
+[smoke-fix] exit=0 Tue Nov 10 05:52:48 AM GMT 2026
