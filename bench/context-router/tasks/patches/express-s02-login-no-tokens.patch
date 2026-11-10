@@ -1,0 +1,13 @@
+diff --git a/src/controllers/auth.controller.js b/src/controllers/auth.controller.js
+index 89f2c1f..aa46d9d 100644
+--- a/src/controllers/auth.controller.js
++++ b/src/controllers/auth.controller.js
+@@ -12,7 +12,7 @@ const login = catchAsync(async (req, res) => {
+   const { email, password } = req.body;
+   const user = await authService.loginUserWithEmailAndPassword(email, password);
+   const tokens = await tokenService.generateAuthTokens(user);
+-  res.send({ user, tokens });
++  res.send({ user, token: tokens });
+ });
+ 
+ const logout = catchAsync(async (req, res) => {

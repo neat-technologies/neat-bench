@@ -1,0 +1,33 @@
+{
+  "id": "express-m09-access-token-expires-immediately",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "medium",
+  "size_rationale": "Medium because the config is read in one place (config.js) and used in another (token generation), so the cause sits one step away from the 401s the prompt describes.",
+  "prompt": "Users are logged out straight away: the access token returned by login or register is rejected with 401 'Please authenticate' on the very next request, and `tokens.access.expires` in the login response equals the time of the request. Refresh tokens are unaffected.",
+  "bug_patch": "patches/express-m09-access-token-expires-immediately.patch",
+  "gold_files": [
+    "src/config/config.js"
+  ],
+  "root_cause": {
+    "file": "src/config/config.js",
+    "line": 48,
+    "detail": "config.jwt.accessExpirationMinutes reads envVars.JWT_ACCESS_EXPIRATION, a key that is never set (the validated key is JWT_ACCESS_EXPIRATION_MINUTES); the value is undefined, moment().add(undefined, 'minutes') adds nothing, and access tokens expire at issue time."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth middleware > should call next with no errors if access token is valid",
+      "tests/integration/user.test.js > User routes > POST /v1/users > should return 201 and successfully create new user if data is ok"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js tests/integration/user.test.js -t 'should call next with no errors if access token is valid|should return 201 and successfully create new user if data is ok'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

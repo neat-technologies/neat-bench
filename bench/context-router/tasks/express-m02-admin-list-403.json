@@ -1,0 +1,33 @@
+{
+  "id": "express-m02-admin-list-403",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "medium",
+  "size_rationale": "Medium because the cause sits one step away from the symptom, in the roles config that the auth middleware reads for several routes; the routes and controllers the prompt names are correct.",
+  "prompt": "Admins get 403 Forbidden on GET /v1/users and when fetching another user with GET /v1/users/:userId. The same admin can still create, update and delete users.",
+  "bug_patch": "patches/express-m02-admin-list-403.patch",
+  "gold_files": [
+    "src/config/roles.js"
+  ],
+  "root_cause": {
+    "file": "src/config/roles.js",
+    "line": 3,
+    "detail": "The admin role's rights list has 'getUser' instead of 'getUsers', so routes guarded by auth('getUsers') reject admins unless they are reading their own id."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/user.test.js > User routes > GET /v1/users > should return 200 and apply the default query options",
+      "tests/integration/user.test.js > User routes > GET /v1/users/:userId > should return 200 and the user object if admin is trying to get another user"
+    ],
+    "cmd": "npx jest tests/integration/user.test.js -t 'should return 200 and apply the default query options|should return 200 and the user object if admin is trying to get another user'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

@@ -1,0 +1,13 @@
+diff --git a/src/services/user.service.js b/src/services/user.service.js
+index f75de0a..20d2128 100644
+--- a/src/services/user.service.js
++++ b/src/services/user.service.js
+@@ -43,7 +43,7 @@ const getUserById = async (id) => {
+  * @returns {Promise<User>}
+  */
+ const getUserByEmail = async (email) => {
+-  return User.findOne({ email });
++  return User.findOne({ emails: email });
+ };
+ 
+ /**

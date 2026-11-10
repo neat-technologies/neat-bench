@@ -1,0 +1,32 @@
+{
+  "id": "express-s04-refresh-401",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in the refresh endpoint's own service function (refreshAuth), which the prompt points at by naming POST /v1/auth/refresh-tokens.",
+  "prompt": "POST /v1/auth/refresh-tokens rejects every refresh token with 401 'Please authenticate', including one issued by login seconds before. Login itself works.",
+  "bug_patch": "patches/express-s04-refresh-401.patch",
+  "gold_files": [
+    "src/services/auth.service.js"
+  ],
+  "root_cause": {
+    "file": "src/services/auth.service.js",
+    "line": 42,
+    "detail": "refreshAuth verifies the token as tokenTypes.ACCESS instead of tokenTypes.REFRESH; no token record of that type exists, verifyToken throws and the catch turns it into 401."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/refresh-tokens > should return 200 and new auth tokens if refresh token is valid"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 200 and new auth tokens if refresh token is valid'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "fixture-small",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "test fixture",
+  "size": "small",
+  "size_rationale": "test fixture",
+  "prompt": "GET /v1/users/:id returns 400 'userId must be a valid mongo id' for valid ids.",
+  "bug_patch": "patches/fixture-small.patch",
+  "gold_files": ["src/validations/custom.validation.js"],
+  "root_cause": { "file": "src/validations/custom.validation.js", "line": 2, "detail": "fixture" },
+  "oracle": { "type": "tests", "fail_to_pass": [], "cmd": "true" },
+  "validated": { "patch_applies": false, "patch_reverses": false, "oracle_runs": false }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "express-m05-users-page-empty",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "medium",
+  "size_rationale": "Medium because the cause sits one step away from the endpoint, in the paginate model plugin behind GET /v1/users; the controller and service the prompt leads to only pass the options through.",
+  "prompt": "GET /v1/users returns an empty `results` array even though the same response reports totalResults: 3. With ?limit=2 it returns only the last of the three users.",
+  "bug_patch": "patches/express-m05-users-page-empty.patch",
+  "gold_files": [
+    "src/models/plugins/paginate.plugin.js"
+  ],
+  "root_cause": {
+    "file": "src/models/plugins/paginate.plugin.js",
+    "line": 37,
+    "detail": "Off-by-one: skip is page * limit instead of (page - 1) * limit, so page 1 skips the first `limit` documents."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/user.test.js > User routes > GET /v1/users > should return 200 and apply the default query options",
+      "tests/integration/user.test.js > User routes > GET /v1/users > should return the correct page if page and limit params are specified",
+      "tests/unit/models/plugins/paginate.plugin.test.js > paginate plugin > populate option > should populate the specified data fields"
+    ],
+    "cmd": "npx jest tests/integration/user.test.js tests/unit/models/plugins/paginate.plugin.test.js -t 'should return 200 and apply the default query options|should return the correct page if page and limit params are specified|should populate the specified data fields'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

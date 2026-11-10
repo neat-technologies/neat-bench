@@ -1,0 +1,32 @@
+{
+  "id": "express-s01-register-200",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in one file, the register controller, which the prompt points at by naming POST /v1/auth/register and the wrong status.",
+  "prompt": "POST /v1/auth/register creates the account and returns the user and tokens, but the response status is 200 instead of 201 Created.",
+  "bug_patch": "patches/express-s01-register-200.patch",
+  "gold_files": [
+    "src/controllers/auth.controller.js"
+  ],
+  "root_cause": {
+    "file": "src/controllers/auth.controller.js",
+    "line": 8,
+    "detail": "register responds with httpStatus.OK instead of httpStatus.CREATED."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/register > should return 201 and successfully register user if request data is ok"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 201 and successfully register user if request data is ok'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

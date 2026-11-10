@@ -1,0 +1,13 @@
+diff --git a/src/models/plugins/toJSON.plugin.js b/src/models/plugins/toJSON.plugin.js
+index d2cd22e..7f5d17d 100644
+--- a/src/models/plugins/toJSON.plugin.js
++++ b/src/models/plugins/toJSON.plugin.js
+@@ -28,7 +28,7 @@ const toJSON = (schema) => {
+         }
+       });
+ 
+-      ret.id = ret._id.toString();
++      ret.id = ret._id.toStrng();
+       delete ret._id;
+       delete ret.__v;
+       delete ret.createdAt;

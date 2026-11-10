@@ -1,0 +1,19 @@
+{
+  "name": "neat-bench-context-router",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Experiment: route NEAT's context per task with Jev, against today's full context and a best-case oracle (neat-bench#23).",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "route": "node router/cli.mjs",
+    "eval": "node eval-router.mjs"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.7.0"
+  },
+  "license": "UNLICENSED"
+}

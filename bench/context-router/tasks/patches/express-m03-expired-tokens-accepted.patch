@@ -1,0 +1,13 @@
+diff --git a/src/services/token.service.js b/src/services/token.service.js
+index e5e8fba..7c0cb25 100644
+--- a/src/services/token.service.js
++++ b/src/services/token.service.js
+@@ -19,7 +19,7 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
+   const payload = {
+     sub: userId,
+     iat: moment().unix(),
+-    exp: expires.unix(),
++    exp: expires.valueOf(),
+     type,
+   };
+   return jwt.sign(payload, secret);
