@@ -68,7 +68,7 @@ const nodegoat: BenchCorpusItem = {
   advisories: [
     // clean bumps; infra-level, exercised by the whole suite (a degenerate delete breaks no-regression, not just these)
     { id: 'GHSA-cf4h-3jhx-xvhq', ecosystem: 'npm', dep: 'underscore', vulnerableRange: '<1.12.1', fixedIn: '1.13.8', importers: ['config/config.js'], fixKind: 'bump', vulnPathTests: [] },
-    { id: 'CVE-2024-29041', ecosystem: 'npm', dep: 'express', vulnerableRange: '<4.20.0', fixedIn: '4.21.2', importers: ['server.js', 'app/routes/tutorial.js'], fixKind: 'bump', vulnPathTests: [] },
+    { id: 'CVE-2024-29041', ecosystem: 'npm', dep: 'express', vulnerableRange: '<4.19.2', fixedIn: '4.21.2', importers: ['server.js', 'app/routes/tutorial.js'], fixKind: 'bump', vulnPathTests: [] }, // CVE-2024-29041 fixed in 4.19.2; range is doc-only (grader uses live OSV on the resolved version, not this field)
     { id: 'CVE-2024-45590', ecosystem: 'npm', dep: 'body-parser', vulnerableRange: '<1.20.3', fixedIn: '1.20.9', importers: ['server.js'], fixKind: 'bump', vulnPathTests: [] },
     // feature-specific: a degenerate "fix" that removes the feature breaks these exact specs
     { id: 'CVE-2022-21680', ecosystem: 'npm', dep: 'marked', vulnerableRange: '<4.0.10', fixedIn: '4.0.10', importers: ['server.js', 'app/views/memos.html'], fixKind: 'bump', vulnPathTests: ['Should memo be generated'] },

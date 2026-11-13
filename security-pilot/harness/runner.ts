@@ -11,6 +11,9 @@ import { runTrial, FreshProvisioner, type Provisioner, type RunTrialOpts, type T
 
 const GiB = 1024 * 1024 * 1024
 export const MAX_CONCURRENCY = Number(process.env.CONCURRENCY ?? '2')
+// RAM floor: before launching each trial the runner holds until MemAvailable is above this, so the
+// box (a shared gaming rig) keeps breathing. Override with RAM_FLOOR_GI; default leaves headroom.
+export const RAM_FLOOR_GI = Number(process.env.RAM_FLOOR_GI ?? '6')
 
 // Real available memory (MemAvailable), not os.freemem() (which excludes reclaimable cache).
 export async function availableGi(): Promise<number> {

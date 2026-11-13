@@ -33,8 +33,8 @@ async function main() {
   })
   console.error(`\n=== ${app} REAL k=1 COMPLETE ===`)
   for (const r of rs) {
-    console.error(`${r.arm} ${r.app} pass=${r.pass}${r.error ? ' ERROR: ' + r.error.split('\n')[0] : ''}`)
-    if (r.grade) for (const c of r.grade.criteria) console.error(`   [${c.pass ? 'PASS' : 'FAIL'}] ${c.name}: ${String(c.detail).slice(0, 160)}`)
+    console.error(`${r.arm} ${r.app} pass=${r.pass} verdict=${r.grade?.verdict ?? '-'}${r.grade?.unverified?.length ? ` unverified=[${r.grade.unverified.join(',')}]` : ''}${r.error ? ' ERROR: ' + r.error.split('\n')[0] : ''}`)
+    if (r.grade) for (const c of r.grade.criteria) console.error(`   [${c.verdict.toUpperCase().padEnd(5)}] ${c.name}: ${String(c.detail).slice(0, 160)}`)
     const m: any = r.metrics ?? {}
     if (m.cost) console.error(`   cost=$${(m.cost.usd ?? 0).toFixed(3)} in=${m.cost.usage?.input} out=${m.cost.usage?.output} turns=${m.effort?.turns} stop=${m.effort?.stopReason}`)
     if (m.time) console.error(`   totalMs=${m.time.totalMs} phase=${JSON.stringify(m.time.phase)}`)

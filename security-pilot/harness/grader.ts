@@ -1,4 +1,4 @@
-import { resolveInstalledVersion, osvAffected_, runScanner, runTests } from './grader-impl.js'
+import { resolveInstalledVersion, osvAffected_, runScanner, runTestsDetailed, type TestRun } from './grader-impl.js'
 // The bench grader. The pass oracle is deterministic and, for the vuln check, INDEPENDENT of
 // NEAT (OSV + the ecosystem's own scanner decide "vuln gone", never NEAT's scanner) so the bench
 // can never grade itself. recon.qa supplies the "actually works" signal (its own spec); the
@@ -32,16 +32,32 @@ export interface ReconQA {
   qa(app: string, treePath: string): Promise<{ works: boolean; journeyFailures: string[]; newDivergences: string[] }>
 }
 
+export type Verdict = 'pass' | 'fail' | 'unverified'
+
 export interface Criterion {
   name: 'vuln-gone' | 'no-regression' | 'not-degenerate' | 'actually-works'
-  pass: boolean
+  verdict: Verdict
+  pass: boolean // convenience mirror of verdict === 'pass' (kept for back-compat printers/consumers)
   detail: string
 }
 
 export interface TrialResult {
   app: string
-  pass: boolean
+  pass: boolean // overall clean pass: every criterion verdict === 'pass'
+  verdict: Verdict // 'fail' if any criterion failed, else 'unverified' if any unverified, else 'pass'
+  unverified: string[] // names of criteria that could not be verified (counted out of the headline)
   criteria: Criterion[]
+}
+
+function crit(name: Criterion['name'], verdict: Verdict, detail: string): Criterion {
+  return { name, verdict, pass: verdict === 'pass', detail }
+}
+
+// A set of verdicts collapses worst-first: any fail -> fail; else any unverified -> unverified.
+function overallVerdict(criteria: Criterion[]): Verdict {
+  if (criteria.some((c) => c.verdict === 'fail')) return 'fail'
+  if (criteria.some((c) => c.verdict === 'unverified')) return 'unverified'
+  return 'pass'
 }
 
 // --- independent authorities (NO NEAT in here) ---
@@ -49,68 +65,100 @@ export interface TrialResult {
 // Resolve the dep's installed version from the post-patch lockfile, then ask OSV whether that
 // version is still affected. Cross-checked by the ecosystem scanner (npm audit / pip-audit /
 // govulncheck) in runScanner. Both must agree the advisory is cleared.
-async function vulnGone(adv: Advisory, treePath: string): Promise<Criterion> {
+async function vulnGone(adv: Advisory, treePath: string, preFlagged: boolean | undefined): Promise<Criterion> {
+  // Contamination guard: if we positively confirmed the advisory was NOT present on the pre-patch tree,
+  // "vuln gone" has no signal (there was nothing to remove) -> UNVERIFIED, never a trivial pass.
+  // preFlagged === undefined means the pre-check did not run / errored, so proceed normally.
+  if (preFlagged === false) {
+    return crit('vuln-gone', 'unverified', `${adv.id}: not flagged on the pre-patch tree (no signal); cannot credit removal`)
+  }
   const resolved = await resolveInstalledVersion(adv.ecosystem, adv.dep, treePath) // read lockfile
+  const scannerFlags = await runScanner(adv, treePath) // npm audit / pip-audit / govulncheck; throws if it can't run
   if (resolved === null) {
-    return { name: 'vuln-gone', pass: true, detail: `${adv.dep} removed from the resolved tree` }
+    // Resolver found no version. For a remove/replace fix that is the correct end state (confirm via the
+    // scanner). For a bump the dep is expected present, so a null resolve means the resolver is blind,
+    // NOT that the vuln is gone -> UNVERIFIED instead of the old fail-open pass.
+    if (scannerFlags) return crit('vuln-gone', 'fail', `${adv.dep} still flagged by the scanner (${adv.id}); dep did not resolve`)
+    if (adv.fixKind === 'remove' || adv.fixKind === 'replace') {
+      return crit('vuln-gone', 'pass', `${adv.dep} removed from the resolved tree; scanner clear (${adv.id})`)
+    }
+    return crit('vuln-gone', 'unverified', `${adv.dep} did not resolve to a version (expected a ${adv.fixKind}); scanner clear but the fixed version cannot be confirmed`)
   }
   const osvAffected = await osvAffected_(adv, resolved) // POST api.osv.dev/v1/query, check ranges
-  const scannerFlags = await runScanner(adv, treePath) // npm audit / pip-audit / govulncheck
   const cleared = !osvAffected && !scannerFlags
-  return {
-    name: 'vuln-gone',
-    pass: cleared,
-    detail: cleared
+  return crit(
+    'vuln-gone',
+    cleared ? 'pass' : 'fail',
+    cleared
       ? `${adv.dep}@${resolved} outside ${adv.id} affected range (OSV + scanner agree)`
       : `${adv.dep}@${resolved} still flagged (osvAffected=${osvAffected}, scanner=${scannerFlags})`,
-  }
+  )
 }
 
 // Run the app's own suite; a regression is any baseline-green test now failing.
-async function noRegression(item: CorpusItem, treePath: string): Promise<Criterion> {
-  const now = await runTests(item.testCmd, treePath) // -> set of passing test ids
-  const regressed = item.baselineGreen.filter((t) => !now.has(t))
-  return {
-    name: 'no-regression',
-    pass: regressed.length === 0,
-    detail: regressed.length === 0 ? 'baseline-green tests still green' : `regressed: ${regressed.join(', ')}`,
+function noRegression(item: CorpusItem, run: TestRun): Criterion {
+  // A vacuous baseline (capture failed, or the suite ran nothing) cannot certify "no regression".
+  if (item.baselineGreen.length === 0) {
+    return crit('no-regression', 'unverified', 'no baseline-green tests captured (suite did not run at baseline); cannot certify no-regression')
   }
+  const regressed = item.baselineGreen.filter((t) => run.ran.has(t) && !run.passed.has(t)) // ran and now failing
+  const notRun = item.baselineGreen.filter((t) => !run.ran.has(t)) // did not execute post-patch (env/skip)
+  if (regressed.length) return crit('no-regression', 'fail', `regressed: ${regressed.join(', ')}`)
+  if (notRun.length) {
+    const shown = notRun.slice(0, 8).join(', ')
+    return crit('no-regression', 'unverified', `baseline-green tests did not run post-patch (env): ${shown}${notRun.length > 8 ? ` +${notRun.length - 8} more` : ''}`)
+  }
+  return crit('no-regression', 'pass', 'baseline-green tests still green')
 }
 
 // The tests that exercised the vulnerable path must still exist and pass: can't "fix" by deleting
 // the feature.
-async function notDegenerate(item: CorpusItem, treePath: string): Promise<Criterion> {
-  const now = await runTests(item.testCmd, treePath)
-  const vulnPathTests = item.advisories.flatMap((a) => a.vulnPathTests)
-  const missing = vulnPathTests.filter((t) => !now.has(t))
-  return {
-    name: 'not-degenerate',
-    pass: missing.length === 0,
-    detail: missing.length === 0 ? 'vuln-path tests persist and pass' : `missing/failing path tests: ${missing.join(', ')}`,
+function notDegenerate(item: CorpusItem, run: TestRun): Criterion {
+  const vulnPathTests = [...new Set(item.advisories.flatMap((a) => a.vulnPathTests))]
+  if (vulnPathTests.length === 0) {
+    return crit('not-degenerate', 'unverified', 'no vuln-path tests defined for this item; cannot guard against degenerate removal')
   }
+  const failed = vulnPathTests.filter((t) => run.ran.has(t) && !run.passed.has(t)) // ran and failing = feature broken/removed
+  const notRun = vulnPathTests.filter((t) => !run.ran.has(t)) // skipped/absent/infra -> cannot verify the feature survived
+  if (failed.length) return crit('not-degenerate', 'fail', `vuln-path tests failing (feature broken/removed): ${failed.join(', ')}`)
+  if (notRun.length) return crit('not-degenerate', 'unverified', `vuln-path tests did not run (env/skip); cannot confirm the feature survived: ${notRun.join(', ')}`)
+  return crit('not-degenerate', 'pass', 'vuln-path tests persist and pass')
 }
 
-export async function gradeTrial(item: CorpusItem, treePath: string, recon: ReconQA): Promise<TrialResult> {
-  const vuln = await Promise.all(item.advisories.map((a) => vulnGone(a, treePath)))
-  const vulnGoneAll: Criterion = {
-    name: 'vuln-gone',
-    pass: vuln.every((c) => c.pass),
-    detail: vuln.map((c) => c.detail).join(' | '),
-  }
-  const reg = await noRegression(item, treePath)
-  const deg = await notDegenerate(item, treePath)
+export async function gradeTrial(
+  item: CorpusItem,
+  treePath: string,
+  recon: ReconQA,
+  opts: { preFlagged?: Record<string, boolean> } = {},
+): Promise<TrialResult> {
+  const pre = opts.preFlagged ?? {}
+  const vuln = await Promise.all(item.advisories.map((a) => vulnGone(a, treePath, pre[a.id])))
+  const vulnGoneAll = crit('vuln-gone', overallVerdict(vuln), vuln.map((c) => `${c.verdict}: ${c.detail}`).join(' | '))
+
+  // Run the native suite ONCE (was twice) and feed both the regression + degenerate checks.
+  const run = await runTestsDetailed(item.testCmd, treePath)
+  const reg = noRegression(item, run)
+  const deg = notDegenerate(item, run)
+
   const qa = await recon.qa(item.app, treePath)
-  const works: Criterion = {
-    name: 'actually-works',
-    pass: qa.works && qa.newDivergences.length === 0,
-    detail: qa.works
+  const works = crit(
+    'actually-works',
+    qa.works && qa.newDivergences.length === 0 ? 'pass' : 'fail',
+    qa.works
       ? qa.newDivergences.length === 0
         ? 'journeys correct, no new divergence'
         : `new divergence introduced: ${qa.newDivergences.join(', ')}`
       : `journeys failed: ${qa.journeyFailures.join(', ')}`,
-  }
+  )
   const criteria = [vulnGoneAll, reg, deg, works]
-  return { app: item.app, pass: criteria.every((c) => c.pass), criteria }
+  const verdict = overallVerdict(criteria)
+  return {
+    app: item.app,
+    pass: verdict === 'pass',
+    verdict,
+    unverified: criteria.filter((c) => c.verdict === 'unverified').map((c) => c.name),
+    criteria,
+  }
 }
 
 // --- ecosystem-specific helpers: implemented, NEAT-independent, in grader-impl.ts (imported at top) ---

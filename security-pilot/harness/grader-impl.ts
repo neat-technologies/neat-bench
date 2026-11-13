@@ -319,42 +319,76 @@ export function govulncheckFlags(stdout: string, advId: string): boolean {
   return false
 }
 
-// --- runTests: run the suite, return the set of PASSING test ids (framework-aware) ---
-export async function runTests(testCmd: string, treePath: string): Promise<Set<string>> {
-  const ids = new Set<string>()
+// --- runTests: run the suite (framework-aware). runTestsDetailed returns BOTH the passing ids and
+// the RAN ids (passed ∪ failed), so the grader can tell "ran and failed/absent" (a real regression
+// or a degenerate feature deletion) from "could not run in this env" (skipped/infra -> UNVERIFIED,
+// never a false pass OR a false fail). runTests keeps the old passing-set signature for callers that
+// only need baseline/post green ids.
+export interface TestRun {
+  passed: Set<string>
+  ran: Set<string> // passed ∪ failed; a test NOT in here did not execute (skipped/absent/infra)
+}
+
+export async function runTestsDetailed(testCmd: string, treePath: string): Promise<TestRun> {
+  const passed = new Set<string>()
+  const ran = new Set<string>()
+  const addPassed = (id: string) => {
+    passed.add(id)
+    ran.add(id)
+  }
+  const addRan = (id: string) => {
+    ran.add(id)
+  }
   const lower = testCmd.toLowerCase()
 
   if (lower.includes('node --test') || lower.includes('test-backend') || /\.mjs\b/.test(lower)) {
     const out = await sh(testCmd, treePath)
-    // node:test emits TAP ("ok N - name") OR the spec reporter ("✔ name (1.2ms)" pass / "✖ name" fail).
-    // uptime-kuma runs --test-reporter=spec, so both are handled; only PASSING names are recorded.
+    // node:test emits TAP ("ok N - name" pass / "not ok N - name" fail) OR the spec reporter
+    // ("✔ name (1.2ms)" pass / "✖ name" fail). skip/todo are neither pass nor ran. uptime-kuma runs
+    // --test-reporter=spec, so both are handled.
     for (const line of (out.stdout + '\n' + out.stderr).split('\n')) {
-      const tap = line.match(/^\s*ok\s+\d+\s*-\s*(.+?)\s*$/)
-      if (tap && !/# (skip|todo)/i.test(line)) {
-        ids.add(tap[1].trim())
+      const tapFail = line.match(/^\s*not ok\s+\d+\s*-\s*(.+?)\s*$/)
+      if (tapFail) {
+        addRan(tapFail[1].trim())
         continue
       }
-      const spec = line.match(/^\s*[✔✓]\s+(.+?)(?:\s+\([\d.]+\s*m?s\))?\s*$/)
-      if (spec) ids.add(spec[1].trim())
+      const tap = line.match(/^\s*ok\s+\d+\s*-\s*(.+?)\s*$/)
+      if (tap) {
+        if (!/# (skip|todo)/i.test(line)) addPassed(tap[1].trim())
+        continue
+      }
+      const specPass = line.match(/^\s*[✔✓]\s+(.+?)(?:\s+\([\d.]+\s*m?s\))?\s*$/)
+      if (specPass) {
+        addPassed(specPass[1].trim())
+        continue
+      }
+      const specFail = line.match(/^\s*[✖✗]\s+(.+?)(?:\s+\([\d.]+\s*m?s\))?\s*$/)
+      if (specFail) addRan(specFail[1].trim())
     }
-    return ids
+    return { passed, ran }
   }
 
   if (lower.includes('pytest')) {
     const cmd = /\s-v\b/.test(testCmd) ? testCmd : `${testCmd} -v`
     const out = await sh(cmd, treePath)
-    for (const line of (out.stdout + '\n' + out.stderr).split('\n')) {
-      const m = line.match(/^(\S+::\S+)\s+PASSED/)
-      if (!m) continue
-      // Add the full nodeid AND the bare method + Class::method, so corpus vulnPathTests written
-      // as bare method names (e.g. test_dynamic_path) match the same way full ids do.
-      const full = m[1]
-      ids.add(full)
+    // Add the full nodeid AND the bare method + Class::method, so corpus vulnPathTests written as
+    // bare method names (e.g. test_dynamic_path) match the same way full ids do.
+    const expand = (full: string, sink: (id: string) => void) => {
+      sink(full)
       const parts = full.split('::')
-      ids.add(parts[parts.length - 1])
-      if (parts.length >= 2) ids.add(parts.slice(-2).join('::'))
+      sink(parts[parts.length - 1])
+      if (parts.length >= 2) sink(parts.slice(-2).join('::'))
     }
-    return ids
+    for (const line of (out.stdout + '\n' + out.stderr).split('\n')) {
+      const p = line.match(/^(\S+::\S+)\s+PASSED/)
+      if (p) {
+        expand(p[1], addPassed)
+        continue
+      }
+      const f = line.match(/^(\S+::\S+)\s+(FAILED|ERROR)/)
+      if (f) expand(f[1], addRan)
+    }
+    return { passed, ran }
   }
 
   if (lower.includes('go test')) {
@@ -364,21 +398,32 @@ export async function runTests(testCmd: string, treePath: string): Promise<Set<s
       if (!line.trim()) continue
       try {
         const ev = JSON.parse(line)
+        if (!ev.Test) continue
         // Full "Package Test" AND bare Test (corpus vulnPathTests use the bare name, e.g. TestPostProcess).
-        if (ev.Action === 'pass' && ev.Test) {
-          ids.add(`${ev.Package} ${ev.Test}`)
-          ids.add(ev.Test)
+        if (ev.Action === 'pass') {
+          addPassed(`${ev.Package} ${ev.Test}`)
+          addPassed(ev.Test)
+        } else if (ev.Action === 'fail') {
+          addRan(`${ev.Package} ${ev.Test}`)
+          addRan(ev.Test)
         }
       } catch {
         /* non-JSON line */
       }
     }
-    return ids
+    return { passed, ran }
   }
 
-  // Fallback (e.g. cypress `npm run test:ci`): coarse, but pre/post use the SAME runTests so
-  // baselineGreen (established per trial) and this call agree on the id scheme.
+  // Fallback (e.g. cypress `npm run test:ci`): coarse — we cannot see individual it() names, only a
+  // whole-suite pass/fail. Per-test vulnPathTests (cypress it() names) therefore never appear in `ran`,
+  // so not-degenerate comes back UNVERIFIED for such apps (honest: the suite could not report them),
+  // never a false pass. pre/post use the SAME runner so the id scheme agrees.
   const out = await sh(testCmd, treePath)
-  if (out.code === 0) ids.add('suite:pass')
-  return ids
+  if (out.code === 0) addPassed('suite:pass')
+  else addRan('suite:pass')
+  return { passed, ran }
+}
+
+export async function runTests(testCmd: string, treePath: string): Promise<Set<string>> {
+  return (await runTestsDetailed(testCmd, treePath)).passed
 }

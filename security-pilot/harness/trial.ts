@@ -19,7 +19,7 @@ import { buildTools } from './tools.js'
 import { connectNeatMcp, type NeatMcp } from './neat-mcp.js'
 import { buildReconToolDefs, ReconQA, reconAssess, type ReconState } from '../recon/recon-tools.js'
 import { fetchDivergences, type Divergence } from '../recon/verifier.js'
-import { runTests } from './grader-impl.js'
+import { runTests, resolveInstalledVersion, osvAffected_, runScanner } from './grader-impl.js'
 import { standUp, BENCH_NEAT_SHA } from './standup.js'
 
 const TASK =
@@ -220,6 +220,23 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     phase.baselineMs = Date.now() - bt0
     await writeArtifact(artifactsDir, 'baseline.json', { baselineGreen: item.baselineGreen, baselineDivergenceCount: baselineDivergences.length })
 
+    // 2b. Contamination guard: confirm each advisory is actually detectable on the PRE-patch tree
+    // (before the agent touches it). If an advisory is not flagged pre-patch, "vuln gone" post-patch
+    // has no signal -> the grader marks it UNVERIFIED rather than a trivial pass. Best-effort: a check
+    // error leaves the advisory unmarked (undefined), and the grader then proceeds normally for it.
+    const preFlagged: Record<string, boolean> = {}
+    for (const a of item.advisories) {
+      try {
+        const resolved = await resolveInstalledVersion(a.ecosystem, a.dep, ctx.treePath)
+        const osv = resolved ? await osvAffected_(a, resolved) : false
+        const scan = await runScanner(a, ctx.treePath)
+        preFlagged[a.id] = osv || scan
+      } catch (e) {
+        await writeArtifact(artifactsDir, `preflag-error-${a.id.replace(/[^\w.-]/g, '_')}.txt`, String(e))
+      }
+    }
+    await writeArtifact(artifactsDir, 'pre-signal.json', preFlagged)
+
     // 3. assemble the arm's tools (NEAT arms: MCP suite + security CLI + Recon)
     const reconState: ReconState = { baselineDivergences }
     let neatToolDefs: ToolDef[] | undefined
@@ -254,7 +271,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
       reconState.attributableFiles = item.advisories.flatMap((a) => a.importers)
     }
     const recon = new ReconQA(ctx, reconState)
-    const grade = await gradeTrial(item, ctx.treePath, recon)
+    const grade = await gradeTrial(item, ctx.treePath, recon, { preFlagged })
     phase.gradeMs = Date.now() - gt0
     rec.grade = grade
     rec.pass = grade.pass
@@ -294,7 +311,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     for (const [k, v] of Object.entries(result.toolCalls)) if (neatToolNames.has(k)) neatUsage[k] = v
     rec.metrics = {
       ...rec.metrics,
-      outcome: { pass: grade.pass, criteria: grade.criteria },
+      outcome: { pass: grade.pass, verdict: grade.verdict, unverified: grade.unverified, criteria: grade.criteria },
       cost: { usd: result.costUsd, usage: result.usage },
       time: { totalMs: Date.now() - t0, phase },
       effort: { turns: result.turns, stopReason: result.stopReason, toolCalls: result.toolCalls },
