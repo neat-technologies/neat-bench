@@ -15,7 +15,7 @@ async function main() {
   const D = path.join(runsRoot, dirs[dirs.length - 1])
   console.error(`=== RE-GRADE (scanGo findings-scoped) ${D} ===`)
   const item = getCorpusItem('gitea')
-  for (const arm of ['bare-opus', 'neat-opus', 'neat-sonnet']) {
+  for (const arm of ['bare-opus', 'neat-sonnet-full', 'neat-sonnet-lean']) {
     const A = path.join(D, arm, 'gitea')
     let grade: any, scanner: any
     try {

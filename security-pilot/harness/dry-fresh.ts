@@ -94,7 +94,7 @@ async function main() {
   console.error(`box=${os.hostname()} node=${process.version} app=${app} avail=${(await availableGi()).toFixed(1)}Gi`)
 
   const item = app === 'nodegoat' ? trimmedNodegoat() : getCorpusItem(app)
-  const neatArm = ARMS.find((a) => a.id === 'neat-opus')!
+  const neatArm = ARMS.find((a) => a.id === 'neat-sonnet-full')!
   const bareArm = ARMS.find((a) => a.id === 'bare-opus')!
 
   // ---- NEAT arm: fresh standup + MAIN-build daemon observes it ----
@@ -115,7 +115,7 @@ async function main() {
     // Stub trial over the live standup (no second standup) -> grade + run.json.
     const live = new LiveReuseProvisioner({ treePath: neatStandup.treePath, neatBase: neatStandup.neatBase, appBase: neatStandup.appBase })
     const rec = await runTrial(neatArm, item, live, { runsRoot, runLabel, seed: 0, stubAgent })
-    reportRec('neat-opus', rec, observed.length, divs.length)
+    reportRec('neat-sonnet-full', rec, observed.length, divs.length)
   } finally {
     await neatStandup.teardown()
     console.error('[neat] torn down')

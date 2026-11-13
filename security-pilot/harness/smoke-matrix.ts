@@ -21,8 +21,8 @@ import { fetchGraph, fetchDivergences, observedFromService } from '../recon/veri
 
 const SMOKE = `node -e "console.log('ok 1 - smoke')"`
 const APPS = ['nodegoat', 'uptime-kuma', 'gitea', 'paperless-ngx']
-// neat-opus first per app so the graph peek + id-match land on a NEAT standup.
-const ARM_ORDER: Arm[] = ['neat-opus', 'bare-opus', 'neat-sonnet'].map((id) => ARMS.find((a) => a.id === id)!)
+// a NEAT arm first per app so the graph peek + id-match land on a NEAT standup.
+const ARM_ORDER: Arm[] = ['neat-sonnet-full', 'bare-opus', 'neat-sonnet-lean'].map((id) => ARMS.find((a) => a.id === id)!)
 
 const INTERESTING = new Set(['dep', 'cve', 'claim', 'against', 'a', 'b', 'direction', 'query', 'question', 'base', 'node', 'target'])
 function cannedArgs(tool: ToolDef): any {

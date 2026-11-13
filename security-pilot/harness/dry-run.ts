@@ -127,7 +127,7 @@ async function main() {
     'utf8',
   )
 
-  const neatArm = ARMS.find((a) => a.id === 'neat-opus')!
+  const neatArm = ARMS.find((a) => a.id === 'neat-sonnet-full')!
   const bareArm = ARMS.find((a) => a.id === 'bare-opus')!
   const neatProv = new LiveReuseProvisioner({ treePath: TREE, neatBase: NEAT_BASE, appBase: APP_BASE })
   const bareProv = new LiveReuseProvisioner({ treePath: TREE, appBase: APP_BASE, otelCaptureDir }) // bare: no neatBase, gets OTel capture

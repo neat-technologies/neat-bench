@@ -26,7 +26,7 @@ async function main() {
   await waitForRam(ramFloor, `${app}-neat`)
   console.error('\n######### NEAT arm #########')
   const neatProv = new FreshProvisioner({ workRoot })
-  const neatSt = await neatProv.provision(item, ARMS.find((a) => a.id === 'neat-opus')!)
+  const neatSt = await neatProv.provision(item, ARMS.find((a) => a.id === 'neat-sonnet-full')!)
   try {
     const g = await fetchGraph(neatSt.neatBase!)
     const divs = await fetchDivergences(neatSt.neatBase!)

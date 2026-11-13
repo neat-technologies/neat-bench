@@ -31,6 +31,17 @@ or violating its policies, and without churning dependencies that do not need to
 Work in the checkout directory using the available tools. When you believe the fix is complete and
 verified, stop. Do not ask for confirmation; act.`
 
+// The graph-first (lean) directive — appended to the lean arm's system prompt ONLY. This is the single
+// variable separating neat-sonnet-lean from neat-sonnet-full: go direct by default, query the graph
+// before any file sweep, read only the locus it hands you, escalate only when the fix is not obvious.
+// (Source: the #1612 GRAPH_FIRST.lean.md directive.)
+const LEAN_DIRECTIVE = `
+Graph-first (lean):
+You have NEAT's live graph of this codebase. Query the graph before any file search: NEAT queries come before grep at all times, and every question about the code is one NEAT query, not a file sweep.
+Default to the direct fix. A known-vulnerability fix is almost always a single dependency bump to the version named in the advisory: apply it, verify, stop. Do not explore the codebase to understand an obvious fix.
+When you must know something, ask the graph once and read only the file:line it points you to. Ground every claim in what the graph returns; if it does not show the vulnerable path, say so.
+Switch heads only when the fix is not obvious (a dependency with no fixed version to remove or replace, a vulnerability reachable only transitively, or a bump that would break a reached caller). For a clean bump, skip the investigation. Keep your looking proportional: small fix, one glance; hard fix, investigate properly.`
+
 function sh(cmd: string, cwd: string, timeoutMs: number, env?: NodeJS.ProcessEnv): Promise<{ code: number; stdout: string; stderr: string }> {
   return new Promise((resolve) => {
     exec(cmd, { cwd, timeout: timeoutMs, maxBuffer: 64 * 1024 * 1024, env: env ?? process.env }, (err, stdout, stderr) =>
@@ -180,6 +191,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     rec.pins = {
       model: arm.model,
       arm: arm.id,
+      lean: arm.lean === true,
       app: item.app,
       repo: item.repo,
       commit: item.commit,
@@ -252,9 +264,11 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
 
     // 4. run the agent (or the stub for the dry plumbing test)
     const at0 = Date.now()
+    // Lean arm only: the graph-first directive is the single variable vs the full arm.
+    const system = arm.lean ? `${SYSTEM}\n${LEAN_DIRECTIVE}` : SYSTEM
     const result = opts.stubAgent
       ? await opts.stubAgent(arm, tools, ctx)
-      : await runAgent(arm, SYSTEM, TASK, tools, { maxTurns: opts.maxTurns })
+      : await runAgent(arm, system, TASK, tools, { maxTurns: opts.maxTurns })
     phase.agentMs = Date.now() - at0
     await writeArtifact(artifactsDir, 'transcript.json', result.transcript)
     await writeArtifact(artifactsDir, 'usage.json', { usage: result.usage, costUsd: result.costUsd, turns: result.turns, stopReason: result.stopReason, wallMs: result.wallMs, toolCalls: result.toolCalls })

@@ -1,4 +1,4 @@
-// REAL k=1 for gitea only (neat-opus, bare-opus, neat-sonnet), serial, RAM-gated. Real agent loop
+// REAL k=1 for gitea only (bare-opus, neat-sonnet-full, neat-sonnet-lean), serial, RAM-gated. Real agent loop
 // (ANTHROPIC_API_KEY from env) + the REAL testCmd (go test ./modules/markup/...). FreshProvisioner
 // stands each arm up fresh at the vuln commit on the eb330c2 main-build daemon. run.json per trial
 // carries pins + the full metric set (tokens/$/time/turns/toolCalls/neatUsage).
