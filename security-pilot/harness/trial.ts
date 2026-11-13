@@ -102,10 +102,22 @@ export class FreshProvisioner implements Provisioner {
   async provision(item: BenchCorpusItem, arm: Arm): Promise<Provisioned> {
     const treePath = await fs.mkdtemp(path.join(this.cfg.workRoot, `${item.app}-${arm.id}-`))
     // Fresh isolated checkout at the pinned vulnerable commit.
-    let r = await sh(`git clone --no-checkout ${item.repoUrl} .`, treePath, 600_000)
-    if (r.code !== 0) throw new Error(`git clone failed: ${r.stderr.slice(-400)}`)
-    r = await sh(`git fetch --depth 1 origin ${item.commit}`, treePath, 600_000)
-    if (r.code !== 0) await sh(`git fetch origin ${item.commit}`, treePath, 600_000)
+    // Network git ops flake (DNS / transient), so retry a few times with backoff before failing the whole
+    // trial — a single "Could not resolve host" should not lose an arm across a 12-trial suite. The clone
+    // cleans the dir between attempts (a partial clone leaves .git behind and the re-clone would refuse).
+    const gitStep = async (cmd: string, timeoutMs: number, label: string, cleanDir = false) => {
+      let last = { code: 1, stdout: '', stderr: '' }
+      for (let attempt = 1; attempt <= 4; attempt++) {
+        if (cleanDir) await sh('find . -mindepth 1 -delete 2>/dev/null; true', treePath, 60_000)
+        last = await sh(cmd, treePath, timeoutMs)
+        if (last.code === 0) return last
+        await new Promise((res) => setTimeout(res, 4000 * attempt))
+      }
+      throw new Error(`${label} failed after 4 attempts: ${last.stderr.slice(-400)}`)
+    }
+    await gitStep(`git clone --no-checkout ${item.repoUrl} .`, 600_000, 'git clone', true)
+    let r = await sh(`git fetch --depth 1 origin ${item.commit}`, treePath, 600_000)
+    if (r.code !== 0) await gitStep(`git fetch origin ${item.commit}`, 600_000, 'git fetch')
     r = await sh(`git checkout ${item.commit}`, treePath, 120_000)
     if (r.code !== 0) throw new Error(`git checkout ${item.commit} failed: ${r.stderr.slice(-400)}`)
 

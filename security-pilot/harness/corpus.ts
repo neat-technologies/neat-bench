@@ -134,7 +134,12 @@ const gitea: BenchCorpusItem = {
   service: 'gitea',
   knownDaemonPort: 8204,
   appDefaultPort: 3000,
-  testCmd: 'go test ./modules/markup/...', // markup rendering (x/net/html path); full CI is heavy
+  // The harness PATH has no `go`; gitea needs its pinned go1.27.3 toolchain + the populated module/build
+  // caches + the sqlite build tags (same as the recipe's build) for `go test` to compile and emit ids.
+  // GOWORK=off so it uses gitea's go.mod, not the recipe's otelc sidecar workspace. Self-contained so the
+  // baseline capture, the not-degenerate grade, and the smoke id-match all run it identically.
+  testCmd:
+    'env GOWORK=off GOTOOLCHAIN=local GOFLAGS=-modcacherw PATH="$HOME/neat-bench/security-pilot/gitea/toolchain/go/bin:$PATH" GOPATH="$HOME/neat-bench/security-pilot/gitea/gopath" GOMODCACHE="$HOME/neat-bench/security-pilot/gitea/gopath/pkg/mod" GOCACHE="$HOME/neat-bench/security-pilot/gitea/gocache" go test -json -tags "sqlite sqlite_unlock_notify" ./modules/markup/...',
   advisories: [
     { id: 'CVE-2026-78661', ecosystem: 'Go', dep: 'golang.org/x/net', vulnerableRange: '<0.62.0', fixedIn: '0.62.0', importers: ['modules/markup/html.go', 'modules/markup/internal/renderinternal.go', 'services/mailer/mail.go'], fixKind: 'bump', vulnPathTests: ['TestPostProcess', 'TestRender_Commits', 'TestRender_links', 'TestRender_emoji', 'TestSanitizer'] },
     { id: 'CVE-2026-97045', ecosystem: 'Go', dep: 'golang.org/x/net', vulnerableRange: '<0.62.0', fixedIn: '0.62.0', importers: ['modules/markup/html.go', 'modules/markup/internal/renderinternal.go'], fixKind: 'bump', vulnPathTests: ['TestPostProcess', 'TestIssue16020', 'TestIssue18471'] },
