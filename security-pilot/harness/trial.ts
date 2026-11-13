@@ -31,16 +31,19 @@ or violating its policies, and without churning dependencies that do not need to
 Work in the checkout directory using the available tools. When you believe the fix is complete and
 verified, stop. Do not ask for confirmation; act.`
 
-// The graph-first (lean) directive — appended to the lean arm's system prompt ONLY. This is the single
-// variable separating neat-sonnet-lean from neat-sonnet-full: go direct by default, query the graph
-// before any file sweep, read only the locus it hands you, escalate only when the fix is not obvious.
-// (Source: the #1612 GRAPH_FIRST.lean.md directive.)
+// The graph-first (lean) directive — appended to the lean arm's system prompt ONLY. The lean half of
+// the context-dose comparison: lead with the card NEAT already produced, go direct, escalate only when
+// the fix is not obvious. It names ONLY tools the lean arm actually has (the card + security scan as the
+// primary answer; root cause / blast radius / dependencies for escalation) so the agent never chases a
+// dropped tool and reads as circling when it is not. (Derived from the #1612 GRAPH_FIRST.lean.md directive.)
 const LEAN_DIRECTIVE = `
 Graph-first (lean):
-You have NEAT's live graph of this codebase. Query the graph before any file search: NEAT queries come before grep at all times, and every question about the code is one NEAT query, not a file sweep.
-Default to the direct fix. A known-vulnerability fix is almost always a single dependency bump to the version named in the advisory: apply it, verify, stop. Do not explore the codebase to understand an obvious fix.
-When you must know something, ask the graph once and read only the file:line it points you to. Ground every claim in what the graph returns; if it does not show the vulnerable path, say so.
-Switch heads only when the fix is not obvious (a dependency with no fixed version to remove or replace, a vulnerability reachable only transitively, or a bump that would break a reached caller). For a clean bump, skip the investigation. Keep your looking proportional: small fix, one glance; hard fix, investigate properly.`
+NEAT has already done the investigation; lead with the answer it hands you instead of re-deriving it.
+- The incident card (get_incident_card) and the security scan (security_scan, get_reachable_cves, is_reachable, scan_diff) ARE the distilled answer: the reachable vulnerability, its locus as file:line, and the fix to apply. Read those first.
+- NEAT queries come before grep at all times. Do not sweep files to understand an obvious fix; the card already points at the locus, so open only that line.
+Default to the direct fix. A known-vulnerability fix is almost always a single dependency bump to the version named in the advisory: apply it, verify, stop.
+Switch heads only when the fix is not obvious (a dependency with no fixed version to remove or replace, a vulnerability reachable only transitively, or a bump that would break a reached caller). Only then escalate, with get_root_cause, get_blast_radius and get_dependencies. For a clean bump, skip the investigation.
+Keep your looking proportional: small fix, one glance at the card; hard fix, escalate properly. Ground every claim in what NEAT returns; if it does not show the vulnerable path, say so.`
 
 function sh(cmd: string, cwd: string, timeoutMs: number, env?: NodeJS.ProcessEnv): Promise<{ code: number; stdout: string; stderr: string }> {
   return new Promise((resolve) => {
