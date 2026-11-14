@@ -115,10 +115,19 @@ async function resolveOtelNodeTgz(): Promise<string> {
   return path.join(dir, tgz)
 }
 
+export interface DeployResult {
+  ok: boolean
+  detail: string
+}
+
 export interface StandupHandles {
   neatBase?: string
   appBase: string
   otelCaptureDir?: string
+  // Rebuild + restart the app from the CURRENT state of the checkout, using the same recipe that stood
+  // it up. The app first started from the vulnerable commit, so without this every post-fix journey
+  // would exercise the unpatched process and "the app still works" would be measured on the wrong code.
+  redeploy: () => Promise<DeployResult>
   teardown: () => Promise<void>
 }
 
@@ -247,7 +256,24 @@ export async function standUp(item: BenchCorpusItem, arm: Arm, treePath: string)
       throw new Error(`standup script failed (code ${r.code}): ${(r.stdout + r.stderr).slice(-700)}`)
     }
 
-    return { neatBase, appBase: `http://127.0.0.1:${appPort}`, otelCaptureDir, teardown }
+    let deployN = 0
+    const redeploy = async (): Promise<DeployResult> => {
+      deployN++
+      // Stop the pid-file app (and gitea's sink) so the recipe can rebind the port. Container apps
+      // (paperless) restart inside the recipe's RESTART branch.
+      await sh(
+        `for f in app.pid sink.pid; do [ -f "${workDir}/$f" ] && kill "$(cat "${workDir}/$f")" 2>/dev/null; done; sleep 2; ` +
+          `for f in app.pid sink.pid; do [ -f "${workDir}/$f" ] && kill -9 "$(cat "${workDir}/$f")" 2>/dev/null; done; sleep 1; true`,
+        workDir,
+        30_000,
+      )
+      const rr = await sh(`bash "${scriptPath}"`, workDir, 1_800_000, { ...env, RESTART: '1' })
+      await fs.writeFile(path.join(logsDir, `redeploy-${deployN}.out`), `${rr.stdout}\n--- stderr ---\n${rr.stderr}`, 'utf8').catch(() => {})
+      if (rr.code === 0) return { ok: true, detail: 'rebuilt and restarted from the patched checkout' }
+      return { ok: false, detail: `recipe exit ${rr.code}: ${(rr.stdout + rr.stderr).trim().slice(-600)}` }
+    }
+
+    return { neatBase, appBase: `http://127.0.0.1:${appPort}`, otelCaptureDir, redeploy, teardown }
   } catch (e) {
     // Preserve logs (daemon/app/build) before teardown rm's the work dir, so failures are diagnosable.
     try {

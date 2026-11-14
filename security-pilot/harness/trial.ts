@@ -19,7 +19,7 @@ import { buildTools } from './tools.js'
 import { connectNeatMcp, type NeatMcp } from './neat-mcp.js'
 import { buildReconToolDefs, ReconQA, reconAssess, type ReconState } from '../recon/recon-tools.js'
 import { fetchDivergences, type Divergence } from '../recon/verifier.js'
-import { runTests, resolveInstalledVersion, osvAffected_, runScanner } from './grader-impl.js'
+import { runTests, runTestsDetailed, resolveInstalledVersion, osvAffected_, runScanner } from './grader-impl.js'
 import { standUp, BENCH_NEAT_SHA } from './standup.js'
 
 const TASK =
@@ -28,8 +28,13 @@ const TASK =
 const SYSTEM = `You are a senior engineer fixing security vulnerabilities in a real application checkout.
 Your job: remove the vulnerabilities that are actually reachable in this app, without breaking the app
 or violating its policies, and without churning dependencies that do not need to change.
-Work in the checkout directory using the available tools. When you believe the fix is complete and
-verified, stop. Do not ask for confirmation; act.`
+Work in the checkout directory using the available tools.
+Before you stop, VERIFY the fix end to end: confirm the application still works (use recon_qa to drive
+its journeys if you have it, otherwise exercise the app yourself) AND run the project's test suite
+(run_tests). Clearing the security scan does NOT mean the fix is done: if the app is broken or a
+previously-passing test now fails, the fix is incomplete and may need a code change, not just a version
+bump. Keep going until the vulnerability is gone AND the app and its tests still pass. Then stop. Do not
+ask for confirmation; act.`
 
 // The graph-first (lean) directive — appended to the lean arm's system prompt ONLY. The lean half of
 // the context-dose comparison: lead with the card NEAT already produced, go direct, escalate only when
@@ -84,6 +89,8 @@ export interface Provisioned {
   neatBase?: string
   appBase?: string
   otelCaptureDir?: string
+  // Rebuild + restart the app from the current checkout (FreshProvisioner). Absent for live reuse.
+  redeploy?: () => Promise<{ ok: boolean; detail: string }>
   teardown: () => Promise<void>
 }
 export interface Provisioner {
@@ -140,6 +147,7 @@ export class FreshProvisioner implements Provisioner {
       neatBase: handles.neatBase,
       appBase: handles.appBase,
       otelCaptureDir: handles.otelCaptureDir,
+      redeploy: handles.redeploy,
       teardown: async () => {
         await handles.teardown().catch(() => {})
         await fs.rm(treePath, { recursive: true, force: true }).catch(() => {})
@@ -174,7 +182,9 @@ async function writeArtifact(dir: string, name: string, data: unknown): Promise<
 }
 
 export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Provisioner, opts: RunTrialOpts): Promise<TrialRecord> {
-  const artifactsDir = path.join(opts.runsRoot, opts.runLabel, arm.id, item.app)
+  // One directory per rep: seed 0 keeps the k=1 path, later seeds get a suffix, so k>1 never overwrites
+  // an earlier rep's transcript/grade.
+  const artifactsDir = path.join(opts.runsRoot, opts.runLabel, arm.id, opts.seed ? `${item.app}-s${opts.seed}` : item.app)
   await fs.mkdir(artifactsDir, { recursive: true })
   const phase: Record<string, number> = {}
   const t0 = Date.now()
@@ -223,6 +233,9 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
       box: os.hostname(),
       groundTruthLocked: item.locked,
       neatBase: ctx.neatBase ?? null,
+      neatCli: process.env.BENCH_NEAT_CLI ?? null,
+      neatBin: process.env.NEAT_BIN ?? null,
+      neatMcpEntry: ctx.mcpEntry,
       appBase: ctx.appBase ?? null,
       asOf: new Date().toISOString(),
     }
@@ -244,8 +257,20 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
         await writeArtifact(artifactsDir, 'baseline-divergences-error.txt', String(e))
       }
     }
+    // Baseline journeys: does the app work BEFORE the fix? Journeys already failing here (app never came
+    // up in this env) are not attributable to the fix, so the grader and the verify gate both discount
+    // them. undefined = the baseline probe itself errored (then nothing is discounted).
+    let baselineJourneyFailures: string[] | undefined
+    let baselineJourneySignatures: Record<string, string[]> | undefined
+    try {
+      const base = await reconAssess(ctx, { baselineDivergences })
+      baselineJourneyFailures = base.journeyFailures ?? []
+      baselineJourneySignatures = base.journeySignatures
+    } catch (e) {
+      await writeArtifact(artifactsDir, 'baseline-journeys-error.txt', String(e))
+    }
     phase.baselineMs = Date.now() - bt0
-    await writeArtifact(artifactsDir, 'baseline.json', { baselineGreen: item.baselineGreen, baselineDivergenceCount: baselineDivergences.length })
+    await writeArtifact(artifactsDir, 'baseline.json', { baselineGreen: item.baselineGreen, baselineDivergenceCount: baselineDivergences.length, baselineJourneyFailures: baselineJourneyFailures ?? null, baselineJourneySignatures: baselineJourneySignatures ?? null })
 
     // 2b. Contamination guard: confirm each advisory is actually detectable on the PRE-patch tree
     // (before the agent touches it). If an advisory is not flagged pre-patch, "vuln gone" post-patch
@@ -265,7 +290,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     await writeArtifact(artifactsDir, 'pre-signal.json', preFlagged)
 
     // 3. assemble the arm's tools (NEAT arms: MCP suite + security CLI + Recon)
-    const reconState: ReconState = { baselineDivergences }
+    const reconState: ReconState = { baselineDivergences, baselineJourneySignatures }
     let neatToolDefs: ToolDef[] | undefined
     let reconToolDefs: ToolDef[] | undefined
     if (arm.neat) {
@@ -281,10 +306,69 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     const at0 = Date.now()
     // Lean arm only: the graph-first directive is the single variable vs the full arm.
     const system = arm.lean ? `${SYSTEM}\n${LEAN_DIRECTIVE}` : SYSTEM
+    // Seed attributable files so the gate's recon can run before the post-run refinement below.
+    reconState.attributableFiles = item.advisories.flatMap((a) => a.importers)
+    // Verify-before-done gate (uniform across arms). When the agent tries to stop, confirm the app's own
+    // journeys still work and no previously-green test regressed, using the app's own checks (never the
+    // grader's). A failure is handed back so the agent keeps fixing rather than shipping a fix that
+    // clears the scan but breaks the app. runAgent bounds the retries (BENCH_MAX_VERIFY_REJECTS).
+    // The app must be rebuilt + restarted from the patched checkout before any "does it still work"
+    // check, or the journeys would hit the process started from the vulnerable commit.
+    let lastDeploy: { ok: boolean; detail: string } | undefined
+    const redeployNow = async () => {
+      const prov = provisioned
+      if (!prov?.redeploy) return undefined
+      let d = await prov.redeploy()
+      if (!d.ok) d = await prov.redeploy() // one retry: a transient install/network blip is not the fix's fault
+      lastDeploy = d
+      return d
+    }
+    const verifyGate = async (): Promise<{ ok: boolean; feedback: string }> => {
+      let journeyFailures: string[] = []
+      let regressed: string[] = []
+      const d = await redeployNow()
+      if (d && !d.ok) {
+        return {
+          ok: false,
+          feedback: `Not done yet. The app could not be rebuilt and restarted from your patched checkout, so the fix does not deploy: ${d.detail.slice(-500)}. Make the checkout build and start cleanly (lockfile and manifest consistent, code compiling), then stop.`,
+        }
+      }
+      // Same baseline-compared signals the grader uses: only a journey that worked before the fix, or a
+      // test that was green before and now RAN and failed, counts. Pre-existing failures and tests that
+      // merely did not execute are never held against the agent. A probe that errors does not reject.
+      try {
+        const now = (await reconAssess(ctx, reconState)).journeyFailures ?? []
+        journeyFailures = baselineJourneyFailures ? now.filter((j) => !baselineJourneyFailures!.includes(j)) : now
+      } catch {
+        journeyFailures = []
+      }
+      try {
+        if (item.baselineGreen.length > 0) {
+          const post = await runTestsDetailed(item.testCmd, ctx.treePath)
+          regressed = item.baselineGreen.filter((t) => post.ran.has(t) && !post.passed.has(t))
+        }
+      } catch {
+        regressed = []
+      }
+      if (journeyFailures.length === 0 && regressed.length === 0) return { ok: true, feedback: '' }
+      const parts: string[] = []
+      if (journeyFailures.length) parts.push(`the app's own journeys fail after your change (${journeyFailures.slice(0, 6).join('; ')})`)
+      if (regressed.length) parts.push(`these previously-passing tests now fail, so your change broke them: ${regressed.slice(0, 12).join(', ')}`)
+      return {
+        ok: false,
+        feedback: `Not done yet. Verification of your fix failed: ${parts.join(' | ')}. Clearing the vulnerability does not count if the app no longer works or a test regressed; the fix may need a code change, not just a version bump. Keep working until the app runs and its tests pass, then stop.`,
+      }
+    }
     const result = opts.stubAgent
       ? await opts.stubAgent(arm, tools, ctx)
-      : await runAgent(arm, system, TASK, tools, { maxTurns: opts.maxTurns })
+      : await runAgent(arm, system, TASK, tools, { maxTurns: opts.maxTurns, verifyGate })
     phase.agentMs = Date.now() - at0
+    // Final redeploy for grading, unless the gate just redeployed this exact tree and passed it.
+    const dt0 = Date.now()
+    const gatePassedLast = !opts.stubAgent && (result as { stopReason?: string }).stopReason === 'end_turn' && lastDeploy?.ok === true
+    const deploy = gatePassedLast ? lastDeploy : await redeployNow()
+    phase.redeployMs = Date.now() - dt0
+    await writeArtifact(artifactsDir, 'redeploy.json', { deploy: deploy ?? null, reusedGateDeploy: gatePassedLast })
     await writeArtifact(artifactsDir, 'transcript.json', result.transcript)
     await writeArtifact(artifactsDir, 'usage.json', { usage: result.usage, costUsd: result.costUsd, turns: result.turns, stopReason: result.stopReason, wallMs: result.wallMs, toolCalls: result.toolCalls })
 
@@ -300,7 +384,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
       reconState.attributableFiles = item.advisories.flatMap((a) => a.importers)
     }
     const recon = new ReconQA(ctx, reconState)
-    const grade = await gradeTrial(item, ctx.treePath, recon, { preFlagged })
+    const grade = await gradeTrial(item, ctx.treePath, recon, { preFlagged, baselineJourneyFailures, deploy })
     phase.gradeMs = Date.now() - gt0
     rec.grade = grade
     rec.pass = grade.pass

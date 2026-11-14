@@ -15,6 +15,13 @@ set -uo pipefail
 step() { echo "[$(date +%T)] [gitea-fresh] $*"; }
 export PATH="$NODE_BIN:$PATH"
 mkdir -p "$WORK/logs" "$WORK/data" "$WORK/home"
+# Throwaway instance secret and admin login, generated once per trial and reused on a redeploy
+# (the recipe runs again from the patched tree, against the same data directory).
+if [ ! -f "$WORK/trial-creds" ]; then
+  rnd() { head -c "$1" /dev/urandom | od -An -tx1 | tr -d ' \n'; }
+  printf 'TRIAL_SECRET=%s\nTRIAL_PW=Pw-%s\n' "$(rnd 32)" "$(rnd 8)" > "$WORK/trial-creds"
+fi
+. "$WORK/trial-creds"
 
 O="$APP_DIR/otelc"                 # stock otelc clone (shared, read-only)
 TC="$APP_DIR/toolchain/go/bin"     # pinned go toolchain (shared)
@@ -82,7 +89,7 @@ DB_TYPE = sqlite3
 PATH = $WORK/data/gitea.db
 [security]
 INSTALL_LOCK = true
-SECRET_KEY = <redacted>
+SECRET_KEY = $TRIAL_SECRET
 [webhook]
 ALLOWED_HOST_LIST = loopback
 [log]
@@ -104,7 +111,7 @@ python3 -m http.server "${GITEA_SINK_PORT:-3199}" --bind 127.0.0.1 > "$WORK/logs
 echo $! > "$WORK/sink.pid"; SINKPID=$!
 
 "$BIN" migrate -c "$WORK/app.ini" > "$WORK/logs/migrate.log" 2>&1
-"$BIN" admin user create --admin --username neat --password '<redacted>' --email neat@example.invalid --must-change-password=<redacted> -c "$WORK/app.ini" > "$WORK/logs/user.log" 2>&1
+"$BIN" admin user create --admin --username neat --password "$TRIAL_PW" --email neat@example.invalid --must-change-password=false -c "$WORK/app.ini" > "$WORK/logs/user.log" 2>&1
 
 step "gitea web on :$APP_PORT (arm=$ARM)"
 nohup "$BIN" web -c "$WORK/app.ini" > "$WORK/logs/app.log" 2>&1 < /dev/null &
@@ -117,7 +124,7 @@ step "gitea version http: $code"
 [ "$code" = "000" ] && { step "FATAL: app did not come up"; tail -30 "$WORK/logs/app.log"; exit 5; }
 
 # 4. API traffic + a webhook to the local sink.
-A="-s -u neat:changeme -H Content-Type:application/json"
+A="-s -u neat:$TRIAL_PW -H Content-Type:application/json"
 B="http://127.0.0.1:$APP_PORT/api/v1"
 curl $A -X POST $B/user/repos -d '{"name":"demo","auto_init":true}' -o /dev/null -w "create repo %{http_code}\n"
 curl $A -X POST $B/repos/neat/demo/issues -d '{"title":"first issue","body":"hello"}' -o /dev/null -w "create issue %{http_code}\n"

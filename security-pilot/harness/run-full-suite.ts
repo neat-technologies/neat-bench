@@ -19,7 +19,9 @@ const SMOKE = `node -e "console.log('ok 1 - smoke')"`
 
 async function main() {
   CORPUS['nodegoat'].testCmd = SMOKE
+  CORPUS['nodegoat'].suiteUnavailable = 'Cypress e2e needs a headless browser'
   CORPUS['paperless-ngx'].testCmd = SMOKE
+  CORPUS['paperless-ngx'].suiteUnavailable = 'pytest needs the app image dependencies'
   const runsRoot = path.resolve(process.env.DRY_RUNS_ROOT ?? 'runs')
   const runLabel = 'full-k1-' + new Date().toISOString().replace(/[:.]/g, '-')
   const concurrency = Number(process.env.CONCURRENCY ?? '1')

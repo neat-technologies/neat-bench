@@ -21,7 +21,7 @@ export async function flush(ctx: TrialContext, baselineDivergences: Divergence[]
   let journeyFailures: string[] = []
   let journeysRan = 0
   if (ctx.appBase) {
-    const driven = await driveJourneys(suite, ctx.appBase, passes)
+    const driven = await driveJourneys(suite, ctx.appBase, passes, 40, { treePath: ctx.treePath })
     journeyFailures = driven.failures
     journeysRan = driven.ran
   }

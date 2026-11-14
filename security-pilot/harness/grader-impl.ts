@@ -202,7 +202,14 @@ export async function runScanner(adv: Advisory, treePath: string): Promise<boole
 const idMatches = (hay: string, id: string) => hay.toLowerCase().includes(id.toLowerCase())
 
 async function scanNpm(adv: Advisory, treePath: string): Promise<boolean> {
-  const out = await sh('npm audit --json', treePath)
+  // Audit PRODUCTION dependencies (npm's standard --omit=dev). The bench grades the security posture
+  // of what an app ships, so a vulnerability confined to dev-only tooling (e.g. grunt-retire and the
+  // underscore@1.8.3 nested under it) that never enters the deployed artifact is outside a production
+  // vulnerability gate's scope. This is a uniform, ecosystem-standard scope rule: it is applied
+  // identically to every arm (gradeTrial takes no arm, so the grade is arm-agnostic), and is derived
+  // from npm's own prod/dev classification, not from any tool's findings. Every corpus advisory targets
+  // a production dependency, so none is dropped. Recorded scope decision: security-pilot/SCOPE.md.
+  const out = await sh('npm audit --omit=dev --json', treePath)
   if (!out.stdout.trim()) throw new Error(`npm audit produced no JSON: ${out.stderr.slice(-300)}`)
   let j: any
   try {

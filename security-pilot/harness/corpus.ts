@@ -37,10 +37,16 @@ const uptimeKuma: BenchCorpusItem = {
       importers: ['server/monitor-types/mqtt.js', 'server/monitor-types/mongodb.js'],
       fixKind: 'bump',
       // test/backend-test/monitors/test-mqtt.js, describe("MqttMonitorType"), json-query path -> checkJsonQuery() -> jsonata()
+      // Plus two container-free guards: test/backend-test/test-globalping.js drives GlobalpingMonitorType ->
+      // evaluateJsonQuery() -> jsonata(...).evaluate() (src/util.js) against a mocked client, so they run
+      // (and are green at baseline) even when the HiveMQ testcontainer cannot start. The grader only
+      // guards with tests that were green at baseline, so the MQTT three count when HiveMQ is up.
       vulnPathTests: [
         'check() sets status to UP when json-query finds expected value',
         'check() rejects when json-query path returns undefined',
         'check() rejects when json-query value does not match expected value',
+        'should handle JSON query check (valid)',
+        'should handle JSON query check (invalid)',
       ],
     },
   ],

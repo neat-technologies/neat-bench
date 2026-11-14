@@ -62,9 +62,26 @@ export async function runMatrix(opts: MatrixOpts): Promise<TrialRecord[]> {
 
   await fs.mkdir(path.join(opts.runsRoot, '_trees'), { recursive: true })
 
+  // Preflight: the NEAT arms reach NEAT through TWO paths, the daemon (BENCH_NEAT_CLI) and the security
+  // CLI tools (NEAT_BIN, default: whatever `neat` is on PATH). If they point at different builds the
+  // agent is graded against a NEAT that is not the one under test, silently. Refuse to start instead.
+  if (arms.some((a) => a.neat) && process.env.BENCH_ALLOW_SPLIT_NEAT !== '1') {
+    const cli = process.env.BENCH_NEAT_CLI
+    const bin = process.env.NEAT_BIN
+    if (!cli || !bin) {
+      throw new Error(`preflight: NEAT arms need BOTH BENCH_NEAT_CLI and NEAT_BIN set explicitly (got BENCH_NEAT_CLI=${cli ?? 'unset'}, NEAT_BIN=${bin ?? 'unset'}); an unset NEAT_BIN falls back to the global \`neat\``)
+    }
+    if (!process.env.NEAT_MCP_ENTRY) {
+      throw new Error('preflight: NEAT arms need NEAT_MCP_ENTRY set explicitly; unset, the MCP server falls back to the globally installed @neat.is/mcp, a third NEAT build outside the one under test')
+    }
+    if (!bin.includes(cli)) {
+      throw new Error(`preflight: NEAT_BIN (${bin}) does not run the same build as BENCH_NEAT_CLI (${cli}); the security tools and the daemon would be different NEAT versions`)
+    }
+  }
+
   // Build the full job list (arm x app x seed).
   const jobs: { arm: Arm; item: BenchCorpusItem; seed: number }[] = []
-  for (const arm of arms) for (const app of apps) for (let s = 0; s < k; s++) jobs.push({ arm, item: CORPUS[app], seed: s })
+  for (const arm of arms) for (const app of apps) for (let s = 0; s < k; s++) jobs.push({ arm, item: structuredClone(CORPUS[app]), seed: s }) // per-trial copy: a trial writes its own baseline onto the item
 
   const results: TrialRecord[] = []
   let next = 0

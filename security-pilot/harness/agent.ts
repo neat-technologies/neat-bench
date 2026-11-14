@@ -34,7 +34,7 @@ export async function runAgent(
   systemPrompt: string,
   userTask: string,
   tools: ToolDef[],
-  opts: { maxTurns?: number } = {},
+  opts: { maxTurns?: number; verifyGate?: () => Promise<{ ok: boolean; feedback: string }> } = {},
 ): Promise<AgentResult> {
   const client = new Anthropic() // ANTHROPIC_API_KEY from env (~/.neat-bench-secrets/anthropic.env)
   const maxTurns = opts.maxTurns ?? MAX_TURNS
@@ -46,6 +46,8 @@ export async function runAgent(
   const start = Date.now()
   let turns = 0
   let stopReason = 'end_turn'
+  const maxGate = Number(process.env.BENCH_MAX_VERIFY_REJECTS ?? '3')
+  let gateRejections = 0
 
   while (turns < maxTurns) {
     turns++
@@ -64,7 +66,25 @@ export async function runAgent(
     usage.cacheCreation += res.usage.cache_creation_input_tokens ?? 0
     messages.push({ role: 'assistant', content: res.content })
     stopReason = res.stop_reason ?? 'end_turn'
-    if (res.stop_reason !== 'tool_use') break
+    if (res.stop_reason !== 'tool_use') {
+      // Verify-before-done gate. The agent does not get to declare the fix done until it is verified:
+      // when it stops, run the app's OWN journeys + re-run its tests; if the app is broken or a
+      // previously-passing test regressed, hand the failures back and keep the loop going, so a fix that
+      // clears the scan but breaks the app never counts as complete. Bounded by BENCH_MAX_VERIFY_REJECTS
+      // and maxTurns. Uniform across arms. It uses the app's own journeys + tests (never the grader's
+      // specific checks), so this is engineering discipline, not teaching to the test.
+      if (opts.verifyGate) {
+        const gate = await opts.verifyGate()
+        if (!gate.ok) {
+          gateRejections++
+          if (gateRejections > maxGate) { stopReason = 'verify-exhausted'; break }
+          stopReason = 'verify-reject'
+          messages.push({ role: 'user', content: gate.feedback })
+          continue
+        }
+      }
+      break
+    }
 
     // Opt-in per-trial cost cap (BENCH_TRIAL_COST_CAP, USD). Honors the bench $25 guardrail: stop a
     // runaway trial BEFORE it blows past, rather than only noticing at the end. 0/unset = no cap.
@@ -95,6 +115,9 @@ export async function runAgent(
     messages.push({ role: 'user', content: results })
   }
 
+  // Ran out of turns mid-work (the last response still wanted a tool): name it, so a capped trial is
+  // never mistaken for one that chose to stop.
+  if (turns >= maxTurns && stopReason === 'tool_use') stopReason = 'max-turns'
   const price = PRICE[arm.model] ?? { in: 0, out: 0 }
   // cache reads ~0.1x input price; creation ~1.25x (small, folded into input approx)
   const costUsd = usage.input * price.in + usage.output * price.out + usage.cacheRead * price.in * 0.1

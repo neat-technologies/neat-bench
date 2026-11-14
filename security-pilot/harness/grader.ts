@@ -26,6 +26,9 @@ export interface CorpusItem {
   advisories: Advisory[] // the reachable CVEs to remediate
   auditNoise: string[] // transitive/unused advisory ids present, to measure bare over-fixing
   baselineGreen: string[] // test ids green at `commit` before any patch (established per trial)
+  // Set when the app's real suite cannot run in this environment and a placeholder command stands in
+  // for it. The placeholder passing says nothing about the app, so no-regression reads UNVERIFIED.
+  suiteUnavailable?: string
 }
 
 export interface ReconQA {
@@ -97,6 +100,9 @@ async function vulnGone(adv: Advisory, treePath: string, preFlagged: boolean | u
 
 // Run the app's own suite; a regression is any baseline-green test now failing.
 function noRegression(item: CorpusItem, run: TestRun): Criterion {
+  if (item.suiteUnavailable) {
+    return crit('no-regression', 'unverified', `the app's real suite cannot run in this env (${item.suiteUnavailable}); a placeholder ran instead, which certifies nothing`)
+  }
   // A vacuous baseline (capture failed, or the suite ran nothing) cannot certify "no regression".
   if (item.baselineGreen.length === 0) {
     return crit('no-regression', 'unverified', 'no baseline-green tests captured (suite did not run at baseline); cannot certify no-regression')
@@ -118,10 +124,22 @@ function notDegenerate(item: CorpusItem, run: TestRun): Criterion {
   if (vulnPathTests.length === 0) {
     return crit('not-degenerate', 'unverified', 'no vuln-path tests defined for this item; cannot guard against degenerate removal')
   }
-  const failed = vulnPathTests.filter((t) => run.ran.has(t) && !run.passed.has(t)) // ran and failing = feature broken/removed
-  const notRun = vulnPathTests.filter((t) => !run.ran.has(t)) // skipped/absent/infra -> cannot verify the feature survived
-  if (failed.length) return crit('not-degenerate', 'fail', `vuln-path tests failing (feature broken/removed): ${failed.join(', ')}`)
-  if (notRun.length) return crit('not-degenerate', 'unverified', `vuln-path tests did not run (env/skip); cannot confirm the feature survived: ${notRun.join(', ')}`)
+  // Baseline-compared: a vuln-path test can only show the fix broke the feature if it was GREEN before
+  // the fix. One that was not green at baseline (container-gated, flaky, absent in this env) carries no
+  // signal either way, so its post-patch state is never attributed to the agent.
+  const baseline = new Set(item.baselineGreen)
+  const guardable = vulnPathTests.filter((t) => baseline.has(t))
+  const noBaseline = vulnPathTests.filter((t) => !baseline.has(t))
+  const failed = guardable.filter((t) => run.ran.has(t) && !run.passed.has(t)) // green before, failing now = feature broken/removed
+  const notRun = guardable.filter((t) => !run.ran.has(t)) // green before, did not execute now -> cannot confirm it survived
+  if (failed.length) return crit('not-degenerate', 'fail', `vuln-path tests green at baseline now failing (feature broken/removed): ${failed.join(', ')}`)
+  if (guardable.length === 0) {
+    return crit('not-degenerate', 'unverified', `no vuln-path test was green at baseline in this env, so the feature cannot be guarded: ${noBaseline.join(', ')}`)
+  }
+  if (notRun.length) return crit('not-degenerate', 'unverified', `vuln-path tests did not run post-patch (env/skip); cannot confirm the feature survived: ${notRun.join(', ')}`)
+  if (noBaseline.length) {
+    return crit('not-degenerate', 'unverified', `${guardable.length} vuln-path test(s) pass, but ${noBaseline.length} had no green baseline and cannot be guarded: ${noBaseline.join(', ')}`)
+  }
   return crit('not-degenerate', 'pass', 'vuln-path tests persist and pass')
 }
 
@@ -129,7 +147,7 @@ export async function gradeTrial(
   item: CorpusItem,
   treePath: string,
   recon: ReconQA,
-  opts: { preFlagged?: Record<string, boolean> } = {},
+  opts: { preFlagged?: Record<string, boolean>; baselineJourneyFailures?: string[]; deploy?: { ok: boolean; detail: string } } = {},
 ): Promise<TrialResult> {
   const pre = opts.preFlagged ?? {}
   const vuln = await Promise.all(item.advisories.map((a) => vulnGone(a, treePath, pre[a.id])))
@@ -141,15 +159,30 @@ export async function gradeTrial(
   const deg = notDegenerate(item, run)
 
   const qa = await recon.qa(item.app, treePath)
-  const works = crit(
-    'actually-works',
-    qa.works && qa.newDivergences.length === 0 ? 'pass' : 'fail',
-    qa.works
-      ? qa.newDivergences.length === 0
-        ? 'journeys correct, no new divergence'
-        : `new divergence introduced: ${qa.newDivergences.join(', ')}`
-      : `journeys failed: ${qa.journeyFailures.join(', ')}`,
-  )
+  // Baseline-compared: journeys that already failed BEFORE the fix (the app never came up in this env)
+  // say nothing about the fix. Only a journey that worked at baseline and fails now is the fix's doing.
+  const baseFail = opts.baselineJourneyFailures
+  const preExisting = baseFail ? qa.journeyFailures.filter((j) => baseFail.includes(j)) : []
+  const introduced = baseFail ? qa.journeyFailures.filter((j) => !baseFail.includes(j)) : qa.journeyFailures
+  // The verdict rests on the redeploy and the journeys alone. Both are the same for every arm and
+  // neither reads NEAT. NEAT's own signals (new declared-vs-observed divergences, OBSERVED still
+  // materializing) exist only for the NEAT arms, so counting them would hold those arms to a check
+  // the bare arm never faces, and would put NEAT inside its own oracle. They are reported, not graded.
+  const neatNote = qa.newDivergences.length ? ` (NEAT reports ${qa.newDivergences.length} new divergence(s), not graded: ${qa.newDivergences.slice(0, 4).join(', ')})` : ''
+  let works: Criterion
+  if (opts.deploy && !opts.deploy.ok) {
+    // The patched checkout does not build or boot. Whatever is still answering is the old process.
+    works = crit('actually-works', 'fail', `the patched checkout could not be rebuilt and restarted: ${opts.deploy.detail.slice(-300)}`)
+  } else if (introduced.length > 0) {
+    works = crit('actually-works', 'fail', `journeys that worked at baseline now fail or answer differently: ${introduced.join(', ')}${neatNote}`)
+  } else if (preExisting.length > 0) {
+    works = crit('actually-works', 'unverified', `app journeys already failed at baseline in this env (not attributable to the fix): ${preExisting.slice(0, 6).join(', ')}${neatNote}`)
+  } else if (!opts.deploy) {
+    // Journeys pass, but against a process that was never rebuilt from the patched checkout.
+    works = crit('actually-works', 'unverified', `journeys pass, but the running app was not redeployed from the patched checkout, so they exercised pre-fix code${neatNote}`)
+  } else {
+    works = crit('actually-works', 'pass', `every journey answers as it did at baseline on the redeployed app${neatNote}`)
+  }
   const criteria = [vulnGoneAll, reg, deg, works]
   const verdict = overallVerdict(criteria)
   return {
