@@ -28,6 +28,30 @@ PG_NAME="${PG_NAME:-${MONGO_NAME:-sec-pilot-fresh-pg}-pg}"
 REDIS_NAME="${REDIS_NAME:-${MONGO_NAME:-sec-pilot-fresh}-redis}"
 IMG="sec-pilot/paperless-neat:2.15.3-$$"
 
+# RESTART=1 (redeploy after the agent's fix). The app runs the image's prebuilt code and venv, so a
+# patched uv.lock would never reach the running process. Sync the checkout's lock into the container's
+# environment, then restart it, so the journeys exercise the patched dependency set. (Source edits in
+# the checkout are not deployed: the image's src is not bind-mounted. Dependency fixes are.)
+if [ "${RESTART:-0}" = 1 ]; then
+  APP_CONT="$(cat "$WORK/paperless-container" 2>/dev/null)"
+  [ -n "$APP_CONT" ] || { step "FATAL: no app container recorded for redeploy"; exit 6; }
+  step "redeploy: sync patched uv.lock into $APP_CONT"
+  docker exec "$APP_CONT" sh -lc 'cd /checkout && (timeout 180 uv export --frozen --no-dev --no-hashes --no-emit-project --format requirements-txt -o /tmp/neat-redeploy.txt 2>/tmp/neat-redeploy.err || timeout 180 uv export --frozen --no-hashes --no-emit-project -o /tmp/neat-redeploy.txt 2>>/tmp/neat-redeploy.err) && timeout 900 uv pip install --system --no-cache -r /tmp/neat-redeploy.txt' > "$WORK/logs/redeploy-sync.log" 2>&1 \
+    || { step "REDEPLOY SYNC FAILED (patched lock does not install)"; docker exec "$APP_CONT" sh -lc 'tail -5 /tmp/neat-redeploy.err' 2>/dev/null; tail -25 "$WORK/logs/redeploy-sync.log"; exit 6; }
+  # The image collects static files at build time as symlinks into site-packages. A dependency
+  # upgrade that moves or drops a package's static files leaves those links dangling, and whitenoise
+  # refuses to boot. A real deploy rebuilds the image, which re-runs collectstatic; do the same here.
+  step "redeploy: re-collect static files against the synced packages"
+  docker exec "$APP_CONT" sh -lc 'cd /usr/src/paperless/src && python3 manage.py collectstatic --clear --no-input --link' > "$WORK/logs/redeploy-static.log" 2>&1 \
+    || { step "REDEPLOY collectstatic FAILED"; tail -25 "$WORK/logs/redeploy-static.log"; exit 6; }
+  docker restart "$APP_CONT" >/dev/null 2>&1 || { step "container restart FAILED"; exit 6; }
+  for i in $(seq 1 120); do curl -sf -o /dev/null -u admin:changeme "http://127.0.0.1:$APP_PORT/api/" && break; sleep 3; done
+  code="$(curl -s -o /dev/null -w '%{http_code}' -u admin:changeme "http://127.0.0.1:$APP_PORT/api/")"
+  step "api after redeploy: $code"
+  [ "$code" = "000" ] && { step "FATAL: app did not come back after redeploy"; docker logs "$APP_CONT" 2>&1 | tail -30; exit 5; }
+  step "done (redeploy)"
+  exit 0
+fi
 # 1. derived image (adds neat-otel + instrumentations; site-packages derived, not hard-coded).
 step "docker build $IMG"
 cp "$APP_DIR/paperless-fresh.Dockerfile" "$APP_DIR/build/Dockerfile"
@@ -57,6 +81,8 @@ step "paperless container $APP_CONT on :$APP_PORT (arm=$ARM)"
 # reads the checkout lock via the /checkout mount (pip-audit) + host-side resolvePyPI(uv.lock). The
 # daemon's EXTRACTED layer watches the checkout directly. (A code-level paperless fix would need a
 # rebuild; out of scope for this lockfile-only target.)
+# Throwaway Django secret for this trial instance only (nothing outlives the container).
+TRIAL_SECRET="$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')"
 docker run -d --name "$APP_CONT" --network host \
   -v "$SRC:/checkout:ro" \
   -v "$WORK/run/data:/usr/src/paperless/data" -v "$WORK/run/media:/usr/src/paperless/media" \
@@ -64,7 +90,7 @@ docker run -d --name "$APP_CONT" --network host \
   -e PYTHONPATH="/usr/src/paperless/src:$AUTOPATH" -e DJANGO_SETTINGS_MODULE=paperless.settings \
   -e PAPERLESS_DBHOST=127.0.0.1 -e PAPERLESS_DBPORT="$PG_PORT" -e PAPERLESS_REDIS="redis://127.0.0.1:$REDIS_PORT" \
   -e PAPERLESS_PORT="$APP_PORT" -e PAPERLESS_BIND_ADDR=127.0.0.1 -e PAPERLESS_ALLOWED_HOSTS=127.0.0.1,localhost \
-  -e PAPERLESS_SECRET_KEY=<redacted> -e PAPERLESS_ADMIN_USER=admin -e PAPERLESS_ADMIN_PASSWORD=changeme \
+  -e PAPERLESS_SECRET_KEY="$TRIAL_SECRET" -e PAPERLESS_ADMIN_USER=admin -e PAPERLESS_ADMIN_PASSWORD=changeme \
   -e PAPERLESS_OCR_LANGUAGE=eng -e PAPERLESS_TASK_WORKERS=1 -e PAPERLESS_THREADS_PER_WORKER=1 -e PAPERLESS_WEBSERVER_WORKERS=1 \
   -e OTEL_SERVICE_NAME=paperless-ngx -e OTEL_TRACES_EXPORTER=otlp -e OTEL_METRICS_EXPORTER=none -e OTEL_LOGS_EXPORTER=none \
   -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="$OTLP_TRACES_ENDPOINT" -e OTEL_EXPORTER_OTLP_PROTOCOL="${OTLP_PROTOCOL:-http/protobuf}" \

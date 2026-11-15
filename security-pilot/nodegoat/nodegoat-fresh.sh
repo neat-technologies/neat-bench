@@ -33,7 +33,8 @@ fi
 [ -f "$SIDECAR" ] || { step "FATAL: SIDECAR missing: $SIDECAR"; exit 3; }
 
 # 2. deps into the fresh checkout.
-if [ ! -d "$SRC/node_modules" ]; then
+# RESTART=1 (redeploy after the agent's fix): reinstall from the patched lockfile, as a deploy would.
+if [ ! -d "$SRC/node_modules" ] || [ "${RESTART:-0}" = 1 ]; then
   step "npm ci (node $(node -v))"
   if ! (cd "$SRC" && CYPRESS_INSTALL_BINARY=0 npm ci --no-audit --no-fund > "$WORK/logs/npm-ci.log" 2>&1); then
     step "npm ci failed, trying npm install"
@@ -72,7 +73,11 @@ if [ "$code" = "000" ]; then step "FATAL: app did not come up"; tail -30 "$WORK/
 # 5. baseline traffic: login as a seeded user, walk reads + writes, hit outbound research.
 J="$WORK/cookies.txt"; rm -f "$J"
 C="curl -s -o /dev/null -b $J -c $J -w %{http_code}"
-echo "login $($C -X POST -d 'userName=user1&password=<redacted>' http://127.0.0.1:$APP_PORT/login)"
+# The seeded user1 login comes from the app's own seed file, so the recipe carries no literal.
+SEED_PW="$(node -e 'const s=require("fs").readFileSync(process.argv[1],"utf8");const m=s.match(/"userName":\s*"user1"[\s\S]*?"password":\s*"([^"]+)"/);process.stdout.write(m?m[1]:"")' "$SRC/artifacts/db-reset.js")"
+[ -n "$SEED_PW" ] || { step "FATAL: could not read the seeded user1 login from artifacts/db-reset.js"; exit 5; }
+LOGIN_CODE="$($C -X POST --data-urlencode userName=user1 --data-urlencode "password=$SEED_PW" http://127.0.0.1:$APP_PORT/login)"
+echo "login $LOGIN_CODE"
 for p in /dashboard /profile /contributions /allocations/2 /memos /learn /benefits /tutorial; do echo "GET $p $($C http://127.0.0.1:$APP_PORT$p)"; done
 echo "POST /contributions $($C -X POST -d 'preTax=2&afterTax=2&roth=2' http://127.0.0.1:$APP_PORT/contributions)"
 echo "POST /memos $($C -X POST -d 'memo=hello' http://127.0.0.1:$APP_PORT/memos)"

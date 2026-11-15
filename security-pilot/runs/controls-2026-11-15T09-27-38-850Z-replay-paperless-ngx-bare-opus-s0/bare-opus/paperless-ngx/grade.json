@@ -1,0 +1,35 @@
+{
+  "app": "paperless-ngx",
+  "pass": false,
+  "verdict": "unverified",
+  "unverified": [
+    "no-regression",
+    "not-degenerate"
+  ],
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "pass: jinja2@3.1.6 outside CVE-2025-27516 affected range (OSV + scanner agree)"
+    },
+    {
+      "name": "no-regression",
+      "verdict": "unverified",
+      "pass": false,
+      "detail": "no baseline-green tests captured (suite did not run at baseline); cannot certify no-regression"
+    },
+    {
+      "name": "not-degenerate",
+      "verdict": "unverified",
+      "pass": false,
+      "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+    },
+    {
+      "name": "actually-works",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "every journey answers as it did at baseline on the redeployed app"
+    }
+  ]
+}

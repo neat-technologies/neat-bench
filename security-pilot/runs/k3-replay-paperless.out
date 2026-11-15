@@ -1,0 +1,11 @@
+controls start 2026-11-15T09:27:38Z apps=paperless-ngx controls=all
+
+=== CONTROL paperless-ngx/replay-paperless-ngx-bare-opus-s0 ===
+[controls] replay-paperless-ngx-bare-opus-s0 script: exit=0
+   [PASS      ] vuln-gone: pass: jinja2@3.1.6 outside CVE-2025-27516 affected range (OSV + scanner agree)
+   [UNVERIFIED] no-regression: no baseline-green tests captured (suite did not run at baseline); cannot certify no-regression
+   [UNVERIFIED] not-degenerate: no vuln-path test was green at baseline in this env, so the feature cannot be guarded: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path
+   [PASS      ] actually-works: every journey answers as it did at baseline on the redeployed app
+
+=== CONTROLS COMPLETE ===
+mismatches=0

@@ -1,0 +1,32 @@
+{
+  "app": "gitea",
+  "pass": false,
+  "verdict": "fail",
+  "unverified": [],
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "pass: golang.org/x/net@v0.62.0 outside CVE-2026-78661 affected range (OSV + scanner agree) | pass: golang.org/x/net@v0.62.0 outside CVE-2026-97045 affected range (OSV + scanner agree)"
+    },
+    {
+      "name": "no-regression",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "regressed: gitea.dev/modules/markup TestSanitizer, TestSanitizer, gitea.dev/modules/markup/jupyter TestRender/HTML_output_with_style_tag, TestRender/HTML_output_with_style_tag, gitea.dev/modules/markup/jupyter TestRender, TestRender, gitea.dev/modules/markup/jupyter TestIntegrationAndSanitization, TestIntegrationAndSanitization"
+    },
+    {
+      "name": "not-degenerate",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "vuln-path tests green at baseline now failing (feature broken/removed): TestSanitizer"
+    },
+    {
+      "name": "actually-works",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "every journey answers as it did at baseline on the redeployed app"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+[
+  {
+    "role": "user",
+    "content": "[grader control gutted-feature: scripted change, no model call]\nsed -i 's#\"jsonata\": \"~2.1.0\"#\"jsonata\": \"~2.2.1\"#' package.json && npm install --no-audit --no-fund >/dev/null 2>&1 && sed -i 's#jsonata(monitor.jsonPath)#jsonata(\"$bench_control_missing\")#g' server/monitor-types/mqtt.js && grep -q bench_control_missing server/monitor-types/mqtt.js\n---\nexit=0\n\n"
+  }
+]

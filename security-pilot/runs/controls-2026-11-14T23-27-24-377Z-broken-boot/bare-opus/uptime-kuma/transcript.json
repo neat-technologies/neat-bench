@@ -1,0 +1,6 @@
+[
+  {
+    "role": "user",
+    "content": "[grader control broken-boot: scripted change, no model call]\nsed -i 's#\"jsonata\": \"~2.1.0\"#\"jsonata\": \"~2.2.1\"#' package.json && npm install --no-audit --no-fund >/dev/null 2>&1 && { echo 'throw new Error(\"bench control: the app cannot start\");'; cat server/server.js; } > server/server.js.tmp && mv server/server.js.tmp server/server.js\n---\nexit=0\n\n"
+  }
+]

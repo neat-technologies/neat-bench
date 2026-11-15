@@ -21,8 +21,8 @@ import { fetchGraph, fetchDivergences, observedFromService } from '../recon/veri
 
 const SMOKE = `node -e "console.log('ok 1 - smoke')"`
 const APPS = ['nodegoat', 'uptime-kuma', 'gitea', 'paperless-ngx']
-// neat-opus first per app so the graph peek + id-match land on a NEAT standup.
-const ARM_ORDER: Arm[] = ['neat-opus', 'bare-opus', 'neat-sonnet'].map((id) => ARMS.find((a) => a.id === id)!)
+// a NEAT arm first per app so the graph peek + id-match land on a NEAT standup.
+const ARM_ORDER: Arm[] = ['neat-sonnet-full', 'bare-opus', 'neat-sonnet-lean'].map((id) => ARMS.find((a) => a.id === id)!)
 
 const INTERESTING = new Set(['dep', 'cve', 'claim', 'against', 'a', 'b', 'direction', 'query', 'question', 'base', 'node', 'target'])
 function cannedArgs(tool: ToolDef): any {
@@ -84,7 +84,8 @@ interface Row {
   app: string
   arm: string
   pass: boolean | null
-  criteria: { name: string; pass: boolean; detail: string }[]
+  verdict?: 'pass' | 'fail' | 'unverified'
+  criteria: { name: string; verdict: 'pass' | 'fail' | 'unverified'; pass: boolean; detail: string }[]
   toolsAnswered: string
   observedEdges?: number
   divergences?: number
@@ -203,13 +204,14 @@ async function main() {
           : new LiveReuseProvisioner({ treePath: st.treePath, appBase: st.appBase, otelCaptureDir: st.otelCaptureDir })
         const rec = await runTrial(arm, item, live, { runsRoot, runLabel, seed: 0, stubAgent })
         row.pass = rec.pass
-        row.criteria = (rec.grade?.criteria ?? []).map((c: any) => ({ name: c.name, pass: c.pass, detail: String(c.detail).slice(0, 160) }))
+        row.verdict = rec.grade?.verdict
+        row.criteria = (rec.grade?.criteria ?? []).map((c: any) => ({ name: c.name, verdict: c.verdict, pass: c.pass, detail: String(c.detail).slice(0, 160) }))
         const surf = (rec.metrics?.toolSurface as string[]) ?? []
         const tools = await fs.readFile(path.join(rec.artifactsDir, 'dry-tools.json'), 'utf8').then(JSON.parse).catch(() => [])
         const ok = tools.filter((t: any) => !t.isError).length
         row.toolsAnswered = `${ok}/${tools.length}`
         if (rec.error) row.error = rec.error.split('\n')[0]
-        console.error(`  pass=${row.pass} tools=${row.toolsAnswered} criteria=${row.criteria.map((c) => `${c.name}:${c.pass}`).join(',')}`)
+        console.error(`  pass=${row.pass} verdict=${row.verdict ?? '-'} tools=${row.toolsAnswered} criteria=${row.criteria.map((c) => `${c.name}:${c.verdict}`).join(',')}`)
       } catch (e) {
         row.error = String((e as Error).message ?? e).slice(0, 400)
         console.error(`  CONFIG ERROR: ${row.error}`)
@@ -224,9 +226,10 @@ async function main() {
 
   console.error('\n================= 12-CONFIG MATRIX =================')
   for (const r of rows) {
-    const crit = r.criteria.map((c) => `${c.name}=${c.pass ? 'P' : 'F'}`).join(' ')
+    const crit = r.criteria.map((c) => `${c.name}=${c.verdict === 'pass' ? 'P' : c.verdict === 'fail' ? 'F' : 'U'}`).join(' ')
     const extra = r.arm.startsWith('neat') ? `obs=${r.observedEdges ?? '-'} div=${r.divergences ?? '-'}` : `cap=${r.captureBytes ?? '-'}B`
-    console.error(`${r.pass === null ? 'ERR ' : r.pass ? 'PASS' : 'fail'} ${r.arm.padEnd(12)} ${r.app.padEnd(14)} tools=${r.toolsAnswered} ${extra} | ${crit}${r.error ? ' | ERROR: ' + r.error : ''}`)
+    const status = r.pass === null ? 'ERR ' : r.verdict === 'unverified' ? 'UNVF' : r.pass ? 'PASS' : 'fail'
+    console.error(`${status} ${r.arm.padEnd(12)} ${r.app.padEnd(14)} tools=${r.toolsAnswered} ${extra} | ${crit}${r.error ? ' | ERROR: ' + r.error : ''}`)
   }
   console.error('\n================= ID-MATCH =================')
   for (const m of idMatches) {

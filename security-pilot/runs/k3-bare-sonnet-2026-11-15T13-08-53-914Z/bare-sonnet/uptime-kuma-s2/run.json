@@ -1,0 +1,142 @@
+{
+  "pins": {
+    "model": "claude-sonnet-5-5",
+    "arm": "bare-sonnet",
+    "lean": false,
+    "app": "uptime-kuma",
+    "repo": "github.com/louislam/uptime-kuma",
+    "commit": "1f0755fb044fe08e99fccde6722062fb2bf6c8f4",
+    "ecosystem": "npm",
+    "service": "uptime-kuma",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "package-lock.json",
+      "sha256": "b2dab7d5ac30439698c48dee39a2a2deb56cc9519b3e6c6e204dd92e9aaf5d6c"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 2,
+    "node": "v20.20.2",
+    "box": "deniz-MS-7E26",
+    "groundTruthLocked": true,
+    "neatBase": null,
+    "neatCli": "/home/deniz/neat-main-1622/packages/core/dist/cli.cjs",
+    "neatBin": "node /home/deniz/neat-main-1622/packages/core/dist/cli.cjs",
+    "neatMcpEntry": "/home/deniz/neat-main-1622/packages/mcp/dist/index.cjs",
+    "appBase": "http://127.0.0.1:42079",
+    "asOf": "2026-11-15T13:37:10.684Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "npm_audit",
+      "pip_audit",
+      "osv_scan"
+    ],
+    "outcome": {
+      "pass": true,
+      "verdict": "pass",
+      "unverified": [],
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "pass: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)"
+        },
+        {
+          "name": "no-regression",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "vuln-path tests persist and pass"
+        },
+        {
+          "name": "actually-works",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "every journey answers as it did at baseline on the redeployed app"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 0.902868,
+      "usage": {
+        "input": 413169,
+        "output": 7653,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 730381,
+      "phase": {
+        "setupMs": 37370,
+        "baselineMs": 106064,
+        "agentMs": 365379,
+        "redeployMs": 0,
+        "gradeMs": 109172
+      }
+    },
+    "effort": {
+      "turns": 14,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "run_shell": 13,
+        "npm_audit": 1,
+        "run_tests": 1
+      }
+    },
+    "neatUsage": {},
+    "lockfilePre": {
+      "file": "package-lock.json",
+      "sha256": "b2dab7d5ac30439698c48dee39a2a2deb56cc9519b3e6c6e204dd92e9aaf5d6c"
+    },
+    "lockfilePost": {
+      "file": "package-lock.json",
+      "sha256": "3389a30b202c7cd1d35363b7b21fae0beb8081d92512991a5319a03e486472bd"
+    }
+  },
+  "grade": {
+    "app": "uptime-kuma",
+    "pass": true,
+    "verdict": "pass",
+    "unverified": [],
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "pass: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)"
+      },
+      {
+        "name": "no-regression",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "every journey answers as it did at baseline on the redeployed app"
+      }
+    ]
+  }
+}

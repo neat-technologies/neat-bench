@@ -1,0 +1,17 @@
+{
+  "usage": {
+    "input": 664045,
+    "output": 8645,
+    "cacheRead": 0,
+    "cacheCreation": 0
+  },
+  "costUsd": 2.82908,
+  "turns": 20,
+  "stopReason": "refusal",
+  "wallMs": 152736,
+  "toolCalls": {
+    "run_shell": 19,
+    "osv_scan": 1,
+    "pip_audit": 1
+  }
+}

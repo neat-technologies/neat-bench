@@ -1,0 +1,32 @@
+{
+  "app": "uptime-kuma",
+  "pass": false,
+  "verdict": "fail",
+  "unverified": [],
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "pass: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)"
+    },
+    {
+      "name": "no-regression",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "baseline-green tests still green"
+    },
+    {
+      "name": "not-degenerate",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "vuln-path tests persist and pass"
+    },
+    {
+      "name": "actually-works",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "the patched checkout could not be rebuilt and restarted: js/loader:1623:10)\n    at Module.load (node:internal/modules/cjs/loader:1266:32)\n    at Module._load (node:internal/modules/cjs/loader:1091:12)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)\n    at node:internal/main/run_main_module:28:49\n\nNode.js v20.20.2"
+    }
+  ]
+}

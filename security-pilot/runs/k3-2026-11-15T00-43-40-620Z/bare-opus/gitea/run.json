@@ -1,0 +1,142 @@
+{
+  "pins": {
+    "model": "claude-opus-5-5",
+    "arm": "bare-opus",
+    "lean": false,
+    "app": "gitea",
+    "repo": "github.com/go-gitea/gitea",
+    "commit": "829b49c1ae96015e345f9d2a0eb1ea7acd5f31e1",
+    "ecosystem": "Go",
+    "service": "gitea",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "deniz-MS-7E26",
+    "groundTruthLocked": true,
+    "neatBase": null,
+    "neatCli": "/home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatBin": "node /home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatMcpEntry": "/home/deniz/neat-src/packages/mcp/dist-fixed/index.cjs",
+    "appBase": "http://127.0.0.1:41153",
+    "asOf": "2026-11-15T03:03:38.871Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "npm_audit",
+      "pip_audit",
+      "osv_scan"
+    ],
+    "outcome": {
+      "pass": true,
+      "verdict": "pass",
+      "unverified": [],
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "pass: golang.org/x/net@v0.62.0 outside CVE-2026-78661 affected range (OSV + scanner agree) | pass: golang.org/x/net@v0.62.0 outside CVE-2026-97045 affected range (OSV + scanner agree)"
+        },
+        {
+          "name": "no-regression",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "vuln-path tests persist and pass"
+        },
+        {
+          "name": "actually-works",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "every journey answers as it did at baseline on the redeployed app"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 16.481392,
+      "usage": {
+        "input": 3956353,
+        "output": 32799,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 678807,
+      "phase": {
+        "setupMs": 160362,
+        "baselineMs": 3454,
+        "agentMs": 476626,
+        "redeployMs": 35729,
+        "gradeMs": 1669
+      }
+    },
+    "effort": {
+      "turns": 60,
+      "stopReason": "max-turns",
+      "toolCalls": {
+        "run_shell": 63,
+        "osv_scan": 1,
+        "run_tests": 1
+      }
+    },
+    "neatUsage": {},
+    "lockfilePre": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    },
+    "lockfilePost": {
+      "file": "go.sum",
+      "sha256": "e70c1dc54514fa747dc0422657c697645ae0cc96c47ab3982bfa4897a5c4f9a2"
+    }
+  },
+  "grade": {
+    "app": "gitea",
+    "pass": true,
+    "verdict": "pass",
+    "unverified": [],
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "pass: golang.org/x/net@v0.62.0 outside CVE-2026-78661 affected range (OSV + scanner agree) | pass: golang.org/x/net@v0.62.0 outside CVE-2026-97045 affected range (OSV + scanner agree)"
+      },
+      {
+        "name": "no-regression",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "every journey answers as it did at baseline on the redeployed app"
+      }
+    ]
+  }
+}

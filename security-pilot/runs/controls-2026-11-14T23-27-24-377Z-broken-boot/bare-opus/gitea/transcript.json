@@ -1,0 +1,6 @@
+[
+  {
+    "role": "user",
+    "content": "[grader control broken-boot: scripted change, no model call]\nexport PATH=\"$PATH:/usr/local/go/bin\" GOFLAGS=-mod=mod && go get golang.org/x/net@v0.62.0 >/dev/null 2>&1 && go mod tidy >/dev/null 2>&1 && echo 'func benchControlDoesNotCompile( {' >> main.go\n---\nexit=0\n\n"
+  }
+]

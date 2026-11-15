@@ -1,0 +1,169 @@
+{
+  "pins": {
+    "model": "claude-sonnet-5-5",
+    "arm": "neat-sonnet-full",
+    "lean": false,
+    "app": "uptime-kuma",
+    "repo": "github.com/louislam/uptime-kuma",
+    "commit": "1f0755fb044fe08e99fccde6722062fb2bf6c8f4",
+    "ecosystem": "npm",
+    "service": "uptime-kuma",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "package-lock.json",
+      "sha256": "b2dab7d5ac30439698c48dee39a2a2deb56cc9519b3e6c6e204dd92e9aaf5d6c"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "deniz-MS-7E26",
+    "groundTruthLocked": true,
+    "neatBase": "http://127.0.0.1:32963",
+    "neatCli": "/home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatBin": "node /home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatMcpEntry": "/home/deniz/neat-src/packages/mcp/dist-fixed/index.cjs",
+    "appBase": "http://127.0.0.1:45159",
+    "asOf": "2026-11-15T04:08:44.439Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "security_scan",
+      "get_reachable_cves",
+      "is_reachable",
+      "scan_diff",
+      "ask",
+      "get_root_cause",
+      "get_blast_radius",
+      "get_dependencies",
+      "get_observed_dependencies",
+      "expand",
+      "relate",
+      "get_incident_history",
+      "get_incident_card",
+      "investigate",
+      "semantic_search",
+      "get_graph_diff",
+      "get_recent_stale_edges",
+      "get_divergences",
+      "check_policies",
+      "recon_qa",
+      "recon_flush",
+      "recon_probe"
+    ],
+    "outcome": {
+      "pass": true,
+      "verdict": "pass",
+      "unverified": [],
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "pass: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)"
+        },
+        {
+          "name": "no-regression",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "vuln-path tests persist and pass"
+        },
+        {
+          "name": "actually-works",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "every journey answers as it did at baseline on the redeployed app"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 4.61415,
+      "usage": {
+        "input": 2279595,
+        "output": 5496,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 880152,
+      "phase": {
+        "setupMs": 52362,
+        "baselineMs": 110361,
+        "agentMs": 493990,
+        "redeployMs": 0,
+        "gradeMs": 108726
+      }
+    },
+    "effort": {
+      "turns": 21,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "get_reachable_cves": 1,
+        "security_scan": 2,
+        "check_policies": 1,
+        "run_shell": 17,
+        "run_tests": 2,
+        "recon_qa": 1
+      }
+    },
+    "neatUsage": {
+      "get_reachable_cves": 1,
+      "security_scan": 2,
+      "check_policies": 1,
+      "recon_qa": 1
+    },
+    "lockfilePre": {
+      "file": "package-lock.json",
+      "sha256": "b2dab7d5ac30439698c48dee39a2a2deb56cc9519b3e6c6e204dd92e9aaf5d6c"
+    },
+    "lockfilePost": {
+      "file": "package-lock.json",
+      "sha256": "c94d762de92035012a4a2b6ce7ebd463e7118a53a870b156ba78f8e5b429859d"
+    }
+  },
+  "grade": {
+    "app": "uptime-kuma",
+    "pass": true,
+    "verdict": "pass",
+    "unverified": [],
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "pass: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)"
+      },
+      {
+        "name": "no-regression",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "every journey answers as it did at baseline on the redeployed app"
+      }
+    ]
+  }
+}

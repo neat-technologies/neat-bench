@@ -1,0 +1,20 @@
+{
+  "usage": {
+    "input": 1809773,
+    "output": 4196,
+    "cacheRead": 0,
+    "cacheCreation": 0
+  },
+  "costUsd": 3.6615059999999997,
+  "turns": 15,
+  "stopReason": "end_turn",
+  "wallMs": 247517,
+  "toolCalls": {
+    "get_reachable_cves": 1,
+    "security_scan": 1,
+    "run_shell": 11,
+    "run_tests": 2,
+    "scan_diff": 2,
+    "recon_qa": 1
+  }
+}

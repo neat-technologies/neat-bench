@@ -134,8 +134,19 @@ export function buildTools(arm: Arm, ctx: TrialContext, opts: BuildToolsOpts): T
     tools.push(...bareScannerTools(ctx))
   } else {
     tools.push(...buildSecurityToolDefs(ctx))
-    if (opts.neatToolDefs) tools.push(...opts.neatToolDefs)
+    if (opts.neatToolDefs) {
+      // Lean dose: a CARD-FIRST graph surface. Keep the incident card (the in-your-face answer) plus
+      // the directive's "switch heads" escalation (root cause, blast radius, dependencies); drop the
+      // broad exploration tools (investigate, semantic_search, expand, ask, relate, graph diff,
+      // divergences, policies, history, stale) so lean leads with the card and escalates only when the
+      // fix is not obvious. Full gets the whole surface. The security scan + recon stay for both.
+      const neatDefs = arm.lean ? opts.neatToolDefs.filter((t) => LEAN_NEAT_TOOLS.has(t.name)) : opts.neatToolDefs
+      tools.push(...neatDefs)
+    }
     if (opts.reconToolDefs) tools.push(...opts.reconToolDefs)
   }
   return tools
 }
+
+// The card-first MCP graph tools the lean arm keeps (plus the security scan + recon, added above).
+export const LEAN_NEAT_TOOLS = new Set(['get_incident_card', 'get_root_cause', 'get_blast_radius', 'get_dependencies'])

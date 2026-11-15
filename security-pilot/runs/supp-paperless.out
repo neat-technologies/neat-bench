@@ -1,0 +1,31 @@
+supp start 2026-11-15T09:32:15Z NEAT_BIN=node /home/deniz/neat-main-1622/packages/core/dist/cli.cjs node=v20.20.2 key_loaded=yes
+=== k=3 SUITE === runLabel=supp-paperless-1622-2026-11-15T09-32-16-120Z apps=paperless-ngx arms=neat-sonnet-full,neat-sonnet-lean
+[runner] worker 0 starting neat-sonnet-full/paperless-ngx#0 (avail 25.4Gi)
+[runner] done neat-sonnet-full/paperless-ngx#0: pass=false
+[runner] worker 0 starting neat-sonnet-full/paperless-ngx#1 (avail 24.4Gi)
+[runner] done neat-sonnet-full/paperless-ngx#1: pass=false
+[runner] worker 0 starting neat-sonnet-full/paperless-ngx#2 (avail 22.9Gi)
+[runner] done neat-sonnet-full/paperless-ngx#2: pass=false
+[runner] worker 0 starting neat-sonnet-lean/paperless-ngx#0 (avail 21.3Gi)
+[runner] done neat-sonnet-lean/paperless-ngx#0: pass=false
+[runner] worker 0 starting neat-sonnet-lean/paperless-ngx#1 (avail 20.5Gi)
+[runner] done neat-sonnet-lean/paperless-ngx#1: pass=false
+[runner] worker 0 starting neat-sonnet-lean/paperless-ngx#2 (avail 20.4Gi)
+[runner] done neat-sonnet-lean/paperless-ngx#2: pass=false
+
+=== k=3 SUITE COMPLETE ===
+paperless-ngx/neat-sonnet-full pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$19.481 turns=60
+paperless-ngx/neat-sonnet-full pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$17.710 turns=60
+paperless-ngx/neat-sonnet-full pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$20.670 turns=60
+paperless-ngx/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$18.895 turns=60
+paperless-ngx/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$13.717 turns=42
+paperless-ngx/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$3.394 turns=15
+
+TOTAL SPEND: $93.87
+artifacts: /home/deniz/neat-bench/security-pilot/runs/supp-paperless-1622-2026-11-15T09-32-16-120Z

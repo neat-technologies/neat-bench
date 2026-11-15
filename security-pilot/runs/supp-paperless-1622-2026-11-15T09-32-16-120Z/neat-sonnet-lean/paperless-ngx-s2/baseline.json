@@ -1,0 +1,33 @@
+{
+  "baselineGreen": [
+    "suite:pass"
+  ],
+  "baselineDivergenceCount": 21,
+  "baselineJourneyFailures": [],
+  "baselineJourneySignatures": {
+    "root": [
+      "302"
+    ],
+    "login-page": [
+      "200"
+    ],
+    "api-root": [
+      "302"
+    ],
+    "api-documents": [
+      "401"
+    ],
+    "api-storage-paths": [
+      "401"
+    ],
+    "health": [
+      "401"
+    ],
+    "documents-authed": [
+      "200 count"
+    ],
+    "storage-path-render": [
+      "200 render:6b4a6d31"
+    ]
+  }
+}

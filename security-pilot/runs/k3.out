@@ -1,0 +1,151 @@
+k3 start 2026-11-15T00:43:40Z NEAT_BIN=node /home/deniz/neat-src/packages/core/dist-fixed/cli.cjs node=v20.20.2 key_loaded=yes
+=== k=3 SUITE === runLabel=k3-2026-11-15T00-43-40-620Z apps=uptime-kuma,nodegoat,paperless-ngx,gitea arms=bare-opus,neat-sonnet-full,neat-sonnet-lean
+[runner] worker 0 starting bare-opus/uptime-kuma#0 (avail 26.7Gi)
+[runner] done bare-opus/uptime-kuma#0: pass=true
+[runner] worker 0 starting bare-opus/uptime-kuma#1 (avail 26.5Gi)
+[runner] done bare-opus/uptime-kuma#1: pass=true
+[runner] worker 0 starting bare-opus/uptime-kuma#2 (avail 26.6Gi)
+[runner] done bare-opus/uptime-kuma#2: pass=true
+[runner] worker 0 starting bare-opus/nodegoat#0 (avail 26.5Gi)
+[runner] done bare-opus/nodegoat#0: pass=false
+[runner] worker 0 starting bare-opus/nodegoat#1 (avail 26.5Gi)
+[runner] done bare-opus/nodegoat#1: pass=false
+[runner] worker 0 starting bare-opus/nodegoat#2 (avail 26.5Gi)
+[runner] done bare-opus/nodegoat#2: pass=false
+[runner] worker 0 starting bare-opus/paperless-ngx#0 (avail 26.4Gi)
+[runner] done bare-opus/paperless-ngx#0: pass=false
+[runner] worker 0 starting bare-opus/paperless-ngx#1 (avail 26.0Gi)
+[runner] done bare-opus/paperless-ngx#1: pass=false
+[runner] worker 0 starting bare-opus/paperless-ngx#2 (avail 20.5Gi)
+[runner] done bare-opus/paperless-ngx#2: pass=false
+[runner] worker 0 starting bare-opus/gitea#0 (avail 25.3Gi)
+[runner] done bare-opus/gitea#0: pass=true
+[runner] worker 0 starting bare-opus/gitea#1 (avail 24.8Gi)
+[runner] done bare-opus/gitea#1: pass=true
+[runner] worker 0 starting bare-opus/gitea#2 (avail 24.6Gi)
+[runner] done bare-opus/gitea#2: pass=true
+[runner] worker 0 starting neat-sonnet-full/uptime-kuma#0 (avail 24.0Gi)
+[runner] done neat-sonnet-full/uptime-kuma#0: pass=true
+[runner] worker 0 starting neat-sonnet-full/uptime-kuma#1 (avail 24.7Gi)
+[runner] done neat-sonnet-full/uptime-kuma#1: pass=true
+[runner] worker 0 starting neat-sonnet-full/uptime-kuma#2 (avail 24.7Gi)
+[runner] done neat-sonnet-full/uptime-kuma#2: pass=true
+[runner] worker 0 starting neat-sonnet-full/nodegoat#0 (avail 24.6Gi)
+[runner] done neat-sonnet-full/nodegoat#0: pass=false
+[runner] worker 0 starting neat-sonnet-full/nodegoat#1 (avail 24.7Gi)
+[runner] done neat-sonnet-full/nodegoat#1: pass=false
+[runner] worker 0 starting neat-sonnet-full/nodegoat#2 (avail 24.7Gi)
+[runner] done neat-sonnet-full/nodegoat#2: pass=false
+[runner] worker 0 starting neat-sonnet-full/paperless-ngx#0 (avail 24.6Gi)
+[runner] done neat-sonnet-full/paperless-ngx#0: pass=false
+[runner] worker 0 starting neat-sonnet-full/paperless-ngx#1 (avail 24.7Gi)
+[runner] done neat-sonnet-full/paperless-ngx#1: pass=false
+[runner] worker 0 starting neat-sonnet-full/paperless-ngx#2 (avail 22.9Gi)
+[runner] done neat-sonnet-full/paperless-ngx#2: pass=false
+[runner] worker 0 starting neat-sonnet-full/gitea#0 (avail 24.4Gi)
+[runner] done neat-sonnet-full/gitea#0: pass=true
+[runner] worker 0 starting neat-sonnet-full/gitea#1 (avail 25.9Gi)
+[runner] done neat-sonnet-full/gitea#1: pass=true
+[runner] worker 0 starting neat-sonnet-full/gitea#2 (avail 25.9Gi)
+[runner] done neat-sonnet-full/gitea#2: pass=true
+[runner] worker 0 starting neat-sonnet-lean/uptime-kuma#0 (avail 25.8Gi)
+[runner] done neat-sonnet-lean/uptime-kuma#0: pass=true
+[runner] worker 0 starting neat-sonnet-lean/uptime-kuma#1 (avail 26.1Gi)
+[runner] done neat-sonnet-lean/uptime-kuma#1: pass=true
+[runner] worker 0 starting neat-sonnet-lean/uptime-kuma#2 (avail 26.2Gi)
+[runner] done neat-sonnet-lean/uptime-kuma#2: pass=true
+[runner] worker 0 starting neat-sonnet-lean/nodegoat#0 (avail 26.2Gi)
+[runner] done neat-sonnet-lean/nodegoat#0: pass=false
+[runner] worker 0 starting neat-sonnet-lean/nodegoat#1 (avail 26.3Gi)
+[runner] done neat-sonnet-lean/nodegoat#1: pass=false
+[runner] worker 0 starting neat-sonnet-lean/nodegoat#2 (avail 26.2Gi)
+[runner] done neat-sonnet-lean/nodegoat#2: pass=false
+[runner] worker 0 starting neat-sonnet-lean/paperless-ngx#0 (avail 26.2Gi)
+[runner] done neat-sonnet-lean/paperless-ngx#0: pass=false
+[runner] worker 0 starting neat-sonnet-lean/paperless-ngx#1 (avail 25.2Gi)
+[runner] done neat-sonnet-lean/paperless-ngx#1: pass=false
+[runner] worker 0 starting neat-sonnet-lean/paperless-ngx#2 (avail 25.2Gi)
+[runner] done neat-sonnet-lean/paperless-ngx#2: pass=false
+[runner] worker 0 starting neat-sonnet-lean/gitea#0 (avail 25.2Gi)
+[runner] done neat-sonnet-lean/gitea#0: pass=true
+[runner] worker 0 starting neat-sonnet-lean/gitea#1 (avail 25.2Gi)
+[runner] done neat-sonnet-lean/gitea#1: pass=true
+[runner] worker 0 starting neat-sonnet-lean/gitea#2 (avail 25.2Gi)
+[runner] done neat-sonnet-lean/gitea#2: pass=true
+
+=== k=3 SUITE COMPLETE ===
+uptime-kuma/bare-opus pass=true verdict=pass
+   cost=$16.179 turns=50
+uptime-kuma/bare-opus pass=true verdict=pass
+   cost=$11.614 turns=39
+uptime-kuma/bare-opus pass=true verdict=pass
+   cost=$6.532 turns=28
+nodegoat/bare-opus pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$8.108 turns=42
+nodegoat/bare-opus pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$6.006 turns=34
+nodegoat/bare-opus pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$5.278 turns=31
+paperless-ngx/bare-opus pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$17.121 turns=60
+paperless-ngx/bare-opus pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$25.458 turns=57
+paperless-ngx/bare-opus pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$2.829 turns=20
+gitea/bare-opus pass=true verdict=pass
+   cost=$16.481 turns=60
+gitea/bare-opus pass=true verdict=pass
+   cost=$14.485 turns=60
+gitea/bare-opus pass=true verdict=pass
+   cost=$16.698 turns=60
+uptime-kuma/neat-sonnet-full pass=true verdict=pass
+   cost=$4.614 turns=21
+uptime-kuma/neat-sonnet-full pass=true verdict=pass
+   cost=$5.353 turns=24
+uptime-kuma/neat-sonnet-full pass=true verdict=pass
+   cost=$2.388 turns=11
+nodegoat/neat-sonnet-full pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$1.385 turns=19
+nodegoat/neat-sonnet-full pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$6.018 turns=49
+nodegoat/neat-sonnet-full pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$1.523 turns=20
+paperless-ngx/neat-sonnet-full pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$4.195 turns=60
+paperless-ngx/neat-sonnet-full pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$17.633 turns=60
+paperless-ngx/neat-sonnet-full pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$17.238 turns=60
+gitea/neat-sonnet-full pass=true verdict=pass
+   cost=$0.944 turns=14
+gitea/neat-sonnet-full pass=true verdict=pass
+   cost=$1.539 turns=20
+gitea/neat-sonnet-full pass=true verdict=pass
+   cost=$1.017 turns=16
+uptime-kuma/neat-sonnet-lean pass=true verdict=pass
+   cost=$3.675 turns=18
+uptime-kuma/neat-sonnet-lean pass=true verdict=pass
+   cost=$3.131 turns=15
+uptime-kuma/neat-sonnet-lean pass=true verdict=pass
+   cost=$3.000 turns=15
+nodegoat/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$5.620 turns=60
+nodegoat/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$1.861 turns=29
+nodegoat/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$7.025 turns=57
+paperless-ngx/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$14.349 turns=52
+paperless-ngx/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$3.662 turns=15
+paperless-ngx/neat-sonnet-lean pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$4.081 turns=17
+gitea/neat-sonnet-lean pass=true verdict=pass
+   cost=$0.611 turns=11
+gitea/neat-sonnet-lean pass=true verdict=pass
+   cost=$0.883 turns=15
+gitea/neat-sonnet-lean pass=true verdict=pass
+   cost=$0.773 turns=14
+
+TOTAL SPEND: $259.31
+artifacts: /home/deniz/neat-bench/security-pilot/runs/k3-2026-11-15T00-43-40-620Z

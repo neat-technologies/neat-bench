@@ -19,7 +19,7 @@ async function main() {
   const item = getCorpusItem(app)
   console.error(`=== diag app=${app} ===`)
   const prov = new FreshProvisioner({ workRoot })
-  const st = await prov.provision(item, ARMS.find((a) => a.id === 'neat-opus')!)
+  const st = await prov.provision(item, ARMS.find((a) => a.id === 'neat-sonnet-full')!)
   const workDir = `${st.treePath}__work`
   try {
     console.error(`neatBase=${st.neatBase} treePath=${st.treePath}`)

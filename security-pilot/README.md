@@ -4,8 +4,19 @@
 
 This directory is the full, raw pilot that asks that question. Harness, corpus, the independent grader, the Recon QA stack, every per-trial transcript and grade, the agent's own run reports, and the honest limitations — nothing held back.
 
-> ### ⚠️ Read this first: these are **k=1, directional** numbers
-> Every result here is a **single run per (app × arm)** — a pilot, not a published benchmark. One run has no variance bars. **Do not cite any number here as "NEAT's benchmark result."** The headline claims hold up directionally and every number is reproducible from the pins below, but the real figure waits on **k=5** and on closing the bench-environment gaps listed under [Open items](#open-items). We publish the pilot raw — wins, confounds, and warts — because that is the only honest way to build this in public.
+> ### Current state (2026-11-15): read [RESULTS-2026-11-15.md](RESULTS-2026-11-15.md) first
+> The k=3 runs of 2026-11-15 supersede the k=1 pilot written up below. They also found a fault that
+> reaches back into the pilot: the harness cloned each app's full git history, so on **gitea** the
+> arms without NEAT could see, and used, the upstream commit that fixes the target. The pilot's
+> bare-opus gitea trial read that history too, so **the gitea cost comparison in the headline table
+> below does not stand**. A bare-sonnet arm added on 2026-11-15 also shows that on uptime-kuma and
+> paperless-ngx the cost saving against Opus comes from the cheaper model, not from NEAT.
+>
+> Nothing here is a citable benchmark result yet. To stand the bench up on a new machine and re-run
+> it, follow [REPRODUCE.md](REPRODUCE.md).
+>
+> The rest of this file is the k=1 pilot as it was written on 2026-11-10: single runs, directional
+> only, kept for the record.
 
 ## What ran
 

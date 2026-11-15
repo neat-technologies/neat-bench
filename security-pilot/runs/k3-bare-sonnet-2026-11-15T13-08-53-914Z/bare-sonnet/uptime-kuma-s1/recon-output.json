@@ -1,0 +1,25 @@
+{
+  "works": true,
+  "testFailures": [],
+  "journeyFailures": [],
+  "journeySignatures": {
+    "dashboard": [
+      "302"
+    ],
+    "entry-page": [
+      "200"
+    ],
+    "metrics": [
+      "401"
+    ],
+    "badge-missing": [
+      "200"
+    ],
+    "status-page-list": [
+      "404"
+    ]
+  },
+  "newDivergences": [],
+  "observedOk": true,
+  "detail": "bare arm: journeys-only (no NEAT graph); journeys ok; newDivergences=0"
+}

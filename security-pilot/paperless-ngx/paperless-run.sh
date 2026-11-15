@@ -35,17 +35,17 @@ docker run -d --name sec-pilot-paperless --network host \
   -v $T/run/consume:/usr/src/paperless/consume -v $T/run/export:/usr/src/paperless/export \
   -e PAPERLESS_DBHOST=127.0.0.1 -e PAPERLESS_DBPORT=5433 -e PAPERLESS_REDIS=redis://127.0.0.1:6380 \
   -e PAPERLESS_PORT=8103 -e PAPERLESS_BIND_ADDR=127.0.0.1 -e PAPERLESS_ALLOWED_HOSTS=127.0.0.1,localhost \
-  -e PAPERLESS_SECRET_KEY=<redacted> -e PAPERLESS_ADMIN_USER=admin -e PAPERLESS_ADMIN_PASSWORD=changeme \
+  -e PAPERLESS_SECRET_KEY=neat-pilot-secret-key-0123456789abcdef -e PAPERLESS_ADMIN_USER=admin -e PAPERLESS_ADMIN_PASSWORD=Pilot-pass-1 \
   -e PAPERLESS_OCR_LANGUAGE=eng -e PAPERLESS_TASK_WORKERS=1 -e PAPERLESS_THREADS_PER_WORKER=1 -e PAPERLESS_WEBSERVER_WORKERS=1 \
   -e OTEL_SERVICE_NAME=paperless-ngx -e OTEL_TRACES_EXPORTER=otlp -e OTEL_METRICS_EXPORTER=none -e OTEL_LOGS_EXPORTER=none \
   -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://127.0.0.1:4403/v1/traces -e OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf \
   -e OTEL_BSP_SCHEDULE_DELAY=1000 \
   sec-pilot/paperless-neat:3.4.2 >/dev/null
-for i in $(seq 1 120); do curl -sf -o /dev/null http://127.0.0.1:8103/api/ -u admin:changeme && break; sleep 3; done
-step "api: $(curl -s -o /dev/null -w '%{http_code}' -u admin:changeme http://127.0.0.1:8103/api/)"
+for i in $(seq 1 120); do curl -sf -o /dev/null http://127.0.0.1:8103/api/ -u admin:Pilot-pass-1 && break; sleep 3; done
+step "api: $(curl -s -o /dev/null -w '%{http_code}' -u admin:Pilot-pass-1 http://127.0.0.1:8103/api/)"
 
 # Traffic: API reads, metadata writes, one document upload (goes through celery).
-A="-s -o /dev/null -w %{http_code} -u admin:changeme"
+A="-s -o /dev/null -w %{http_code} -u admin:Pilot-pass-1"
 B=http://127.0.0.1:8103/api
 for p in documents/ tags/ correspondents/ document_types/ saved_views/ tasks/ ui_settings/ statistics/; do echo "GET $p $(curl $A $B/$p)"; done
 echo "POST tag $(curl $A -H Content-Type:application/json -X POST -d '{"name":"pilot"}' $B/tags/)"
@@ -53,5 +53,5 @@ echo "POST correspondent $(curl $A -H Content-Type:application/json -X POST -d '
 printf 'NEAT pilot invoice 42\nTotal 10 EUR\n' > $T/run/pilot.txt
 echo "POST upload $(curl $A -F document=@$T/run/pilot.txt -F title=pilot-doc $B/documents/post_document/)"
 sleep 20
-echo "GET documents after consume: $(curl -s -u admin:changeme $B/documents/ | python3 -c 'import sys,json; print(json.load(sys.stdin).get("count"))')"
+echo "GET documents after consume: $(curl -s -u admin:Pilot-pass-1 $B/documents/ | python3 -c 'import sys,json; print(json.load(sys.stdin).get("count"))')"
 step done

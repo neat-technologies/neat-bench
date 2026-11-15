@@ -1,0 +1,11 @@
+01:56:21 watching /home/deniz/neat-bench/security-pilot/runs/k3-2026-11-15T00-43-40-620Z/bare-opus
+01:58:29 nodegoat: captured (port 33093, 6.9s, failures=0)
+02:03:53 nodegoat-s1: captured (port 32819, 6.9s, failures=0)
+02:08:50 nodegoat-s2: captured (port 44549, 5.6s, failures=0)
+02:37:00 paperless-ngx: captured (port 35995, 1.2s, failures=8)
+02:54:24 paperless-ngx-s1: captured (port 43157, 2.4s, failures=0)
+03:00:36 paperless-ngx-s2: captured (port 39849, 2.3s, failures=0)
+03:12:17 gitea: captured (port 41153, 1.5s, failures=0)
+03:35:09 gitea-s1: captured (port 36149, 1.0s, failures=4)
+04:07:50 gitea-s2: captured (port 43187, 1.4s, failures=0)
+09:27:14 k3 suite no longer running; watcher exits

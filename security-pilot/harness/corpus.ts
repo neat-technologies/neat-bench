@@ -37,10 +37,16 @@ const uptimeKuma: BenchCorpusItem = {
       importers: ['server/monitor-types/mqtt.js', 'server/monitor-types/mongodb.js'],
       fixKind: 'bump',
       // test/backend-test/monitors/test-mqtt.js, describe("MqttMonitorType"), json-query path -> checkJsonQuery() -> jsonata()
+      // Plus two container-free guards: test/backend-test/test-globalping.js drives GlobalpingMonitorType ->
+      // evaluateJsonQuery() -> jsonata(...).evaluate() (src/util.js) against a mocked client, so they run
+      // (and are green at baseline) even when the HiveMQ testcontainer cannot start. The grader only
+      // guards with tests that were green at baseline, so the MQTT three count when HiveMQ is up.
       vulnPathTests: [
         'check() sets status to UP when json-query finds expected value',
         'check() rejects when json-query path returns undefined',
         'check() rejects when json-query value does not match expected value',
+        'should handle JSON query check (valid)',
+        'should handle JSON query check (invalid)',
       ],
     },
   ],
@@ -68,7 +74,7 @@ const nodegoat: BenchCorpusItem = {
   advisories: [
     // clean bumps; infra-level, exercised by the whole suite (a degenerate delete breaks no-regression, not just these)
     { id: 'GHSA-cf4h-3jhx-xvhq', ecosystem: 'npm', dep: 'underscore', vulnerableRange: '<1.12.1', fixedIn: '1.13.8', importers: ['config/config.js'], fixKind: 'bump', vulnPathTests: [] },
-    { id: 'CVE-2024-29041', ecosystem: 'npm', dep: 'express', vulnerableRange: '<4.20.0', fixedIn: '4.21.2', importers: ['server.js', 'app/routes/tutorial.js'], fixKind: 'bump', vulnPathTests: [] },
+    { id: 'CVE-2024-29041', ecosystem: 'npm', dep: 'express', vulnerableRange: '<4.19.2', fixedIn: '4.21.2', importers: ['server.js', 'app/routes/tutorial.js'], fixKind: 'bump', vulnPathTests: [] }, // CVE-2024-29041 fixed in 4.19.2; range is doc-only (grader uses live OSV on the resolved version, not this field)
     { id: 'CVE-2024-45590', ecosystem: 'npm', dep: 'body-parser', vulnerableRange: '<1.20.3', fixedIn: '1.20.9', importers: ['server.js'], fixKind: 'bump', vulnPathTests: [] },
     // feature-specific: a degenerate "fix" that removes the feature breaks these exact specs
     { id: 'CVE-2022-21680', ecosystem: 'npm', dep: 'marked', vulnerableRange: '<4.0.10', fixedIn: '4.0.10', importers: ['server.js', 'app/views/memos.html'], fixKind: 'bump', vulnPathTests: ['Should memo be generated'] },
@@ -134,7 +140,12 @@ const gitea: BenchCorpusItem = {
   service: 'gitea',
   knownDaemonPort: 8204,
   appDefaultPort: 3000,
-  testCmd: 'go test ./modules/markup/...', // markup rendering (x/net/html path); full CI is heavy
+  // The harness PATH has no `go`; gitea needs its pinned go1.27.3 toolchain + the populated module/build
+  // caches + the sqlite build tags (same as the recipe's build) for `go test` to compile and emit ids.
+  // GOWORK=off so it uses gitea's go.mod, not the recipe's otelc sidecar workspace. Self-contained so the
+  // baseline capture, the not-degenerate grade, and the smoke id-match all run it identically.
+  testCmd:
+    'env GOWORK=off GOTOOLCHAIN=local GOFLAGS=-modcacherw PATH="$HOME/neat-bench/security-pilot/gitea/toolchain/go/bin:$PATH" GOPATH="$HOME/neat-bench/security-pilot/gitea/gopath" GOMODCACHE="$HOME/neat-bench/security-pilot/gitea/gopath/pkg/mod" GOCACHE="$HOME/neat-bench/security-pilot/gitea/gocache" go test -json -tags "sqlite sqlite_unlock_notify" ./modules/markup/...',
   advisories: [
     { id: 'CVE-2026-78661', ecosystem: 'Go', dep: 'golang.org/x/net', vulnerableRange: '<0.62.0', fixedIn: '0.62.0', importers: ['modules/markup/html.go', 'modules/markup/internal/renderinternal.go', 'services/mailer/mail.go'], fixKind: 'bump', vulnPathTests: ['TestPostProcess', 'TestRender_Commits', 'TestRender_links', 'TestRender_emoji', 'TestSanitizer'] },
     { id: 'CVE-2026-97045', ecosystem: 'Go', dep: 'golang.org/x/net', vulnerableRange: '<0.62.0', fixedIn: '0.62.0', importers: ['modules/markup/html.go', 'modules/markup/internal/renderinternal.go'], fixKind: 'bump', vulnPathTests: ['TestPostProcess', 'TestIssue16020', 'TestIssue18471'] },

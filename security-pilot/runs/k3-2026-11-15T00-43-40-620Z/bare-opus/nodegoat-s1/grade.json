@@ -1,0 +1,35 @@
+{
+  "app": "nodegoat",
+  "pass": false,
+  "verdict": "fail",
+  "unverified": [
+    "no-regression",
+    "not-degenerate"
+  ],
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "fail: underscore@1.9.1 still flagged (osvAffected=true, scanner=true) | pass: express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | pass: body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | pass: marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | pass: mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | fail: swig@1.4.2 still flagged (osvAffected=true, scanner=false)"
+    },
+    {
+      "name": "no-regression",
+      "verdict": "unverified",
+      "pass": false,
+      "detail": "the app's real suite cannot run in this env (Cypress e2e needs a headless browser); a placeholder ran instead, which certifies nothing"
+    },
+    {
+      "name": "not-degenerate",
+      "verdict": "unverified",
+      "pass": false,
+      "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: Should memo be generated, should have admin user able to login, Should new user be added to the system"
+    },
+    {
+      "name": "actually-works",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "every journey answers as it did at baseline on the redeployed app"
+    }
+  ]
+}

@@ -14,6 +14,9 @@ import { flush as doFlush } from './flush.js'
 // baseline traffic (pre-fix) and hands it in; recon_flush refreshes the "current" view.
 export interface ReconState {
   baselineDivergences: Divergence[]
+  // What each journey answered before the fix (trial.ts captures it at baseline). When set, a
+  // journey that was stable at baseline and now answers differently counts as a journey failure.
+  baselineJourneySignatures?: Record<string, string[]>
   // Files in the fix's blast radius (changed-dep importers + agent-edited files). A NEW divergence
   // counts against actually-works ONLY if it references one (fix-attributable); an ambient divergence
   // on code the fix never touched is dropped. Unset/empty => count all (back-compat). Set at grade
@@ -25,9 +28,23 @@ export interface ReconAssessment {
   works: boolean
   testFailures: string[]
   journeyFailures: string[]
+  journeySignatures: Record<string, string[]>
   newDivergences: string[]
   observedOk: boolean
   detail: string
+}
+
+// Journeys whose answer changed since baseline. Only a journey that gave one stable answer at
+// baseline is compared; one that already varied run to run there carries no signal.
+export function journeyDrift(baseline: Record<string, string[]> | undefined, now: Record<string, string[]>): string[] {
+  if (!baseline) return []
+  const out: string[] = []
+  for (const [name, base] of Object.entries(baseline)) {
+    if (base.length !== 1) continue
+    const cur = now[name] ?? ['not-run']
+    if (cur.some((s) => s !== base[0])) out.push(`${name} changed since baseline (${base[0]} -> ${cur.filter((s) => s !== base[0]).join(' | ')})`)
+  }
+  return out
 }
 
 // Core correctness read: drive journeys, confirm OBSERVED still materializes for the exercised
@@ -37,9 +54,11 @@ export async function reconAssess(ctx: TrialContext, state: ReconState, opts: { 
   const suite = getSuite(ctx.app)
 
   let journeyFailures: string[] = []
+  let journeySignatures: Record<string, string[]> = {}
   if (ctx.appBase) {
-    const driven = await driveJourneys(suite, ctx.appBase, 3)
-    journeyFailures = driven.failures
+    const driven = await driveJourneys(suite, ctx.appBase, 3, 40, { treePath: ctx.treePath })
+    journeySignatures = driven.signatures
+    journeyFailures = [...driven.failures, ...journeyDrift(state.baselineJourneySignatures, driven.signatures)]
   } else {
     journeyFailures = ['app base URL not set — journeys not driven']
   }
@@ -69,6 +88,7 @@ export async function reconAssess(ctx: TrialContext, state: ReconState, opts: { 
     works,
     testFailures,
     journeyFailures,
+    journeySignatures,
     newDivergences: attributableNewDivs,
     observedOk,
     detail: `${graphDetail}; journeys ${journeyFailures.length === 0 ? 'ok' : 'failed'}; newDivergences=${attributableNewDivs.length}${droppedDivs.length ? ` (dropped ${droppedDivs.length} ambient)` : ''}`,

@@ -1,0 +1,144 @@
+{
+  "pins": {
+    "model": "claude-opus-5-5",
+    "arm": "bare-opus",
+    "lean": false,
+    "app": "paperless-ngx",
+    "repo": "github.com/paperless-ngx/paperless-ngx",
+    "commit": "e6253caa198cd6a91f3a4de1eb13799d17dd1c68",
+    "ecosystem": "PyPI",
+    "service": "paperless-ngx",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "uv.lock",
+      "sha256": "c10d14089db02af870f4e7dad7d38192a3e8e41838fbc6f84ea1e864031e288e"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "deniz-MS-7E26",
+    "groundTruthLocked": true,
+    "neatBase": null,
+    "neatCli": null,
+    "neatBin": null,
+    "neatMcpEntry": "/home/deniz/.nvm/versions/node/v20.20.2/lib/node_modules/@neat.is/mcp/dist/index.cjs",
+    "appBase": "http://127.0.0.1:36699",
+    "asOf": "2026-11-15T09:29:03.057Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "npm_audit",
+      "pip_audit",
+      "osv_scan"
+    ],
+    "outcome": {
+      "pass": false,
+      "verdict": "unverified",
+      "unverified": [
+        "no-regression",
+        "not-degenerate"
+      ],
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "pass: jinja2@3.1.6 outside CVE-2025-27516 affected range (OSV + scanner agree)"
+        },
+        {
+          "name": "no-regression",
+          "verdict": "unverified",
+          "pass": false,
+          "detail": "no baseline-green tests captured (suite did not run at baseline); cannot certify no-regression"
+        },
+        {
+          "name": "not-degenerate",
+          "verdict": "unverified",
+          "pass": false,
+          "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+        },
+        {
+          "name": "actually-works",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "every journey answers as it did at baseline on the redeployed app"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 0,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 211045,
+      "phase": {
+        "setupMs": 83911,
+        "baselineMs": 3371,
+        "agentMs": 16,
+        "redeployMs": 58168,
+        "gradeMs": 23471
+      }
+    },
+    "effort": {
+      "turns": 0,
+      "stopReason": "scripted-control",
+      "toolCalls": {}
+    },
+    "neatUsage": {},
+    "lockfilePre": {
+      "file": "uv.lock",
+      "sha256": "c10d14089db02af870f4e7dad7d38192a3e8e41838fbc6f84ea1e864031e288e"
+    },
+    "lockfilePost": {
+      "file": "uv.lock",
+      "sha256": "e58b46ee032e391f4d81f458135c46523bd9f8698d9ca02273c4e12d6be9ac63"
+    }
+  },
+  "grade": {
+    "app": "paperless-ngx",
+    "pass": false,
+    "verdict": "unverified",
+    "unverified": [
+      "no-regression",
+      "not-degenerate"
+    ],
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "pass: jinja2@3.1.6 outside CVE-2025-27516 affected range (OSV + scanner agree)"
+      },
+      {
+        "name": "no-regression",
+        "verdict": "unverified",
+        "pass": false,
+        "detail": "no baseline-green tests captured (suite did not run at baseline); cannot certify no-regression"
+      },
+      {
+        "name": "not-degenerate",
+        "verdict": "unverified",
+        "pass": false,
+        "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+      },
+      {
+        "name": "actually-works",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "every journey answers as it did at baseline on the redeployed app"
+      }
+    ]
+  }
+}

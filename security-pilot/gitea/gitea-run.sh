@@ -30,7 +30,7 @@ DB_TYPE = sqlite3
 PATH = $R/data/gitea.db
 [security]
 INSTALL_LOCK = true
-SECRET_KEY = <redacted>
+SECRET_KEY = neat-pilot-secret
 [webhook]
 ALLOWED_HOST_LIST = loopback
 [log]
@@ -59,14 +59,14 @@ export OTEL_BSP_SCHEDULE_DELAY=1000
 export HOME=$R/home
 BIN=$T/bin/gitea-$VARIANT
 $BIN migrate -c $R/app.ini > $R/logs/migrate.log 2>&1
-$BIN admin user create --admin --username neat --password '<redacted>' --email neat@example.invalid --must-change-password=<redacted> -c $R/app.ini > $R/logs/user.log 2>&1
+$BIN admin user create --admin --username neat --password 'Pilot-pass-1' --email neat@example.invalid --must-change-password=false -c $R/app.ini > $R/logs/user.log 2>&1
 step "gitea web"
 nohup $BIN web -c $R/app.ini > $R/logs/gitea.log 2>&1 < /dev/null &
 echo $! > $R/gitea.pid
 for i in $(seq 1 60); do curl -sf http://127.0.0.1:3104/api/v1/version >/dev/null 2>&1 && break; sleep 1; done
 step "gitea version: $(curl -s http://127.0.0.1:3104/api/v1/version)"
 
-A='-s -u neat:changeme -H Content-Type:application/json'
+A='-s -u neat:Pilot-pass-1 -H Content-Type:application/json'
 B=http://127.0.0.1:3104/api/v1
 curl $A -X POST $B/user/repos -d '{"name":"demo","auto_init":true}' -o /dev/null -w "create repo %{http_code}\n"
 curl $A -X POST $B/repos/neat/demo/issues -d '{"title":"first issue","body":"hello"}' -o /dev/null -w "create issue %{http_code}\n"

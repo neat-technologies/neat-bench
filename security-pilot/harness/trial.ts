@@ -19,8 +19,9 @@ import { buildTools } from './tools.js'
 import { connectNeatMcp, type NeatMcp } from './neat-mcp.js'
 import { buildReconToolDefs, ReconQA, reconAssess, type ReconState } from '../recon/recon-tools.js'
 import { fetchDivergences, type Divergence } from '../recon/verifier.js'
-import { runTests } from './grader-impl.js'
+import { runTests, runTestsDetailed, resolveInstalledVersion, osvAffected_, runScanner } from './grader-impl.js'
 import { standUp, BENCH_NEAT_SHA } from './standup.js'
+import { advisoryHomeFor } from './advisory-home.js'
 
 const TASK =
   'Remove the reachable vulnerabilities from this app without breaking it or violating its policies.'
@@ -28,8 +29,27 @@ const TASK =
 const SYSTEM = `You are a senior engineer fixing security vulnerabilities in a real application checkout.
 Your job: remove the vulnerabilities that are actually reachable in this app, without breaking the app
 or violating its policies, and without churning dependencies that do not need to change.
-Work in the checkout directory using the available tools. When you believe the fix is complete and
-verified, stop. Do not ask for confirmation; act.`
+Work in the checkout directory using the available tools.
+Before you stop, VERIFY the fix end to end: confirm the application still works (use recon_qa to drive
+its journeys if you have it, otherwise exercise the app yourself) AND run the project's test suite
+(run_tests). Clearing the security scan does NOT mean the fix is done: if the app is broken or a
+previously-passing test now fails, the fix is incomplete and may need a code change, not just a version
+bump. Keep going until the vulnerability is gone AND the app and its tests still pass. Then stop. Do not
+ask for confirmation; act.`
+
+// The graph-first (lean) directive — appended to the lean arm's system prompt ONLY. The lean half of
+// the context-dose comparison: lead with the card NEAT already produced, go direct, escalate only when
+// the fix is not obvious. It names ONLY tools the lean arm actually has (the card + security scan as the
+// primary answer; root cause / blast radius / dependencies for escalation) so the agent never chases a
+// dropped tool and reads as circling when it is not. (Derived from the #1612 GRAPH_FIRST.lean.md directive.)
+const LEAN_DIRECTIVE = `
+Graph-first (lean):
+NEAT has already done the investigation; lead with the answer it hands you instead of re-deriving it.
+- The incident card (get_incident_card) and the security scan (security_scan, get_reachable_cves, is_reachable, scan_diff) ARE the distilled answer: the reachable vulnerability, its locus as file:line, and the fix to apply. Read those first.
+- NEAT queries come before grep at all times. Do not sweep files to understand an obvious fix; the card already points at the locus, so open only that line.
+Default to the direct fix. A known-vulnerability fix is almost always a single dependency bump to the version named in the advisory: apply it, verify, stop.
+Switch heads only when the fix is not obvious (a dependency with no fixed version to remove or replace, a vulnerability reachable only transitively, or a bump that would break a reached caller). Only then escalate, with get_root_cause, get_blast_radius and get_dependencies. For a clean bump, skip the investigation.
+Keep your looking proportional: small fix, one glance at the card; hard fix, escalate properly. Ground every claim in what NEAT returns; if it does not show the vulnerable path, say so.`
 
 function sh(cmd: string, cwd: string, timeoutMs: number, env?: NodeJS.ProcessEnv): Promise<{ code: number; stdout: string; stderr: string }> {
   return new Promise((resolve) => {
@@ -70,6 +90,8 @@ export interface Provisioned {
   neatBase?: string
   appBase?: string
   otelCaptureDir?: string
+  // Rebuild + restart the app from the current checkout (FreshProvisioner). Absent for live reuse.
+  redeploy?: () => Promise<{ ok: boolean; detail: string }>
   teardown: () => Promise<void>
 }
 export interface Provisioner {
@@ -88,10 +110,22 @@ export class FreshProvisioner implements Provisioner {
   async provision(item: BenchCorpusItem, arm: Arm): Promise<Provisioned> {
     const treePath = await fs.mkdtemp(path.join(this.cfg.workRoot, `${item.app}-${arm.id}-`))
     // Fresh isolated checkout at the pinned vulnerable commit.
-    let r = await sh(`git clone --no-checkout ${item.repoUrl} .`, treePath, 600_000)
-    if (r.code !== 0) throw new Error(`git clone failed: ${r.stderr.slice(-400)}`)
-    r = await sh(`git fetch --depth 1 origin ${item.commit}`, treePath, 600_000)
-    if (r.code !== 0) await sh(`git fetch origin ${item.commit}`, treePath, 600_000)
+    // Network git ops flake (DNS / transient), so retry a few times with backoff before failing the whole
+    // trial — a single "Could not resolve host" should not lose an arm across a 12-trial suite. The clone
+    // cleans the dir between attempts (a partial clone leaves .git behind and the re-clone would refuse).
+    const gitStep = async (cmd: string, timeoutMs: number, label: string, cleanDir = false) => {
+      let last = { code: 1, stdout: '', stderr: '' }
+      for (let attempt = 1; attempt <= 4; attempt++) {
+        if (cleanDir) await sh('find . -mindepth 1 -delete 2>/dev/null; true', treePath, 60_000)
+        last = await sh(cmd, treePath, timeoutMs)
+        if (last.code === 0) return last
+        await new Promise((res) => setTimeout(res, 4000 * attempt))
+      }
+      throw new Error(`${label} failed after 4 attempts: ${last.stderr.slice(-400)}`)
+    }
+    await gitStep(`git clone --no-checkout ${item.repoUrl} .`, 600_000, 'git clone', true)
+    let r = await sh(`git fetch --depth 1 origin ${item.commit}`, treePath, 600_000)
+    if (r.code !== 0) await gitStep(`git fetch origin ${item.commit}`, 600_000, 'git fetch')
     r = await sh(`git checkout ${item.commit}`, treePath, 120_000)
     if (r.code !== 0) throw new Error(`git checkout ${item.commit} failed: ${r.stderr.slice(-400)}`)
 
@@ -114,6 +148,7 @@ export class FreshProvisioner implements Provisioner {
       neatBase: handles.neatBase,
       appBase: handles.appBase,
       otelCaptureDir: handles.otelCaptureDir,
+      redeploy: handles.redeploy,
       teardown: async () => {
         await handles.teardown().catch(() => {})
         await fs.rm(treePath, { recursive: true, force: true }).catch(() => {})
@@ -148,7 +183,9 @@ async function writeArtifact(dir: string, name: string, data: unknown): Promise<
 }
 
 export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Provisioner, opts: RunTrialOpts): Promise<TrialRecord> {
-  const artifactsDir = path.join(opts.runsRoot, opts.runLabel, arm.id, item.app)
+  // One directory per rep: seed 0 keeps the k=1 path, later seeds get a suffix, so k>1 never overwrites
+  // an earlier rep's transcript/grade.
+  const artifactsDir = path.join(opts.runsRoot, opts.runLabel, arm.id, opts.seed ? `${item.app}-s${opts.seed}` : item.app)
   await fs.mkdir(artifactsDir, { recursive: true })
   const phase: Record<string, number> = {}
   const t0 = Date.now()
@@ -180,6 +217,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     rec.pins = {
       model: arm.model,
       arm: arm.id,
+      lean: arm.lean === true,
       app: item.app,
       repo: item.repo,
       commit: item.commit,
@@ -196,6 +234,9 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
       box: os.hostname(),
       groundTruthLocked: item.locked,
       neatBase: ctx.neatBase ?? null,
+      neatCli: process.env.BENCH_NEAT_CLI ?? null,
+      neatBin: process.env.NEAT_BIN ?? null,
+      neatMcpEntry: ctx.mcpEntry,
       appBase: ctx.appBase ?? null,
       asOf: new Date().toISOString(),
     }
@@ -217,15 +258,52 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
         await writeArtifact(artifactsDir, 'baseline-divergences-error.txt', String(e))
       }
     }
+    // Baseline journeys: does the app work BEFORE the fix? Journeys already failing here (app never came
+    // up in this env) are not attributable to the fix, so the grader and the verify gate both discount
+    // them. undefined = the baseline probe itself errored (then nothing is discounted).
+    let baselineJourneyFailures: string[] | undefined
+    let baselineJourneySignatures: Record<string, string[]> | undefined
+    try {
+      const base = await reconAssess(ctx, { baselineDivergences })
+      baselineJourneyFailures = base.journeyFailures ?? []
+      baselineJourneySignatures = base.journeySignatures
+    } catch (e) {
+      await writeArtifact(artifactsDir, 'baseline-journeys-error.txt', String(e))
+    }
     phase.baselineMs = Date.now() - bt0
-    await writeArtifact(artifactsDir, 'baseline.json', { baselineGreen: item.baselineGreen, baselineDivergenceCount: baselineDivergences.length })
+    await writeArtifact(artifactsDir, 'baseline.json', { baselineGreen: item.baselineGreen, baselineDivergenceCount: baselineDivergences.length, baselineJourneyFailures: baselineJourneyFailures ?? null, baselineJourneySignatures: baselineJourneySignatures ?? null })
+
+    // 2b. Contamination guard: confirm each advisory is actually detectable on the PRE-patch tree
+    // (before the agent touches it). If an advisory is not flagged pre-patch, "vuln gone" post-patch
+    // has no signal -> the grader marks it UNVERIFIED rather than a trivial pass. Best-effort: a check
+    // error leaves the advisory unmarked (undefined), and the grader then proceeds normally for it.
+    const preFlagged: Record<string, boolean> = {}
+    for (const a of item.advisories) {
+      try {
+        const resolved = await resolveInstalledVersion(a.ecosystem, a.dep, ctx.treePath)
+        const osv = resolved ? await osvAffected_(a, resolved) : false
+        const scan = await runScanner(a, ctx.treePath)
+        preFlagged[a.id] = osv || scan
+      } catch (e) {
+        await writeArtifact(artifactsDir, `preflag-error-${a.id.replace(/[^\w.-]/g, '_')}.txt`, String(e))
+      }
+    }
+    await writeArtifact(artifactsDir, 'pre-signal.json', preFlagged)
 
     // 3. assemble the arm's tools (NEAT arms: MCP suite + security CLI + Recon)
-    const reconState: ReconState = { baselineDivergences }
+    const reconState: ReconState = { baselineDivergences, baselineJourneySignatures }
     let neatToolDefs: ToolDef[] | undefined
     let reconToolDefs: ToolDef[] | undefined
     if (arm.neat) {
       if (!ctx.neatBase) throw new Error('NEAT arm requires a daemon (ctx.neatBase); none provisioned')
+      // Every NEAT trial on an app reads the same advisory cache (see advisory-home.ts). Filled before
+      // the agent starts, so its time is not the agent's.
+      const at0 = Date.now()
+      const adv = await advisoryHomeFor(opts.runsRoot, item.app, ctx.treePath, `${ctx.treePath}__advisory`)
+      ctx.advisoryHome = adv.home
+      phase.advisorySeedMs = Date.now() - at0
+      rec.pins.advisorySeededAt = adv.seededAt
+      rec.pins.advisorySeedMs = adv.seedMs
       neat = await connectNeatMcp(ctx)
       neatToolDefs = neat.toolDefs
       reconToolDefs = buildReconToolDefs(ctx, reconState)
@@ -235,10 +313,71 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
 
     // 4. run the agent (or the stub for the dry plumbing test)
     const at0 = Date.now()
+    // Lean arm only: the graph-first directive is the single variable vs the full arm.
+    const system = arm.lean ? `${SYSTEM}\n${LEAN_DIRECTIVE}` : SYSTEM
+    // Seed attributable files so the gate's recon can run before the post-run refinement below.
+    reconState.attributableFiles = item.advisories.flatMap((a) => a.importers)
+    // Verify-before-done gate (uniform across arms). When the agent tries to stop, confirm the app's own
+    // journeys still work and no previously-green test regressed, using the app's own checks (never the
+    // grader's). A failure is handed back so the agent keeps fixing rather than shipping a fix that
+    // clears the scan but breaks the app. runAgent bounds the retries (BENCH_MAX_VERIFY_REJECTS).
+    // The app must be rebuilt + restarted from the patched checkout before any "does it still work"
+    // check, or the journeys would hit the process started from the vulnerable commit.
+    let lastDeploy: { ok: boolean; detail: string } | undefined
+    const redeployNow = async () => {
+      const prov = provisioned
+      if (!prov?.redeploy) return undefined
+      let d = await prov.redeploy()
+      if (!d.ok) d = await prov.redeploy() // one retry: a transient install/network blip is not the fix's fault
+      lastDeploy = d
+      return d
+    }
+    const verifyGate = async (): Promise<{ ok: boolean; feedback: string }> => {
+      let journeyFailures: string[] = []
+      let regressed: string[] = []
+      const d = await redeployNow()
+      if (d && !d.ok) {
+        return {
+          ok: false,
+          feedback: `Not done yet. The app could not be rebuilt and restarted from your patched checkout, so the fix does not deploy: ${d.detail.slice(-500)}. Make the checkout build and start cleanly (lockfile and manifest consistent, code compiling), then stop.`,
+        }
+      }
+      // Same baseline-compared signals the grader uses: only a journey that worked before the fix, or a
+      // test that was green before and now RAN and failed, counts. Pre-existing failures and tests that
+      // merely did not execute are never held against the agent. A probe that errors does not reject.
+      try {
+        const now = (await reconAssess(ctx, reconState)).journeyFailures ?? []
+        journeyFailures = baselineJourneyFailures ? now.filter((j) => !baselineJourneyFailures!.includes(j)) : now
+      } catch {
+        journeyFailures = []
+      }
+      try {
+        if (item.baselineGreen.length > 0) {
+          const post = await runTestsDetailed(item.testCmd, ctx.treePath)
+          regressed = item.baselineGreen.filter((t) => post.ran.has(t) && !post.passed.has(t))
+        }
+      } catch {
+        regressed = []
+      }
+      if (journeyFailures.length === 0 && regressed.length === 0) return { ok: true, feedback: '' }
+      const parts: string[] = []
+      if (journeyFailures.length) parts.push(`the app's own journeys fail after your change (${journeyFailures.slice(0, 6).join('; ')})`)
+      if (regressed.length) parts.push(`these previously-passing tests now fail, so your change broke them: ${regressed.slice(0, 12).join(', ')}`)
+      return {
+        ok: false,
+        feedback: `Not done yet. Verification of your fix failed: ${parts.join(' | ')}. Clearing the vulnerability does not count if the app no longer works or a test regressed; the fix may need a code change, not just a version bump. Keep working until the app runs and its tests pass, then stop.`,
+      }
+    }
     const result = opts.stubAgent
       ? await opts.stubAgent(arm, tools, ctx)
-      : await runAgent(arm, SYSTEM, TASK, tools, { maxTurns: opts.maxTurns })
+      : await runAgent(arm, system, TASK, tools, { maxTurns: opts.maxTurns, verifyGate })
     phase.agentMs = Date.now() - at0
+    // Final redeploy for grading, unless the gate just redeployed this exact tree and passed it.
+    const dt0 = Date.now()
+    const gatePassedLast = !opts.stubAgent && (result as { stopReason?: string }).stopReason === 'end_turn' && lastDeploy?.ok === true
+    const deploy = gatePassedLast ? lastDeploy : await redeployNow()
+    phase.redeployMs = Date.now() - dt0
+    await writeArtifact(artifactsDir, 'redeploy.json', { deploy: deploy ?? null, reusedGateDeploy: gatePassedLast })
     await writeArtifact(artifactsDir, 'transcript.json', result.transcript)
     await writeArtifact(artifactsDir, 'usage.json', { usage: result.usage, costUsd: result.costUsd, turns: result.turns, stopReason: result.stopReason, wallMs: result.wallMs, toolCalls: result.toolCalls })
 
@@ -254,7 +393,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
       reconState.attributableFiles = item.advisories.flatMap((a) => a.importers)
     }
     const recon = new ReconQA(ctx, reconState)
-    const grade = await gradeTrial(item, ctx.treePath, recon)
+    const grade = await gradeTrial(item, ctx.treePath, recon, { preFlagged, baselineJourneyFailures, deploy })
     phase.gradeMs = Date.now() - gt0
     rec.grade = grade
     rec.pass = grade.pass
@@ -280,12 +419,12 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     } catch (e) {
       await writeArtifact(artifactsDir, 'test-output.error.txt', String(e))
     }
-    if (arm.neat) {
-      try {
-        await writeArtifact(artifactsDir, 'recon-output.json', await reconAssess(ctx, reconState))
-      } catch (e) {
-        await writeArtifact(artifactsDir, 'recon-output.error.txt', String(e))
-      }
+    // Every arm: the post-fix journey answers are what actually-works rests on, so they are kept for
+    // audit whatever the arm (the bare arm has no graph, so its observed/divergence fields are empty).
+    try {
+      await writeArtifact(artifactsDir, 'recon-output.json', await reconAssess(ctx, reconState))
+    } catch (e) {
+      await writeArtifact(artifactsDir, 'recon-output.error.txt', String(e))
     }
 
     // 6. metrics (the full set the README asks for, derived from captured data)
@@ -294,7 +433,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     for (const [k, v] of Object.entries(result.toolCalls)) if (neatToolNames.has(k)) neatUsage[k] = v
     rec.metrics = {
       ...rec.metrics,
-      outcome: { pass: grade.pass, criteria: grade.criteria },
+      outcome: { pass: grade.pass, verdict: grade.verdict, unverified: grade.unverified, criteria: grade.criteria },
       cost: { usd: result.costUsd, usage: result.usage },
       time: { totalMs: Date.now() - t0, phase },
       effort: { turns: result.turns, stopReason: result.stopReason, toolCalls: result.toolCalls },

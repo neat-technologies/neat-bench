@@ -1,4 +1,4 @@
-// REAL k=1 for gitea only (neat-opus, bare-opus, neat-sonnet), serial, RAM-gated. Real agent loop
+// REAL k=1 for gitea only (bare-opus, neat-sonnet-full, neat-sonnet-lean), serial, RAM-gated. Real agent loop
 // (ANTHROPIC_API_KEY from env) + the REAL testCmd (go test ./modules/markup/...). FreshProvisioner
 // stands each arm up fresh at the vuln commit on the eb330c2 main-build daemon. run.json per trial
 // carries pins + the full metric set (tokens/$/time/turns/toolCalls/neatUsage).
@@ -21,8 +21,8 @@ async function main() {
   })
   console.error('\n=== GITEA REAL k=1 COMPLETE ===')
   for (const r of rs) {
-    console.error(`${r.arm} ${r.app} pass=${r.pass}${r.error ? ' ERROR: ' + r.error.split('\n')[0] : ''}`)
-    if (r.grade) for (const c of r.grade.criteria) console.error(`   [${c.pass ? 'PASS' : 'FAIL'}] ${c.name}: ${String(c.detail).slice(0, 180)}`)
+    console.error(`${r.arm} ${r.app} pass=${r.pass} verdict=${r.grade?.verdict ?? '-'}${r.grade?.unverified?.length ? ` unverified=[${r.grade.unverified.join(',')}]` : ''}${r.error ? ' ERROR: ' + r.error.split('\n')[0] : ''}`)
+    if (r.grade) for (const c of r.grade.criteria) console.error(`   [${c.verdict.toUpperCase().padEnd(5)}] ${c.name}: ${String(c.detail).slice(0, 180)}`)
     const m: any = r.metrics ?? {}
     if (m.cost) console.error(`   cost=$${(m.cost.usd ?? 0).toFixed(4)} usage=${JSON.stringify(m.cost.usage)} turns=${m.effort?.turns} stop=${m.effort?.stopReason}`)
     if (m.time) console.error(`   timeMs=${m.time.totalMs} phase=${JSON.stringify(m.time.phase)}`)

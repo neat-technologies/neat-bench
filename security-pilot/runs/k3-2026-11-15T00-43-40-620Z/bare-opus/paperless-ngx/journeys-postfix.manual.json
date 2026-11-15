@@ -1,0 +1,45 @@
+{
+ "note": "captured by an out-of-harness watcher during the grading window; a separate sample of the same journeys against the same redeployed app",
+ "capturedAt": "2026-11-15T02:37:00Z",
+ "appPort": 35995,
+ "tree": "paperless-ngx-bare-opus-4J3KkJ",
+ "redeployWrittenAt": "2026-11-15T02:36:57Z",
+ "gradeExistedWhenProbeEnded": false,
+ "probeSeconds": 1.2,
+ "failures": [
+  "root fetch failed",
+  "login-page fetch failed",
+  "api-root fetch failed",
+  "api-documents fetch failed",
+  "api-storage-paths fetch failed",
+  "health fetch failed",
+  "documents-authed threw: fetch failed",
+  "storage-path-render threw: fetch failed"
+ ],
+ "signatures": {
+  "root": [
+   "no-response"
+  ],
+  "login-page": [
+   "no-response"
+  ],
+  "api-root": [
+   "no-response"
+  ],
+  "api-documents": [
+   "no-response"
+  ],
+  "api-storage-paths": [
+   "no-response"
+  ],
+  "health": [
+   "no-response"
+  ],
+  "documents-authed": [
+   "threw"
+  ],
+  "storage-path-render": [
+   "threw"
+  ]
+ }
+}

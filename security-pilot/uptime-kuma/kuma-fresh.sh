@@ -24,7 +24,8 @@ if [ ! -d "$APP_DIR/attach/node_modules/@neat.is/otel-node" ]; then
 fi
 [ -f "$SIDECAR" ] || { step "FATAL: SIDECAR missing: $SIDECAR"; exit 3; }
 
-if [ ! -d "$SRC/node_modules" ]; then
+# RESTART=1 (redeploy after the agent's fix): reinstall from the patched lockfile, as a deploy would.
+if [ ! -d "$SRC/node_modules" ] || [ "${RESTART:-0}" = 1 ]; then
   step "npm ci (node $(node -v))"
   (cd "$SRC" && npm ci --no-audit --no-fund > "$WORK/logs/npm-ci.log" 2>&1) || { step "npm ci FAILED"; tail -25 "$WORK/logs/npm-ci.log"; exit 4; }
 fi
