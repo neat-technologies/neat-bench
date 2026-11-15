@@ -39,9 +39,10 @@ interface ExecOut {
 // `neat security scan` spawns OSV-query children that survive exec()'s SIGTERM; on a slow scan the
 // tool timed out but the scan kept running, and the next (cache-miss) tool launched another -> a
 // pileup that ate RAM. SIGKILL to -pid (the group) stops the scan and all its children.
-function run(cmd: string, cwd: string, timeoutMs: number): Promise<ExecOut> {
+function run(cmd: string, cwd: string, timeoutMs: number, neatHome?: string): Promise<ExecOut> {
   return new Promise((resolve) => {
-    const child = spawn('/bin/sh', ['-c', cmd], { cwd, detached: true })
+    const env = neatHome ? { ...process.env, NEAT_HOME: neatHome } : process.env
+    const child = spawn('/bin/sh', ['-c', cmd], { cwd, detached: true, env })
     let stdout = ''
     let stderr = ''
     let timedOut = false
@@ -83,7 +84,7 @@ export async function runNeatSecurityScan(ctx: TrialContext): Promise<SecuritySc
   const p = (async () => {
     // No --service: the scan auto-detects the dep-manifest service name; passing the graph service
     // id would mis-scope (the two names differ, e.g. nodegoat vs owasp-nodejs-goat).
-    const out = await run(`${NEAT_BIN} security scan ${ctx.treePath} --json`, ctx.treePath, ctx.securityTimeoutMs)
+    const out = await run(`${NEAT_BIN} security scan ${ctx.treePath} --json`, ctx.treePath, ctx.securityTimeoutMs, ctx.advisoryHome)
     if (!out.stdout.trim()) {
       throw new Error(`neat security scan produced no JSON (code=${out.code}): ${out.stderr.slice(-400)}`)
     }
@@ -194,7 +195,7 @@ export function buildSecurityToolDefs(ctx: TrialContext): ToolDef[] {
       run: async (input: any) => {
         const base = input?.base
         const head = input?.head ? ` --head ${input.head}` : ''
-        const out = await run(`${NEAT_BIN} security diff ${ctx.treePath} --base ${base}${head} --json`, ctx.treePath, ctx.securityTimeoutMs)
+        const out = await run(`${NEAT_BIN} security diff ${ctx.treePath} --base ${base}${head} --json`, ctx.treePath, ctx.securityTimeoutMs, ctx.advisoryHome)
         if (!out.stdout.trim()) {
           return { content: `scan_diff unavailable: ${out.stderr.slice(-500) || 'no output'} (needs a git checkout with the given refs)`, isError: true }
         }

@@ -28,6 +28,9 @@ export interface TrialContext {
   shellTimeoutMs: number
   // Generous bound for the NEAT security CLI (dep resolve + OSV can exceed 2 min).
   securityTimeoutMs: number
+  // NEAT_HOME for the NEAT security CLI: this trial's private copy of the app's seeded advisory
+  // cache (advisory-home.ts). Unset outside the NEAT arms.
+  advisoryHome?: string
 }
 
 export const DEFAULT_SHELL_TIMEOUT_MS = 120_000

@@ -102,3 +102,11 @@ body is deterministic) is captured before the agent runs. A journey that gave on
 baseline and answers differently after the fix is a failure. Redirects are not followed. Each app has
 at least one journey on its signed-in or vulnerable path where the app allows it (NodeGoat signed-in
 walk, paperless storage-path template render, gitea untrusted-markup render).
+
+## Every NEAT trial on an app reads the same advisory cache (2026-11-15)
+
+`neat security scan` caches advisories and fix-diffs under `NEAT_HOME`. Until now the harness left it unset, so every trial shared `~/.neat`. On paperless-ngx a cold scan ran past the 10-minute tool timeout, but each killed scan had already cached the packages it finished. Across trials the cache filled up, so a later NEAT trial got a complete answer that an earlier one never had. In the k=3 run of 2026-11-15, neat-sonnet-full got no answer from any NEAT security tool on paperless-ngx, and neat-sonnet-lean, which ran later, got a complete one. The NEAT-vs-bare comparison is unaffected, since the bare arm calls nothing from NEAT and the grader reads nothing from it. The full-vs-lean comparison on paperless-ngx is confounded by run order.
+
+Now each app has one seed cache, filled by a full scan of the pristine checkout before that app's first NEAT trial. That fill happens outside the agent's clock and turns and is recorded in `run.json` as `advisorySeededAt` and `advisorySeedMs`. Each NEAT trial's security calls run with `NEAT_HOME` set to a private copy of the seed. Every NEAT trial on an app therefore starts from the same cache, as an installed NEAT does once its daemon has refreshed advisories, and nothing one trial writes reaches another. A seed older than 20 hours is refilled, inside NEAT's 24-hour TTL, so no trial triggers its own refresh.
+
+The slow cold scan itself was a NEAT bug, fixed in NEAT #1622: a cold paperless-ngx scan went from not finishing in 25 minutes to 7 min 54 s, and a warm one takes 27 s.

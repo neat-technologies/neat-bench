@@ -21,6 +21,7 @@ import { buildReconToolDefs, ReconQA, reconAssess, type ReconState } from '../re
 import { fetchDivergences, type Divergence } from '../recon/verifier.js'
 import { runTests, runTestsDetailed, resolveInstalledVersion, osvAffected_, runScanner } from './grader-impl.js'
 import { standUp, BENCH_NEAT_SHA } from './standup.js'
+import { advisoryHomeFor } from './advisory-home.js'
 
 const TASK =
   'Remove the reachable vulnerabilities from this app without breaking it or violating its policies.'
@@ -295,6 +296,14 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     let reconToolDefs: ToolDef[] | undefined
     if (arm.neat) {
       if (!ctx.neatBase) throw new Error('NEAT arm requires a daemon (ctx.neatBase); none provisioned')
+      // Every NEAT trial on an app reads the same advisory cache (see advisory-home.ts). Filled before
+      // the agent starts, so its time is not the agent's.
+      const at0 = Date.now()
+      const adv = await advisoryHomeFor(opts.runsRoot, item.app, ctx.treePath, `${ctx.treePath}__advisory`)
+      ctx.advisoryHome = adv.home
+      phase.advisorySeedMs = Date.now() - at0
+      rec.pins.advisorySeededAt = adv.seededAt
+      rec.pins.advisorySeedMs = adv.seedMs
       neat = await connectNeatMcp(ctx)
       neatToolDefs = neat.toolDefs
       reconToolDefs = buildReconToolDefs(ctx, reconState)
@@ -410,12 +419,12 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
     } catch (e) {
       await writeArtifact(artifactsDir, 'test-output.error.txt', String(e))
     }
-    if (arm.neat) {
-      try {
-        await writeArtifact(artifactsDir, 'recon-output.json', await reconAssess(ctx, reconState))
-      } catch (e) {
-        await writeArtifact(artifactsDir, 'recon-output.error.txt', String(e))
-      }
+    // Every arm: the post-fix journey answers are what actually-works rests on, so they are kept for
+    // audit whatever the arm (the bare arm has no graph, so its observed/divergence fields are empty).
+    try {
+      await writeArtifact(artifactsDir, 'recon-output.json', await reconAssess(ctx, reconState))
+    } catch (e) {
+      await writeArtifact(artifactsDir, 'recon-output.error.txt', String(e))
     }
 
     // 6. metrics (the full set the README asks for, derived from captured data)
