@@ -1,0 +1,35 @@
+{
+  "id": "express-m10-token-flows-401",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "medium",
+  "size_rationale": "Medium because it is a half-applied rename whose gold fix spans two files, with the cause one step away from the three endpoints in the prompt and the resulting error swallowed by their catch blocks.",
+  "prompt": "POST /v1/auth/refresh-tokens, POST /v1/auth/reset-password and POST /v1/auth/verify-email all reject valid, unexpired tokens with 401. Login, register and all of the /v1/users endpoints work normally.",
+  "bug_patch": "patches/express-m10-token-flows-401.patch",
+  "gold_files": [
+    "src/services/user.service.js",
+    "src/controllers/user.controller.js"
+  ],
+  "root_cause": {
+    "file": "src/services/user.service.js",
+    "line": 85,
+    "detail": "userService.getUserById was renamed to getUser (definition, internal callers, export and user.controller) but auth.service.js still calls userService.getUserById in refreshAuth, resetPassword and verifyEmail; the TypeError is swallowed by each catch block and returned as 401. The gold fix reverts the rename; completing it at the three auth.service.js call sites also passes the tests."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/refresh-tokens > should return 200 and new auth tokens if refresh token is valid",
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/reset-password > should return 204 and reset the password",
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/verify-email > should return 204 and verify the email"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 200 and new auth tokens if refresh token is valid|should return 204 and reset the password|should return 204 and verify the email'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

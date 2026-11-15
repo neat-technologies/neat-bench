@@ -1,0 +1,13 @@
+diff --git a/src/controllers/auth.controller.js b/src/controllers/auth.controller.js
+index 89f2c1f..d120266 100644
+--- a/src/controllers/auth.controller.js
++++ b/src/controllers/auth.controller.js
+@@ -27,7 +27,7 @@ const refreshTokens = catchAsync(async (req, res) => {
+ 
+ const forgotPassword = catchAsync(async (req, res) => {
+   const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
+-  await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
++  await emailService.sendResetPasswordEmail(resetPasswordToken, req.body.email);
+   res.status(httpStatus.NO_CONTENT).send();
+ });
+ 

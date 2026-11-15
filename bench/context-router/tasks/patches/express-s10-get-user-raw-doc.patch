@@ -1,0 +1,13 @@
+diff --git a/src/controllers/user.controller.js b/src/controllers/user.controller.js
+index 66b83fa..00a317a 100644
+--- a/src/controllers/user.controller.js
++++ b/src/controllers/user.controller.js
+@@ -21,7 +21,7 @@ const getUser = catchAsync(async (req, res) => {
+   if (!user) {
+     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+   }
+-  res.send(user);
++  res.send(user.toObject());
+ });
+ 
+ const updateUser = catchAsync(async (req, res) => {

@@ -1,0 +1,32 @@
+{
+  "id": "express-s03-logout-404",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in the logout endpoint's own service function, which the prompt points at by naming POST /v1/auth/logout and its 404 'Not found'.",
+  "prompt": "POST /v1/auth/logout returns 404 'Not found' for the refresh token a user got from login a moment earlier, so nobody can log out.",
+  "bug_patch": "patches/express-s03-logout-404.patch",
+  "gold_files": [
+    "src/services/auth.service.js"
+  ],
+  "root_cause": {
+    "file": "src/services/auth.service.js",
+    "line": 28,
+    "detail": "logout looks the refresh token up with blacklisted: true, so a valid (non-blacklisted) token is never found and the service throws 404 'Not found'."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/logout > should return 204 if refresh token is valid"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 204 if refresh token is valid'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

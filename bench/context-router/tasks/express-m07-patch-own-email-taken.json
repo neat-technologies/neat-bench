@@ -1,0 +1,32 @@
+{
+  "id": "express-m07-patch-own-email-taken",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "medium",
+  "size_rationale": "Medium because the quoted error is raised in the user service, but the cause sits one step away in the User model's isEmailTaken static, which register, create and update all share.",
+  "prompt": "PATCH /v1/users/:userId fails with 400 'Email already taken' whenever the body includes the user's own current email, for example when a profile form is resubmitted with the email unchanged.",
+  "bug_patch": "patches/express-m07-patch-own-email-taken.patch",
+  "gold_files": [
+    "src/models/user.model.js"
+  ],
+  "root_cause": {
+    "file": "src/models/user.model.js",
+    "line": 64,
+    "detail": "isEmailTaken queries findOne({ email }) and ignores excludeUserId, so the user being updated counts as already owning their own email."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/user.test.js > User routes > PATCH /v1/users/:userId > should not return 400 if email is my email"
+    ],
+    "cmd": "npx jest tests/integration/user.test.js -t 'should not return 400 if email is my email'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

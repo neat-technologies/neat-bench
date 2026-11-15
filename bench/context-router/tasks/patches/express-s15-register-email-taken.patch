@@ -1,0 +1,13 @@
+diff --git a/src/services/user.service.js b/src/services/user.service.js
+index f75de0a..de09af9 100644
+--- a/src/services/user.service.js
++++ b/src/services/user.service.js
+@@ -8,7 +8,7 @@ const ApiError = require('../utils/ApiError');
+  * @returns {Promise<User>}
+  */
+ const createUser = async (userBody) => {
+-  if (await User.isEmailTaken(userBody.email)) {
++  if (!(await User.isEmailTaken(userBody.email))) {
+     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+   }
+   return User.create(userBody);

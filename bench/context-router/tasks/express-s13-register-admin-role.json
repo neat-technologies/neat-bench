@@ -1,0 +1,32 @@
+{
+  "id": "express-s13-register-admin-role",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in one file, and the prompt names the field (role) whose default in the user model is the place.",
+  "prompt": "Accounts created through POST /v1/auth/register come back with role 'admin' instead of 'user', and can then use the admin-only user endpoints.",
+  "bug_patch": "patches/express-s13-register-admin-role.patch",
+  "gold_files": [
+    "src/models/user.model.js"
+  ],
+  "root_cause": {
+    "file": "src/models/user.model.js",
+    "line": 41,
+    "detail": "The role field defaults to 'admin' instead of 'user', so users created without an explicit role (self-registration) become admins."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/register > should return 201 and successfully register user if request data is ok"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 201 and successfully register user if request data is ok'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

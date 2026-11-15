@@ -1,0 +1,32 @@
+{
+  "id": "express-s16-verify-email-missing-token",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in one file, and the prompt names POST /v1/auth/verify-email and a missing-parameter 400, which points at that endpoint's own validation schema.",
+  "prompt": "POST /v1/auth/verify-email with no `token` query parameter returns 401 'Email verification failed' instead of a 400 validation error. POST /v1/auth/reset-password without a token is still correctly rejected with 400.",
+  "bug_patch": "patches/express-s16-verify-email-missing-token.patch",
+  "gold_files": [
+    "src/validations/auth.validation.js"
+  ],
+  "root_cause": {
+    "file": "src/validations/auth.validation.js",
+    "line": 48,
+    "detail": "The verifyEmail query schema declares token as Joi.string() without .required(), so a missing token passes validation and fails later in the service with 401."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/verify-email > should return 400 if verify email token is missing"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 400 if verify email token is missing'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

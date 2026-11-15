@@ -1,0 +1,33 @@
+{
+  "id": "express-m04-query-validation-skipped",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "medium",
+  "size_rationale": "Medium because the cause sits one step away from the symptom, in the validate middleware shared by every route; the per-route schemas the prompt leads to are correct.",
+  "prompt": "Requests with missing or malformed query parameters are no longer rejected: POST /v1/auth/verify-email and POST /v1/auth/reset-password without `?token=` now return 401 instead of a 400 validation error, and GET /v1/users?limit=abc returns 200. Invalid request bodies are still rejected with 400.",
+  "bug_patch": "patches/express-m04-query-validation-skipped.patch",
+  "gold_files": [
+    "src/middlewares/validate.js"
+  ],
+  "root_cause": {
+    "file": "src/middlewares/validate.js",
+    "line": 7,
+    "detail": "The validate middleware only picks ['params', 'body'] from each route schema, so every route's query schema is silently ignored."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/verify-email > should return 400 if verify email token is missing",
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/reset-password > should return 400 if reset password token is missing"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 400 if verify email token is missing|should return 400 if reset password token is missing'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

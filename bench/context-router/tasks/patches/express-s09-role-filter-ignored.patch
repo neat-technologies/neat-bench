@@ -1,0 +1,13 @@
+diff --git a/src/controllers/user.controller.js b/src/controllers/user.controller.js
+index 66b83fa..c7bbf65 100644
+--- a/src/controllers/user.controller.js
++++ b/src/controllers/user.controller.js
+@@ -10,7 +10,7 @@ const createUser = catchAsync(async (req, res) => {
+ });
+ 
+ const getUsers = catchAsync(async (req, res) => {
+-  const filter = pick(req.query, ['name', 'role']);
++  const filter = pick(req.query, ['name', 'roles']);
+   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+   const result = await userService.queryUsers(filter, options);
+   res.send(result);

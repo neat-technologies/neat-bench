@@ -1,0 +1,53 @@
+diff --git a/src/controllers/user.controller.js b/src/controllers/user.controller.js
+index 66b83fa..63bd676 100644
+--- a/src/controllers/user.controller.js
++++ b/src/controllers/user.controller.js
+@@ -17,7 +17,7 @@ const getUsers = catchAsync(async (req, res) => {
+ });
+ 
+ const getUser = catchAsync(async (req, res) => {
+-  const user = await userService.getUserById(req.params.userId);
++  const user = await userService.getUser(req.params.userId);
+   if (!user) {
+     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+   }
+diff --git a/src/services/user.service.js b/src/services/user.service.js
+index f75de0a..c644a9f 100644
+--- a/src/services/user.service.js
++++ b/src/services/user.service.js
+@@ -33,7 +33,7 @@ const queryUsers = async (filter, options) => {
+  * @param {ObjectId} id
+  * @returns {Promise<User>}
+  */
+-const getUserById = async (id) => {
++const getUser = async (id) => {
+   return User.findById(id);
+ };
+ 
+@@ -53,7 +53,7 @@ const getUserByEmail = async (email) => {
+  * @returns {Promise<User>}
+  */
+ const updateUserById = async (userId, updateBody) => {
+-  const user = await getUserById(userId);
++  const user = await getUser(userId);
+   if (!user) {
+     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+   }
+@@ -71,7 +71,7 @@ const updateUserById = async (userId, updateBody) => {
+  * @returns {Promise<User>}
+  */
+ const deleteUserById = async (userId) => {
+-  const user = await getUserById(userId);
++  const user = await getUser(userId);
+   if (!user) {
+     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+   }
+@@ -82,7 +82,7 @@ const deleteUserById = async (userId) => {
+ module.exports = {
+   createUser,
+   queryUsers,
+-  getUserById,
++  getUser,
+   getUserByEmail,
+   updateUserById,
+   deleteUserById,

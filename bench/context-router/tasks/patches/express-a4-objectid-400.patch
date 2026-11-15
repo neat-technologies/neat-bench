@@ -1,0 +1,11 @@
+diff --git a/src/validations/custom.validation.js b/src/validations/custom.validation.js
+index aa0c5f6..d2f1bba 100644
+--- a/src/validations/custom.validation.js
++++ b/src/validations/custom.validation.js
+@@ -1,5 +1,5 @@
+ const objectId = (value, helpers) => {
+-  if (!value.match(/^[0-9a-fA-F]{24}$/)) {
++  if (!value.match(/^[0-9a-fA-F]{12}$/)) {
+     return helpers.message('"{{#label}}" must be a valid mongo id');
+   }
+   return value;

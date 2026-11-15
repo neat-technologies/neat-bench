@@ -1,0 +1,32 @@
+{
+  "id": "express-s09-role-filter-ignored",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "constructed for neat-bench#23",
+  "size": "small",
+  "size_rationale": "Small because it is a one-line fix in the list-users controller, which the prompt points at by naming GET /v1/users and the role query field.",
+  "prompt": "GET /v1/users?role=user returns admins too: the role filter has no effect, while filtering by name works.",
+  "bug_patch": "patches/express-s09-role-filter-ignored.patch",
+  "gold_files": [
+    "src/controllers/user.controller.js"
+  ],
+  "root_cause": {
+    "file": "src/controllers/user.controller.js",
+    "line": 13,
+    "detail": "getUsers picks the filter key 'roles' instead of 'role' from the query, so ?role= is silently dropped."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/user.test.js > User routes > GET /v1/users > should correctly apply filter on role field"
+    ],
+    "cmd": "npx jest tests/integration/user.test.js -t 'should correctly apply filter on role field'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}

@@ -1,0 +1,13 @@
+diff --git a/src/services/auth.service.js b/src/services/auth.service.js
+index 18d9b22..d8a8bea 100644
+--- a/src/services/auth.service.js
++++ b/src/services/auth.service.js
+@@ -39,7 +39,7 @@ const logout = async (refreshToken) => {
+  */
+ const refreshAuth = async (refreshToken) => {
+   try {
+-    const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH);
++    const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.ACCESS);
+     const user = await userService.getUserById(refreshTokenDoc.user);
+     if (!user) {
+       throw new Error();

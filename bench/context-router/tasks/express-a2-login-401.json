@@ -1,0 +1,33 @@
+{
+  "id": "express-a2-login-401",
+  "target": "express-boilerplate",
+  "repo": "https://github.com/hagopj13/node-express-boilerplate",
+  "base_commit": "179ae84efec61b14206d0305d941daed6c6d07f9",
+  "origin": "constructed",
+  "source": "instances/static-solvable/express-a2-login-401.json (patch reconstructed from gold_patch; original in neat-agent-bench/patches/A2.patch)",
+  "size": "medium",
+  "size_rationale": "Medium because the cause sits one step away from where the symptom shows: the 401 'Incorrect email or password' is raised in the login service, but the faulty query is in getUserByEmail, a shared user-service helper that forgot-password also uses (one-line, one-file fix).",
+  "prompt": "Login with correct credentials that just registered successfully always returns 401 'Incorrect email or password'.",
+  "bug_patch": "patches/express-a2-login-401.patch",
+  "gold_files": [
+    "src/services/user.service.js"
+  ],
+  "root_cause": {
+    "file": "src/services/user.service.js",
+    "line": 46,
+    "detail": "getUserByEmail queries findOne({ emails: email }); the schema field is `email`. Mongoose 5.13 passes the unknown key through to MongoDB, so the lookup never matches: login throws 401 'Incorrect email or password' and forgot-password returns 404."
+  },
+  "oracle": {
+    "type": "tests",
+    "fail_to_pass": [
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/login > should return 200 and login user if email and password match",
+      "tests/integration/auth.test.js > Auth routes > POST /v1/auth/forgot-password > should return 204 and send reset password email to the user"
+    ],
+    "cmd": "npx jest tests/integration/auth.test.js -t 'should return 200 and login user if email and password match|should return 204 and send reset password email to the user'"
+  },
+  "validated": {
+    "patch_applies": true,
+    "patch_reverses": true,
+    "oracle_runs": false
+  }
+}
