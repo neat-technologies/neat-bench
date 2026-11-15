@@ -16,11 +16,17 @@ async function main() {
   CORPUS['paperless-ngx'].testCmd = SMOKE
   CORPUS['paperless-ngx'].suiteUnavailable = 'pytest needs the app image dependencies'
   const runsRoot = path.resolve(process.env.DRY_RUNS_ROOT ?? 'runs')
-  const runLabel = 'k3-' + new Date().toISOString().replace(/[:.]/g, '-')
+  const runLabel = (process.env.BENCH_LABEL ?? 'k3') + '-' + new Date().toISOString().replace(/[:.]/g, '-')
   const k = Number(process.env.BENCH_K ?? '3')
-  const apps = Object.keys(CORPUS)
-  console.error(`=== k=${k} SUITE === runLabel=${runLabel} apps=${apps.join(',')} arms=${ARMS.map((a) => a.id).join(',')}`)
-  const rs = await runMatrix({ runsRoot, runLabel, apps, arms: ARMS, k, concurrency: 1, ramFloorGi: Number(process.env.RAM_FLOOR_GI ?? '6') })
+  // BENCH_APPS / BENCH_ARMS (comma lists) narrow the matrix, e.g. to re-run one app's NEAT arms on a
+  // fixed build. Unset, every app and arm runs.
+  const only = (v: string | undefined) => (v ?? '').split(',').filter(Boolean)
+  const apps = only(process.env.BENCH_APPS).length ? only(process.env.BENCH_APPS) : Object.keys(CORPUS)
+  const arms = only(process.env.BENCH_ARMS).length ? ARMS.filter((a) => only(process.env.BENCH_ARMS).includes(a.id)) : ARMS
+  for (const a of apps) if (!CORPUS[a]) throw new Error(`BENCH_APPS: unknown app ${a}`)
+  if (arms.length === 0) throw new Error('BENCH_ARMS matched no arm')
+  console.error(`=== k=${k} SUITE === runLabel=${runLabel} apps=${apps.join(',')} arms=${arms.map((a) => a.id).join(',')}`)
+  const rs = await runMatrix({ runsRoot, runLabel, apps, arms, k, concurrency: 1, ramFloorGi: Number(process.env.RAM_FLOOR_GI ?? '6') })
   console.error(`\n=== k=${k} SUITE COMPLETE ===`)
   for (const r of rs) {
     console.error(
