@@ -1,0 +1,39 @@
+{
+ "note": "captured by an out-of-harness watcher during the grading window; a separate sample of the same journeys against the same redeployed app",
+ "capturedAt": "2026-11-15T03:35:09Z",
+ "appPort": 36149,
+ "tree": "gitea-bare-opus-3A4wfx",
+ "redeployWrittenAt": "2026-11-15T03:35:06Z",
+ "gradeExistedWhenProbeEnded": true,
+ "probeSeconds": 1.0,
+ "failures": [
+  "explore-repos fetch failed",
+  "explore-users fetch failed",
+  "login-page fetch failed",
+  "markdown-render threw: fetch failed"
+ ],
+ "signatures": {
+  "home": [
+   "200"
+  ],
+  "api-version": [
+   "200"
+  ],
+  "explore-repos": [
+   "200",
+   "no-response"
+  ],
+  "explore-users": [
+   "200",
+   "no-response"
+  ],
+  "login-page": [
+   "200",
+   "no-response"
+  ],
+  "markdown-render": [
+   "200 html:0e6d6a7b",
+   "threw"
+  ]
+ }
+}

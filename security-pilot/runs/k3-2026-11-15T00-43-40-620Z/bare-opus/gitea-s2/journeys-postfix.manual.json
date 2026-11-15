@@ -1,0 +1,30 @@
+{
+ "note": "captured by an out-of-harness watcher during the grading window; a separate sample of the same journeys against the same redeployed app",
+ "capturedAt": "2026-11-15T04:07:50Z",
+ "appPort": 43187,
+ "tree": "gitea-bare-opus-d0c19u",
+ "redeployWrittenAt": "2026-11-15T04:07:48Z",
+ "gradeExistedWhenProbeEnded": true,
+ "probeSeconds": 1.4,
+ "failures": [],
+ "signatures": {
+  "home": [
+   "200"
+  ],
+  "api-version": [
+   "200"
+  ],
+  "explore-repos": [
+   "200"
+  ],
+  "explore-users": [
+   "200"
+  ],
+  "login-page": [
+   "200"
+  ],
+  "markdown-render": [
+   "200 html:0e6d6a7b"
+  ]
+ }
+}

@@ -1,0 +1,6 @@
+{
+  "cmd": "govulncheck -json ./...",
+  "code": 1,
+  "stdout": "{\n  \"config\": {\n    \"protocol_version\": \"v1.0.0\",\n    \"scanner_name\": \"govulncheck\",\n    \"scanner_version\": \"v1.9.0\",\n    \"db\": \"https://vuln.go.dev\",\n    \"db_last_modified\": \"2026-11-11T02:51:11Z\",\n    \"scan_level\": \"symbol\",\n    \"scan_mode\": \"source\"\n  }\n}\n",
+  "stderr": "govulncheck: no go.mod file\n\ngovulncheck only works with Go modules. Try navigating to your module directory.\nOtherwise, run go mod init to make your project a module.\n\nSee https://go.dev/doc/modules/managing-dependencies for more information.\n"
+}

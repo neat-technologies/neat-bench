@@ -1,0 +1,32 @@
+{
+  "app": "uptime-kuma",
+  "pass": false,
+  "verdict": "fail",
+  "unverified": [],
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "pass: jsonata@2.2.2 outside GHSA-8gq3-vp5j-2grp affected range (OSV + scanner agree)"
+    },
+    {
+      "name": "no-regression",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "regressed: check() sets status to UP when json-query finds expected value, check() rejects when json-query value does not match expected value, MqttMonitorType"
+    },
+    {
+      "name": "not-degenerate",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "vuln-path tests green at baseline now failing (feature broken/removed): check() sets status to UP when json-query finds expected value, check() rejects when json-query value does not match expected value"
+    },
+    {
+      "name": "actually-works",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "every journey answers as it did at baseline on the redeployed app"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "works": true,
+  "testFailures": [],
+  "journeyFailures": [],
+  "journeySignatures": {
+    "home": [
+      "200"
+    ],
+    "api-version": [
+      "200"
+    ],
+    "explore-repos": [
+      "200"
+    ],
+    "explore-users": [
+      "200"
+    ],
+    "login-page": [
+      "200"
+    ],
+    "markdown-render": [
+      "200 html:0e6d6a7b"
+    ]
+  },
+  "newDivergences": [],
+  "observedOk": true,
+  "detail": "service:gitea present; 308 OBSERVED edge(s), 189 fresh; journeys ok; newDivergences=0 (dropped 1 ambient)"
+}

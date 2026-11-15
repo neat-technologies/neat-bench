@@ -1,0 +1,7 @@
+{
+  "deploy": {
+    "ok": false,
+    "detail": "recipe exit 4: l/setup.GoBuild.func1\n[5] go.opentelemetry.io/otelc/tool/internal/setup/lock.go:64 tool/internal/setup.withBuildLock\n[6] go.opentelemetry.io/otelc/tool/internal/setup/setup.go:706 tool/internal/setup.GoBuild\n[7] github.com/urfave/cli/v3@v3.12.0/command_run.go:391 github.com/urfave/cli/v3.(*Command).run\n[8] github.com/urfave/cli/v3@v3.12.0/command_run.go:325 github.com/urfave/cli/v3.(*Command).run\n[9] github.com/urfave/cli/v3@v3.12.0/command_run.go:95 github.com/urfave/cli/v3.(*Command).Run\n[10] go.opentelemetry.io/otelc/tool/cmd/otelc/main.go:114 main.main\n[11] runtime/proc.go:302 runtime.main"
+  },
+  "reusedGateDeploy": false
+}

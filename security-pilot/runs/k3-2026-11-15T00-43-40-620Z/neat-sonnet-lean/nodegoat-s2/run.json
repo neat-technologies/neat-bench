@@ -1,0 +1,164 @@
+{
+  "pins": {
+    "model": "claude-sonnet-5-5",
+    "arm": "neat-sonnet-lean",
+    "lean": true,
+    "app": "nodegoat",
+    "repo": "github.com/OWASP/NodeGoat",
+    "commit": "c5cb68a7084e4ae7dcc60e6a98768720a81841e8",
+    "ecosystem": "npm",
+    "service": "nodegoat",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 2,
+    "node": "v20.20.2",
+    "box": "deniz-MS-7E26",
+    "groundTruthLocked": true,
+    "neatBase": "http://127.0.0.1:36199",
+    "neatCli": "/home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatBin": "node /home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatMcpEntry": "/home/deniz/neat-src/packages/mcp/dist-fixed/index.cjs",
+    "appBase": "http://127.0.0.1:33529",
+    "asOf": "2026-11-15T08:09:55.091Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "security_scan",
+      "get_reachable_cves",
+      "is_reachable",
+      "scan_diff",
+      "get_root_cause",
+      "get_blast_radius",
+      "get_dependencies",
+      "get_incident_card",
+      "recon_qa",
+      "recon_flush",
+      "recon_probe"
+    ],
+    "outcome": {
+      "pass": false,
+      "verdict": "unverified",
+      "unverified": [
+        "no-regression",
+        "not-degenerate"
+      ],
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "pass: underscore@1.13.8 outside GHSA-cf4h-3jhx-xvhq affected range (OSV + scanner agree) | pass: express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | pass: body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | pass: marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | pass: mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | pass: swig removed from the resolved tree; scanner clear (CVE-2023-25345)"
+        },
+        {
+          "name": "no-regression",
+          "verdict": "unverified",
+          "pass": false,
+          "detail": "the app's real suite cannot run in this env (Cypress e2e needs a headless browser); a placeholder ran instead, which certifies nothing"
+        },
+        {
+          "name": "not-degenerate",
+          "verdict": "unverified",
+          "pass": false,
+          "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: Should memo be generated, should have admin user able to login, Should new user be added to the system"
+        },
+        {
+          "name": "actually-works",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "every journey answers as it did at baseline on the redeployed app (NEAT reports 1 new divergence(s), not graded: missing-extracted:file:nodegoat:app/data/user-dao.js->infra:mongodb-collection:$cmd)"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 7.025364,
+      "usage": {
+        "input": 3400637,
+        "output": 22409,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 401450,
+      "phase": {
+        "setupMs": 14089,
+        "baselineMs": 1714,
+        "agentMs": 366852,
+        "redeployMs": 0,
+        "gradeMs": 4662
+      }
+    },
+    "effort": {
+      "turns": 57,
+      "stopReason": "end_turn",
+      "toolCalls": {
+        "get_reachable_cves": 1,
+        "security_scan": 4,
+        "run_shell": 45,
+        "run_tests": 5,
+        "recon_qa": 8,
+        "recon_flush": 2
+      }
+    },
+    "neatUsage": {
+      "get_reachable_cves": 1,
+      "security_scan": 4,
+      "recon_qa": 8,
+      "recon_flush": 2
+    },
+    "lockfilePre": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "lockfilePost": {
+      "file": "package-lock.json",
+      "sha256": "c62b6c15a1c7a3737b50d54147206c69c69d1b5acf5828f6703e53572eef2c72"
+    }
+  },
+  "grade": {
+    "app": "nodegoat",
+    "pass": false,
+    "verdict": "unverified",
+    "unverified": [
+      "no-regression",
+      "not-degenerate"
+    ],
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "pass: underscore@1.13.8 outside GHSA-cf4h-3jhx-xvhq affected range (OSV + scanner agree) | pass: express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | pass: body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | pass: marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | pass: mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | pass: swig removed from the resolved tree; scanner clear (CVE-2023-25345)"
+      },
+      {
+        "name": "no-regression",
+        "verdict": "unverified",
+        "pass": false,
+        "detail": "the app's real suite cannot run in this env (Cypress e2e needs a headless browser); a placeholder ran instead, which certifies nothing"
+      },
+      {
+        "name": "not-degenerate",
+        "verdict": "unverified",
+        "pass": false,
+        "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: Should memo be generated, should have admin user able to login, Should new user be added to the system"
+      },
+      {
+        "name": "actually-works",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "every journey answers as it did at baseline on the redeployed app (NEAT reports 1 new divergence(s), not graded: missing-extracted:file:nodegoat:app/data/user-dao.js->infra:mongodb-collection:$cmd)"
+      }
+    ]
+  }
+}

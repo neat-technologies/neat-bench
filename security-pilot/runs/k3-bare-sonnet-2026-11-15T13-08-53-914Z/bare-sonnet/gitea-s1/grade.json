@@ -1,0 +1,32 @@
+{
+  "app": "gitea",
+  "pass": false,
+  "verdict": "fail",
+  "unverified": [],
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "fail: golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=false) | fail: golang.org/x/net@v0.60.0 still flagged (osvAffected=true, scanner=false)"
+    },
+    {
+      "name": "no-regression",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "baseline-green tests still green"
+    },
+    {
+      "name": "not-degenerate",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "vuln-path tests persist and pass"
+    },
+    {
+      "name": "actually-works",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "every journey answers as it did at baseline on the redeployed app"
+    }
+  ]
+}

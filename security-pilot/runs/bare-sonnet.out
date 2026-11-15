@@ -1,0 +1,55 @@
+bare-sonnet start 2026-11-15T13:08:53Z NEAT_BIN=node /home/deniz/neat-main-1622/packages/core/dist/cli.cjs node=v20.20.2 key_loaded=yes
+=== k=3 SUITE === runLabel=k3-bare-sonnet-2026-11-15T13-08-53-914Z apps=uptime-kuma,nodegoat,paperless-ngx,gitea arms=bare-sonnet
+[runner] worker 0 starting bare-sonnet/uptime-kuma#0 (avail 20.6Gi)
+[runner] done bare-sonnet/uptime-kuma#0: pass=true
+[runner] worker 0 starting bare-sonnet/uptime-kuma#1 (avail 21.1Gi)
+[runner] done bare-sonnet/uptime-kuma#1: pass=true
+[runner] worker 0 starting bare-sonnet/uptime-kuma#2 (avail 21.4Gi)
+[runner] done bare-sonnet/uptime-kuma#2: pass=true
+[runner] worker 0 starting bare-sonnet/nodegoat#0 (avail 21.3Gi)
+[runner] done bare-sonnet/nodegoat#0: pass=false
+[runner] worker 0 starting bare-sonnet/nodegoat#1 (avail 21.3Gi)
+[runner] done bare-sonnet/nodegoat#1: pass=false
+[runner] worker 0 starting bare-sonnet/nodegoat#2 (avail 21.4Gi)
+[runner] done bare-sonnet/nodegoat#2: pass=false
+[runner] worker 0 starting bare-sonnet/paperless-ngx#0 (avail 21.3Gi)
+[runner] done bare-sonnet/paperless-ngx#0: pass=false
+[runner] worker 0 starting bare-sonnet/paperless-ngx#1 (avail 21.6Gi)
+[runner] done bare-sonnet/paperless-ngx#1: pass=false
+[runner] worker 0 starting bare-sonnet/paperless-ngx#2 (avail 21.6Gi)
+[runner] done bare-sonnet/paperless-ngx#2: pass=false
+[runner] worker 0 starting bare-sonnet/gitea#0 (avail 18.8Gi)
+[runner] done bare-sonnet/gitea#0: pass=true
+[runner] worker 0 starting bare-sonnet/gitea#1 (avail 21.2Gi)
+[runner] done bare-sonnet/gitea#1: pass=false
+[runner] worker 0 starting bare-sonnet/gitea#2 (avail 24.8Gi)
+[runner] done bare-sonnet/gitea#2: pass=false
+
+=== k=3 SUITE COMPLETE ===
+uptime-kuma/bare-sonnet pass=true verdict=pass
+   cost=$1.516 turns=19
+uptime-kuma/bare-sonnet pass=true verdict=pass
+   cost=$1.340 turns=19
+uptime-kuma/bare-sonnet pass=true verdict=pass
+   cost=$0.903 turns=14
+nodegoat/bare-sonnet pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$1.031 turns=20
+nodegoat/bare-sonnet pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$1.065 turns=19
+nodegoat/bare-sonnet pass=false verdict=fail unverified=[no-regression,not-degenerate]
+   cost=$1.686 turns=28
+paperless-ngx/bare-sonnet pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$5.761 turns=60
+paperless-ngx/bare-sonnet pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$5.223 turns=60
+paperless-ngx/bare-sonnet pass=false verdict=unverified unverified=[no-regression,not-degenerate]
+   cost=$6.026 turns=60
+gitea/bare-sonnet pass=true verdict=pass
+   cost=$1.132 turns=21
+gitea/bare-sonnet pass=false verdict=fail
+   cost=$1.414 turns=21
+gitea/bare-sonnet pass=false verdict=fail
+   cost=$10.174 turns=60
+
+TOTAL SPEND: $37.27
+artifacts: /home/deniz/neat-bench/security-pilot/runs/k3-bare-sonnet-2026-11-15T13-08-53-914Z

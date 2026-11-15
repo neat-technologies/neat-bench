@@ -1,0 +1,14 @@
+controls start 2026-11-15T00:19:07Z apps=gitea controls=gutted-feature
+
+=== CONTROL gitea/gutted-feature ===
+[controls] gutted-feature script: exit=0
+   [PASS      ] vuln-gone: pass: golang.org/x/net@v0.62.0 outside CVE-2026-78661 affected range (OSV + scanner agree) | pass: golang.org/x/net@v0.62.0 outside CVE-2026-97045 affected range (OSV + scanner agree)
+   [FAIL      ] no-regression: regressed: gitea.dev/modules/markup/markdown TestMathRender/$a$, TestMathRender/$a$, gitea.dev/modules/markup/markdown TestMathRender/$_a_$, TestMathRender/$_a_$, gitea.dev/modules/markup/markdown TestMathRender/$a$$b$, TestMathRender/$a$$b$, gitea.dev/modules
+   [FAIL      ] not-degenerate: vuln-path tests green at baseline now failing (feature broken/removed): TestRender_Commits, TestRender_links, TestRender_emoji, TestSanitizer
+   [FAIL      ] actually-works: journeys that worked at baseline now fail or answer differently: markdown-render changed since baseline (200 html:0e6d6a7b -> 200 html:811c9dc5)
+
+=== CONTROLS COMPLETE ===
+OK       gitea/gutted-feature vuln-gone: expected pass, got pass
+OK       gitea/gutted-feature not-degenerate: expected fail, got fail
+OK       gitea/gutted-feature actually-works: expected fail, got fail
+mismatches=0

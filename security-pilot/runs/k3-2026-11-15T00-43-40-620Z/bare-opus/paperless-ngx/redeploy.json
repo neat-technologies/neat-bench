@@ -1,0 +1,7 @@
+{
+  "deploy": {
+    "ok": false,
+    "detail": "recipe exit 5: ocal/lib/python3.12/site-packages/whitenoise/base.py\", line 263, in scantree\n    yield from scantree(entry.path)\n  File \"/usr/local/lib/python3.12/site-packages/whitenoise/base.py\", line 263, in scantree\n    yield from scantree(entry.path)\n  File \"/usr/local/lib/python3.12/site-packages/whitenoise/base.py\", line 265, in scantree\n    yield entry.path, entry.stat()\n                      ^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/usr/src/paperless/static/rest_framework/docs/css/jquery.json-view.min.css'\n[ERROR] Unexpected exit from worker-1\n[INFO] Shutting down granian"
+  },
+  "reusedGateDeploy": false
+}

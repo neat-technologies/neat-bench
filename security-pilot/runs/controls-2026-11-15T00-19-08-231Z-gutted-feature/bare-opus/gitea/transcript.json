@@ -1,0 +1,6 @@
+[
+  {
+    "role": "user",
+    "content": "[grader control gutted-feature: scripted change, no model call]\nexport PATH=\"$PATH:/usr/local/go/bin\" GOFLAGS=-mod=mod && go get golang.org/x/net@v0.62.0 >/dev/null 2>&1 && go mod tidy >/dev/null 2>&1 && python3 - <<'PY'\nimport re\np = 'modules/markup/sanitizer_default.go'\ns = open(p).read()\nm = re.search(r'func Sanitize\\[T string \\| template\\.HTML\\]\\(s T\\) template\\.HTML \\{\\n', s)\nassert m, 'Sanitize not found'\ns = s[:m.end()] + '\\tif true {\\n\\t\\treturn \"\"\\n\\t}\\n' + s[m.end():]\nm = re.search(r'func SanitizeReader\\(r io\\.Reader, renderer string, w io\\.Writer\\) error \\{\\n', s)\nassert m, 'SanitizeReader not found'\ns = s[:m.end()] + '\\tif true {\\n\\t\\t_, err := io.Copy(io.Discard, r)\\n\\t\\treturn err\\n\\t}\\n' + s[m.end():]\nopen(p, 'w').write(s)\nPY\n---\nexit=0\n\n"
+  }
+]

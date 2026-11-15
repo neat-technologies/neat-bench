@@ -1,0 +1,7 @@
+{
+  "deploy": {
+    "ok": true,
+    "detail": "rebuilt and restarted from the patched checkout"
+  },
+  "reusedGateDeploy": false
+}

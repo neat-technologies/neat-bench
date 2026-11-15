@@ -1,0 +1,173 @@
+{
+  "pins": {
+    "model": "claude-sonnet-5-5",
+    "arm": "neat-sonnet-full",
+    "lean": false,
+    "app": "paperless-ngx",
+    "repo": "github.com/paperless-ngx/paperless-ngx",
+    "commit": "e6253caa198cd6a91f3a4de1eb13799d17dd1c68",
+    "ecosystem": "PyPI",
+    "service": "paperless-ngx",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "uv.lock",
+      "sha256": "c10d14089db02af870f4e7dad7d38192a3e8e41838fbc6f84ea1e864031e288e"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 2,
+    "node": "v20.20.2",
+    "box": "deniz-MS-7E26",
+    "groundTruthLocked": true,
+    "neatBase": "http://127.0.0.1:43409",
+    "neatCli": "/home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatBin": "node /home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatMcpEntry": "/home/deniz/neat-src/packages/mcp/dist-fixed/index.cjs",
+    "appBase": "http://127.0.0.1:39313",
+    "asOf": "2026-11-15T06:20:04.287Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "security_scan",
+      "get_reachable_cves",
+      "is_reachable",
+      "scan_diff",
+      "ask",
+      "get_root_cause",
+      "get_blast_radius",
+      "get_dependencies",
+      "get_observed_dependencies",
+      "expand",
+      "relate",
+      "get_incident_history",
+      "get_incident_card",
+      "investigate",
+      "semantic_search",
+      "get_graph_diff",
+      "get_recent_stale_edges",
+      "get_divergences",
+      "check_policies",
+      "recon_qa",
+      "recon_flush",
+      "recon_probe"
+    ],
+    "outcome": {
+      "pass": false,
+      "verdict": "unverified",
+      "unverified": [
+        "no-regression",
+        "not-degenerate"
+      ],
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "pass: jinja2@3.1.6 outside CVE-2025-27516 affected range (OSV + scanner agree)"
+        },
+        {
+          "name": "no-regression",
+          "verdict": "unverified",
+          "pass": false,
+          "detail": "the app's real suite cannot run in this env (pytest needs the app image dependencies); a placeholder ran instead, which certifies nothing"
+        },
+        {
+          "name": "not-degenerate",
+          "verdict": "unverified",
+          "pass": false,
+          "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+        },
+        {
+          "name": "actually-works",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "every journey answers as it did at baseline on the redeployed app"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 17.238039999999998,
+      "usage": {
+        "input": 8535315,
+        "output": 16741,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 1420356,
+      "phase": {
+        "setupMs": 140650,
+        "baselineMs": 3447,
+        "agentMs": 1148917,
+        "redeployMs": 53311,
+        "gradeMs": 37908
+      }
+    },
+    "effort": {
+      "turns": 60,
+      "stopReason": "max-turns",
+      "toolCalls": {
+        "get_reachable_cves": 1,
+        "security_scan": 1,
+        "check_policies": 1,
+        "run_shell": 59,
+        "run_tests": 1
+      }
+    },
+    "neatUsage": {
+      "get_reachable_cves": 1,
+      "security_scan": 1,
+      "check_policies": 1
+    },
+    "lockfilePre": {
+      "file": "uv.lock",
+      "sha256": "c10d14089db02af870f4e7dad7d38192a3e8e41838fbc6f84ea1e864031e288e"
+    },
+    "lockfilePost": {
+      "file": "uv.lock",
+      "sha256": "3fbb946f98cd25afd6ad0557389568633ec394bba4258dbfd8d1423aaddad829"
+    }
+  },
+  "grade": {
+    "app": "paperless-ngx",
+    "pass": false,
+    "verdict": "unverified",
+    "unverified": [
+      "no-regression",
+      "not-degenerate"
+    ],
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "pass: jinja2@3.1.6 outside CVE-2025-27516 affected range (OSV + scanner agree)"
+      },
+      {
+        "name": "no-regression",
+        "verdict": "unverified",
+        "pass": false,
+        "detail": "the app's real suite cannot run in this env (pytest needs the app image dependencies); a placeholder ran instead, which certifies nothing"
+      },
+      {
+        "name": "not-degenerate",
+        "verdict": "unverified",
+        "pass": false,
+        "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+      },
+      {
+        "name": "actually-works",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "every journey answers as it did at baseline on the redeployed app"
+      }
+    ]
+  }
+}

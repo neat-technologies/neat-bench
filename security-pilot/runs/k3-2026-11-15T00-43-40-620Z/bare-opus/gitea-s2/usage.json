@@ -1,0 +1,17 @@
+{
+  "usage": {
+    "input": 4070416,
+    "output": 20825,
+    "cacheRead": 0,
+    "cacheCreation": 0
+  },
+  "costUsd": 16.698164,
+  "turns": 60,
+  "stopReason": "max-turns",
+  "wallMs": 1745874,
+  "toolCalls": {
+    "run_shell": 62,
+    "osv_scan": 2,
+    "run_tests": 2
+  }
+}

@@ -1,0 +1,39 @@
+{
+ "note": "captured by an out-of-harness watcher during the grading window; a separate sample of the same journeys against the same redeployed app",
+ "capturedAt": "2026-11-15T01:58:29Z",
+ "appPort": 33093,
+ "tree": "nodegoat-bare-opus-gctKt8",
+ "redeployWrittenAt": "2026-11-15T01:58:20Z",
+ "gradeExistedWhenProbeEnded": true,
+ "probeSeconds": 6.9,
+ "failures": [],
+ "signatures": {
+  "home": [
+   "302"
+  ],
+  "tutorial": [
+   "200"
+  ],
+  "login-get": [
+   "200"
+  ],
+  "login-post-wrong": [
+   "200"
+  ],
+  "signup-get": [
+   "200"
+  ],
+  "contributions": [
+   "302"
+  ],
+  "memos": [
+   "302"
+  ],
+  "authed-session": [
+   "302 login:302,/dashboard:200,/profile:200,/contributions:200,/memos:200,/allocations/2:200,post-contributions:200"
+  ],
+  "profile-get": [
+   "302"
+  ]
+ }
+}

@@ -1,0 +1,35 @@
+{
+  "app": "paperless-ngx",
+  "pass": false,
+  "verdict": "fail",
+  "unverified": [
+    "no-regression",
+    "not-degenerate"
+  ],
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "pass: jinja2@3.1.6 outside CVE-2025-27516 affected range (OSV + scanner agree)"
+    },
+    {
+      "name": "no-regression",
+      "verdict": "unverified",
+      "pass": false,
+      "detail": "the app's real suite cannot run in this env (pytest needs the app image dependencies); a placeholder ran instead, which certifies nothing"
+    },
+    {
+      "name": "not-degenerate",
+      "verdict": "unverified",
+      "pass": false,
+      "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: test_dynamic_path, test_dynamic_path_with_none, test_dynamic_path_remove_none, test_test_storage_path"
+    },
+    {
+      "name": "actually-works",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "the patched checkout could not be rebuilt and restarted: ase.py\", line 265, in scantree\n    yield entry.path, entry.stat()\n                      ^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/usr/src/paperless/static/rest_framework/docs/css/jquery.json-view.min.css'\n[ERROR] Unexpected exit from worker-1\n[INFO] Shutting down granian"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "pins": {
+    "model": "claude-sonnet-5-5",
+    "arm": "bare-sonnet",
+    "lean": false,
+    "app": "gitea",
+    "repo": "github.com/go-gitea/gitea",
+    "commit": "829b49c1ae96015e345f9d2a0eb1ea7acd5f31e1",
+    "ecosystem": "Go",
+    "service": "gitea",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 2,
+    "node": "v20.20.2",
+    "box": "deniz-MS-7E26",
+    "groundTruthLocked": true,
+    "neatBase": null,
+    "neatCli": "/home/deniz/neat-main-1622/packages/core/dist/cli.cjs",
+    "neatBin": "node /home/deniz/neat-main-1622/packages/core/dist/cli.cjs",
+    "neatMcpEntry": "/home/deniz/neat-main-1622/packages/mcp/dist/index.cjs",
+    "appBase": "http://127.0.0.1:37177",
+    "asOf": "2026-11-15T15:04:55.378Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "npm_audit",
+      "pip_audit",
+      "osv_scan"
+    ],
+    "outcome": {
+      "pass": false,
+      "verdict": "fail",
+      "unverified": [],
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "pass: golang.org/x/net@v0.62.0 outside CVE-2026-78661 affected range (OSV + scanner agree) | pass: golang.org/x/net@v0.62.0 outside CVE-2026-97045 affected range (OSV + scanner agree)"
+        },
+        {
+          "name": "no-regression",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "baseline-green tests still green"
+        },
+        {
+          "name": "not-degenerate",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "vuln-path tests persist and pass"
+        },
+        {
+          "name": "actually-works",
+          "verdict": "fail",
+          "pass": false,
+          "detail": "the patched checkout could not be rebuilt and restarted: run\n[8] github.com/urfave/cli/v3@v3.12.0/command_run.go:325 github.com/urfave/cli/v3.(*Command).run\n[9] github.com/urfave/cli/v3@v3.12.0/command_run.go:95 github.com/urfave/cli/v3.(*Command).Run\n[10] go.opentelemetry.io/otelc/tool/cmd/otelc/main.go:114 main.main\n[11] runtime/proc.go:302 runtime.main"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 10.174437999999999,
+      "usage": {
+        "input": 4961694,
+        "output": 25105,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 484853,
+      "phase": {
+        "setupMs": 148232,
+        "baselineMs": 3536,
+        "agentMs": 301273,
+        "redeployMs": 25704,
+        "gradeMs": 3721
+      }
+    },
+    "effort": {
+      "turns": 60,
+      "stopReason": "max-turns",
+      "toolCalls": {
+        "run_shell": 60,
+        "osv_scan": 1,
+        "read_file": 1,
+        "bash": 1
+      }
+    },
+    "neatUsage": {},
+    "lockfilePre": {
+      "file": "go.sum",
+      "sha256": "1892d7345be5a76ee82210f56cfd877a6dabfe7f94d29e05ae8b21fe57c0ee5d"
+    },
+    "lockfilePost": {
+      "file": "go.sum",
+      "sha256": "4bbdb9050089df8409db1ba0a801a3d150e430bc56f006a4287e68bcecf6b08b"
+    }
+  },
+  "grade": {
+    "app": "gitea",
+    "pass": false,
+    "verdict": "fail",
+    "unverified": [],
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "pass: golang.org/x/net@v0.62.0 outside CVE-2026-78661 affected range (OSV + scanner agree) | pass: golang.org/x/net@v0.62.0 outside CVE-2026-97045 affected range (OSV + scanner agree)"
+      },
+      {
+        "name": "no-regression",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "baseline-green tests still green"
+      },
+      {
+        "name": "not-degenerate",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "vuln-path tests persist and pass"
+      },
+      {
+        "name": "actually-works",
+        "verdict": "fail",
+        "pass": false,
+        "detail": "the patched checkout could not be rebuilt and restarted: run\n[8] github.com/urfave/cli/v3@v3.12.0/command_run.go:325 github.com/urfave/cli/v3.(*Command).run\n[9] github.com/urfave/cli/v3@v3.12.0/command_run.go:95 github.com/urfave/cli/v3.(*Command).Run\n[10] go.opentelemetry.io/otelc/tool/cmd/otelc/main.go:114 main.main\n[11] runtime/proc.go:302 runtime.main"
+      }
+    ]
+  }
+}

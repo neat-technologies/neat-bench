@@ -1,0 +1,6 @@
+{
+  "cmd": "govulncheck -json ./...",
+  "code": 1,
+  "stdout": "{\n  \"config\": {\n    \"protocol_version\": \"v1.0.0\",\n    \"scanner_name\": \"govulncheck\",\n    \"scanner_version\": \"v1.9.0\",\n    \"db\": \"https://vuln.go.dev\",\n    \"db_last_modified\": \"2026-11-11T02:51:11Z\",\n    \"go_version\": \"go1.27.2\",\n    \"scan_level\": \"symbol\",\n    \"scan_mode\": \"source\"\n  }\n}\n",
+  "stderr": "govulncheck: loading packages: \nThere are errors with the provided package patterns:\n\n/home/deniz/neat-bench/security-pilot/runs/_trees/gitea-bare-opus-mirGKW/main.go:60:34: expected ')', found '{'\n/home/deniz/neat-bench/security-pilot/runs/_trees/gitea-bare-opus-mirGKW/main.go:60:36: expected ')', found 'EOF'\n/home/deniz/neat-bench/security-pilot/runs/_trees/gitea-bare-opus-mirGKW/main.go:60:36: expected ';', found 'EOF'\n/home/deniz/neat-bench/security-pilot/runs/_trees/gitea-bare-opus-mirGKW/main.go:60:36: missing ',' in parameter list\n\nFor details on package patterns, see https://pkg.go.dev/cmd/go#hdr-Package_lists_and_patterns.\n\n"
+}

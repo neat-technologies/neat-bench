@@ -1,0 +1,6 @@
+{
+  "testCmd": "pytest src/documents/tests/test_file_handling.py src/documents/tests/test_api_objects.py",
+  "baselineGreen": [],
+  "postPatchGreen": [],
+  "regressed": []
+}

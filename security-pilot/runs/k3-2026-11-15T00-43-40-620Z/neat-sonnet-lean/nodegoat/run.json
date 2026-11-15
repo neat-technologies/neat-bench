@@ -1,0 +1,167 @@
+{
+  "pins": {
+    "model": "claude-sonnet-5-5",
+    "arm": "neat-sonnet-lean",
+    "lean": true,
+    "app": "nodegoat",
+    "repo": "github.com/OWASP/NodeGoat",
+    "commit": "c5cb68a7084e4ae7dcc60e6a98768720a81841e8",
+    "ecosystem": "npm",
+    "service": "nodegoat",
+    "neatVersion": "0.11.0",
+    "benchNeatSha": "eb330c2f382f",
+    "lockfile": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "effort": "high",
+    "maxTurns": 60,
+    "taskBudgetTokens": 500000,
+    "seed": 0,
+    "node": "v20.20.2",
+    "box": "deniz-MS-7E26",
+    "groundTruthLocked": true,
+    "neatBase": "http://127.0.0.1:43153",
+    "neatCli": "/home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatBin": "node /home/deniz/neat-src/packages/core/dist-fixed/cli.cjs",
+    "neatMcpEntry": "/home/deniz/neat-src/packages/mcp/dist-fixed/index.cjs",
+    "appBase": "http://127.0.0.1:34993",
+    "asOf": "2026-11-15T07:57:53.588Z"
+  },
+  "metrics": {
+    "toolSurface": [
+      "run_shell",
+      "read_file",
+      "write_file",
+      "run_tests",
+      "security_scan",
+      "get_reachable_cves",
+      "is_reachable",
+      "scan_diff",
+      "get_root_cause",
+      "get_blast_radius",
+      "get_dependencies",
+      "get_incident_card",
+      "recon_qa",
+      "recon_flush",
+      "recon_probe"
+    ],
+    "outcome": {
+      "pass": false,
+      "verdict": "unverified",
+      "unverified": [
+        "no-regression",
+        "not-degenerate"
+      ],
+      "criteria": [
+        {
+          "name": "vuln-gone",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "pass: underscore@1.13.8 outside GHSA-cf4h-3jhx-xvhq affected range (OSV + scanner agree) | pass: express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | pass: body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | pass: marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | pass: mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | pass: swig removed from the resolved tree; scanner clear (CVE-2023-25345)"
+        },
+        {
+          "name": "no-regression",
+          "verdict": "unverified",
+          "pass": false,
+          "detail": "the app's real suite cannot run in this env (Cypress e2e needs a headless browser); a placeholder ran instead, which certifies nothing"
+        },
+        {
+          "name": "not-degenerate",
+          "verdict": "unverified",
+          "pass": false,
+          "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: Should memo be generated, should have admin user able to login, Should new user be added to the system"
+        },
+        {
+          "name": "actually-works",
+          "verdict": "pass",
+          "pass": true,
+          "detail": "every journey answers as it did at baseline on the redeployed app (NEAT reports 1 new divergence(s), not graded: missing-extracted:file:nodegoat:app/data/user-dao.js->infra:mongodb-collection:$cmd)"
+        }
+      ]
+    },
+    "cost": {
+      "usd": 5.619928,
+      "usage": {
+        "input": 2731544,
+        "output": 15684,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      }
+    },
+    "time": {
+      "totalMs": 510745,
+      "phase": {
+        "setupMs": 14235,
+        "baselineMs": 1838,
+        "agentMs": 461721,
+        "redeployMs": 12875,
+        "gradeMs": 4650
+      }
+    },
+    "effort": {
+      "turns": 60,
+      "stopReason": "max-turns",
+      "toolCalls": {
+        "get_reachable_cves": 1,
+        "security_scan": 3,
+        "run_shell": 50,
+        "read_file": 1,
+        "run_tests": 3,
+        "recon_qa": 8,
+        "recon_flush": 1,
+        "recon_probe": 1
+      }
+    },
+    "neatUsage": {
+      "get_reachable_cves": 1,
+      "security_scan": 3,
+      "recon_qa": 8,
+      "recon_flush": 1,
+      "recon_probe": 1
+    },
+    "lockfilePre": {
+      "file": "package-lock.json",
+      "sha256": "b9ed49893a9d3bcf6fe567cd38fe8168850591e0018f19d3bb0d1f80a4c2eecc"
+    },
+    "lockfilePost": {
+      "file": "package-lock.json",
+      "sha256": "e27c17082d210ee090b428b697df4b9b957dd42d742bc931fe05e9d54fb7c9e0"
+    }
+  },
+  "grade": {
+    "app": "nodegoat",
+    "pass": false,
+    "verdict": "unverified",
+    "unverified": [
+      "no-regression",
+      "not-degenerate"
+    ],
+    "criteria": [
+      {
+        "name": "vuln-gone",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "pass: underscore@1.13.8 outside GHSA-cf4h-3jhx-xvhq affected range (OSV + scanner agree) | pass: express@4.22.3 outside CVE-2024-29041 affected range (OSV + scanner agree) | pass: body-parser@1.20.9 outside CVE-2024-45590 affected range (OSV + scanner agree) | pass: marked@4.3.0 outside CVE-2022-21680 affected range (OSV + scanner agree) | pass: mongodb@3.7.4 outside GHSA-mh5c-679w-hh4r affected range (OSV + scanner agree) | pass: swig removed from the resolved tree; scanner clear (CVE-2023-25345)"
+      },
+      {
+        "name": "no-regression",
+        "verdict": "unverified",
+        "pass": false,
+        "detail": "the app's real suite cannot run in this env (Cypress e2e needs a headless browser); a placeholder ran instead, which certifies nothing"
+      },
+      {
+        "name": "not-degenerate",
+        "verdict": "unverified",
+        "pass": false,
+        "detail": "no vuln-path test was green at baseline in this env, so the feature cannot be guarded: Should memo be generated, should have admin user able to login, Should new user be added to the system"
+      },
+      {
+        "name": "actually-works",
+        "verdict": "pass",
+        "pass": true,
+        "detail": "every journey answers as it did at baseline on the redeployed app (NEAT reports 1 new divergence(s), not graded: missing-extracted:file:nodegoat:app/data/user-dao.js->infra:mongodb-collection:$cmd)"
+      }
+    ]
+  }
+}

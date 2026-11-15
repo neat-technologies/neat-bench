@@ -1,0 +1,34 @@
+{
+  "works": true,
+  "testFailures": [],
+  "journeyFailures": [],
+  "journeySignatures": {
+    "root": [
+      "302"
+    ],
+    "login-page": [
+      "200"
+    ],
+    "api-root": [
+      "302"
+    ],
+    "api-documents": [
+      "401"
+    ],
+    "api-storage-paths": [
+      "401"
+    ],
+    "health": [
+      "401"
+    ],
+    "documents-authed": [
+      "200 count"
+    ],
+    "storage-path-render": [
+      "200 render:6b4a6d31"
+    ]
+  },
+  "newDivergences": [],
+  "observedOk": true,
+  "detail": "service:paperless-ngx present; 195 OBSERVED edge(s), 36 fresh; journeys ok; newDivergences=0 (dropped 1 ambient)"
+}

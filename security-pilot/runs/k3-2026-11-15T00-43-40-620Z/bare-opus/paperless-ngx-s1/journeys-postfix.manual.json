@@ -1,0 +1,36 @@
+{
+ "note": "captured by an out-of-harness watcher during the grading window; a separate sample of the same journeys against the same redeployed app",
+ "capturedAt": "2026-11-15T02:54:24Z",
+ "appPort": 43157,
+ "tree": "paperless-ngx-bare-opus-abATqz",
+ "redeployWrittenAt": "2026-11-15T02:54:20Z",
+ "gradeExistedWhenProbeEnded": false,
+ "probeSeconds": 2.4,
+ "failures": [],
+ "signatures": {
+  "root": [
+   "302"
+  ],
+  "login-page": [
+   "200"
+  ],
+  "api-root": [
+   "302"
+  ],
+  "api-documents": [
+   "401"
+  ],
+  "api-storage-paths": [
+   "401"
+  ],
+  "health": [
+   "401"
+  ],
+  "documents-authed": [
+   "200 count"
+  ],
+  "storage-path-render": [
+   "200 render:6b4a6d31"
+  ]
+ }
+}

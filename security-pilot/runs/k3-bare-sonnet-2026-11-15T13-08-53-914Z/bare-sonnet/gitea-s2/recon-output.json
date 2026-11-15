@@ -1,0 +1,41 @@
+{
+  "works": false,
+  "testFailures": [],
+  "journeyFailures": [
+    "home fetch failed",
+    "api-version fetch failed",
+    "explore-repos fetch failed",
+    "explore-users fetch failed",
+    "login-page fetch failed",
+    "markdown-render threw: fetch failed",
+    "home changed since baseline (200 -> no-response)",
+    "api-version changed since baseline (200 -> no-response)",
+    "explore-repos changed since baseline (200 -> no-response)",
+    "explore-users changed since baseline (200 -> no-response)",
+    "login-page changed since baseline (200 -> no-response)",
+    "markdown-render changed since baseline (200 html:0e6d6a7b -> threw)"
+  ],
+  "journeySignatures": {
+    "home": [
+      "no-response"
+    ],
+    "api-version": [
+      "no-response"
+    ],
+    "explore-repos": [
+      "no-response"
+    ],
+    "explore-users": [
+      "no-response"
+    ],
+    "login-page": [
+      "no-response"
+    ],
+    "markdown-render": [
+      "threw"
+    ]
+  },
+  "newDivergences": [],
+  "observedOk": true,
+  "detail": "bare arm: journeys-only (no NEAT graph); journeys failed; newDivergences=0"
+}

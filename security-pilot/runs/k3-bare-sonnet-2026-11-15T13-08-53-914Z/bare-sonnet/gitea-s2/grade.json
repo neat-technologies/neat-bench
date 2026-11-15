@@ -1,0 +1,32 @@
+{
+  "app": "gitea",
+  "pass": false,
+  "verdict": "fail",
+  "unverified": [],
+  "criteria": [
+    {
+      "name": "vuln-gone",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "pass: golang.org/x/net@v0.62.0 outside CVE-2026-78661 affected range (OSV + scanner agree) | pass: golang.org/x/net@v0.62.0 outside CVE-2026-97045 affected range (OSV + scanner agree)"
+    },
+    {
+      "name": "no-regression",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "baseline-green tests still green"
+    },
+    {
+      "name": "not-degenerate",
+      "verdict": "pass",
+      "pass": true,
+      "detail": "vuln-path tests persist and pass"
+    },
+    {
+      "name": "actually-works",
+      "verdict": "fail",
+      "pass": false,
+      "detail": "the patched checkout could not be rebuilt and restarted: run\n[8] github.com/urfave/cli/v3@v3.12.0/command_run.go:325 github.com/urfave/cli/v3.(*Command).run\n[9] github.com/urfave/cli/v3@v3.12.0/command_run.go:95 github.com/urfave/cli/v3.(*Command).Run\n[10] go.opentelemetry.io/otelc/tool/cmd/otelc/main.go:114 main.main\n[11] runtime/proc.go:302 runtime.main"
+    }
+  ]
+}
