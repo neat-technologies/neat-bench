@@ -4,7 +4,7 @@ Refs neat-technologies/neat-bench#23. A development experiment, not a result. No
 
 ## The question
 
-NEAT loads the same context into every session whatever the task: 28 tool descriptions, the graph-first directive, and the search nudge on every grep. The working premise from Deniz and the CTO is that this makes the agent slow on small fixes. It starts at the library entrance with a 30-floor map when the book is in the next room.
+NEAT loads the same context into every session whatever the task: 28 tool descriptions, the graph-first directive, and the search nudge on every grep. The team's working premise is that this makes the agent slow on small fixes. It starts at the library entrance with a 30-floor map when the book is in the next room.
 
 The one clean pair we have agrees on cost, though not cleanly. On express B2 (`results/express-B2`), both arms made the same one-line fix in the same file. The NEAT arm cost $0.185 against $0.059, took one more turn, and made zero NEAT calls.
 - **What the gap is mostly cache writes:** 17,968 tokens against 1,415. The run without NEAT evidently found its setup already cached from an earlier run; the NEAT run's setup was new and had to be written fresh.
@@ -72,9 +72,9 @@ These are deliberate and scoped to the bench. Nothing here ships to the product 
 
 | Rule | What it says | How this breaks it | Making it permanent needs |
 |---|---|---|---|
-| No model calls: `docs/contracts/llm-policy.md` (ADR-084/086), README "method, not model", `docs/direction.md` | No NEAT process makes an LLM or model call | The router calls Jev, a hosted model, for every task | An ADR amending llm-policy, or keeping the router hosted-only (Sniper already runs Jev server-side) |
+| No model calls: `docs/contracts/llm-policy.md` (ADR-084/086), README "method, not model", `docs/direction.md` | No NEAT process makes an LLM or model call | The router calls Jev, a hosted model, for every task | An ADR amending llm-policy, or keeping the router hosted-only |
 | Graph first: `docs/direction.md` rule 3 | Ask NEAT every time, then grep | The small and medium tiers drop the directive and the nudge | An ADR making rule 3 depend on task size |
-| The request stays local (implicit today) | Nothing NEAT does sends the developer's prompt off the machine | The request and graph summary go to TypeSafe | An egress disclosure like the one hosted Sniper carries, plus a no-retention agreement |
+| The request stays local (implicit today) | Nothing NEAT does sends the developer's prompt off the machine | The request and graph summary go to TypeSafe | An egress disclosure, plus a no-retention agreement |
 
 The bench targets are public repositories, so nothing private reaches TypeSafe in this experiment.
 
