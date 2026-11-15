@@ -110,6 +110,18 @@ export function bareScannerTools(ctx: TrialContext): ToolDef[] {
       },
     },
     {
+      // Go's own scanner, the counterpart of npm_audit and pip_audit. Without it a bare arm on a Go
+      // app has only osv_scan, which reports the app's own advisories by commit hash and says
+      // nothing about its module dependencies. Text output: `-json` streams the whole OSV database.
+      name: 'govulncheck',
+      description: 'Run `govulncheck ./...` in the checkout (Go projects). Returns the vulnerabilities in the module dependencies that the code can reach, with call traces.',
+      input_schema: { type: 'object', properties: {}, additionalProperties: false },
+      run: async () => {
+        const r = await sh('govulncheck ./...', ctx.treePath, ctx.securityTimeoutMs)
+        return { content: clip(r.stdout || r.stderr), isError: !r.stdout }
+      },
+    },
+    {
       name: 'osv_scan',
       description: 'Run osv-scanner over the checkout (any ecosystem). Returns the OSV scan JSON.',
       input_schema: { type: 'object', properties: {}, additionalProperties: false },

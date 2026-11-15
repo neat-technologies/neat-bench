@@ -23,12 +23,16 @@ import { runTests, runTestsDetailed, resolveInstalledVersion, osvAffected_, runS
 import { standUp, BENCH_NEAT_SHA } from './standup.js'
 import { advisoryHomeFor } from './advisory-home.js'
 
+// The scope is third-party dependencies, said outright. Left unsaid, an arm whose scanner flags the
+// app's own advisories by commit hash (osv-scanner does, on gitea) sets out to fix those instead,
+// and the arms end up working on different problems (RESULTS-2026-11-15.md, "gitea").
 const TASK =
-  'Remove the reachable vulnerabilities from this app without breaking it or violating its policies.'
+  "Remove the reachable vulnerabilities in this app's third-party dependencies without breaking it or violating its policies."
 
 const SYSTEM = `You are a senior engineer fixing security vulnerabilities in a real application checkout.
-Your job: remove the vulnerabilities that are actually reachable in this app, without breaking the app
-or violating its policies, and without churning dependencies that do not need to change.
+Your job: remove the vulnerabilities in this app's third-party dependencies that are actually reachable
+from its code, without breaking the app or violating its policies, and without churning dependencies
+that do not need to change. Advisories against the application's own code are out of scope.
 Work in the checkout directory using the available tools.
 Before you stop, VERIFY the fix end to end: confirm the application still works (use recon_qa to drive
 its journeys if you have it, otherwise exercise the app yourself) AND run the project's test suite
@@ -123,11 +127,26 @@ export class FreshProvisioner implements Provisioner {
       }
       throw new Error(`${label} failed after 4 attempts: ${last.stderr.slice(-400)}`)
     }
-    await gitStep(`git clone --no-checkout ${item.repoUrl} .`, 600_000, 'git clone', true)
-    let r = await sh(`git fetch --depth 1 origin ${item.commit}`, treePath, 600_000)
-    if (r.code !== 0) await gitStep(`git fetch origin ${item.commit}`, 600_000, 'git fetch')
-    r = await sh(`git checkout ${item.commit}`, treePath, 120_000)
+    // Only the pinned commit, with no history behind it and none ahead of it. A full clone carries
+    // every later upstream commit, including the one that fixes the target, and an agent that
+    // reads git history then has the answer in its checkout (RESULTS-2026-11-15.md, "gitea").
+    // The remote is removed afterwards so a bare `git fetch` cannot bring the history back.
+    await gitStep(
+      `git init -q . && git remote add origin ${item.repoUrl} && git fetch -q --depth 1 --no-tags origin ${item.commit}`,
+      600_000,
+      'git fetch (pinned commit only)',
+      true,
+    )
+    let r = await sh('git checkout -q --detach FETCH_HEAD && git remote remove origin', treePath, 120_000)
     if (r.code !== 0) throw new Error(`git checkout ${item.commit} failed: ${r.stderr.slice(-400)}`)
+    // Refuse to run a trial on a checkout that holds anything but the pinned commit.
+    r = await sh('git rev-parse HEAD && git rev-list --all | wc -l && git tag | wc -l && git remote | wc -l', treePath, 60_000)
+    const [head, commits, tags, remotes] = r.stdout.trim().split(/\s+/)
+    if (r.code !== 0 || head !== item.commit || commits !== '1' || tags !== '0' || remotes !== '0') {
+      throw new Error(
+        `checkout is not the pinned commit alone (head=${head}, commits=${commits}, tags=${tags}, remotes=${remotes}); expected ${item.commit}, 1, 0, 0`,
+      )
+    }
 
     // Stand the app up FRESH + instrumented and drive baseline traffic so OBSERVED materializes.
     //   NEAT arm: a MAIN-build `neat watch` daemon on the checkout (EXTRACTED + OBSERVED fused),
