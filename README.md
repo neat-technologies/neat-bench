@@ -4,6 +4,13 @@
 
 It is **one rig, a dashboard of numbers** — not a single score. The rig: a same-model agent, run **±NEAT**, against **certified walls** (tasks whose answer is provably *not* in the source, only in runtime behaviour), scored by **objective oracles**. The keystone is model-free.
 
+## Security bench (start here to re-run it)
+
+The security-remediation bench lives in [`security-pilot/`](security-pilot/): real open-source apps at a commit with a real CVE, an agent with and without NEAT, and a grader that does not depend on NEAT.
+
+- Latest runs and what they do and do not show: [`security-pilot/RESULTS-2026-11-15.md`](security-pilot/RESULTS-2026-11-15.md)
+- Standing it up on a new machine and re-running it: [`security-pilot/REPRODUCE.md`](security-pilot/REPRODUCE.md)
+
 ## Why this exists
 
 An earlier fixture ([`neat-agent-bench`](../neat-agent-bench)) tied on correctness because its target was *legible* — a strong agent read its way through. The lesson: NEAT's edge only appears where reading the source **cannot** get you there. So this benchmark measures exactly that boundary, and refuses to count anything that isn't on it.
