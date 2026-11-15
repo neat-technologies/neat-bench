@@ -38,6 +38,12 @@ if [ "${RESTART:-0}" = 1 ]; then
   step "redeploy: sync patched uv.lock into $APP_CONT"
   docker exec "$APP_CONT" sh -lc 'cd /checkout && (timeout 180 uv export --frozen --no-dev --no-hashes --no-emit-project --format requirements-txt -o /tmp/neat-redeploy.txt 2>/tmp/neat-redeploy.err || timeout 180 uv export --frozen --no-hashes --no-emit-project -o /tmp/neat-redeploy.txt 2>>/tmp/neat-redeploy.err) && timeout 900 uv pip install --system --no-cache -r /tmp/neat-redeploy.txt' > "$WORK/logs/redeploy-sync.log" 2>&1 \
     || { step "REDEPLOY SYNC FAILED (patched lock does not install)"; docker exec "$APP_CONT" sh -lc 'tail -5 /tmp/neat-redeploy.err' 2>/dev/null; tail -25 "$WORK/logs/redeploy-sync.log"; exit 6; }
+  # The image collects static files at build time as symlinks into site-packages. A dependency
+  # upgrade that moves or drops a package's static files leaves those links dangling, and whitenoise
+  # refuses to boot. A real deploy rebuilds the image, which re-runs collectstatic; do the same here.
+  step "redeploy: re-collect static files against the synced packages"
+  docker exec "$APP_CONT" sh -lc 'cd /usr/src/paperless/src && python3 manage.py collectstatic --clear --no-input --link' > "$WORK/logs/redeploy-static.log" 2>&1 \
+    || { step "REDEPLOY collectstatic FAILED"; tail -25 "$WORK/logs/redeploy-static.log"; exit 6; }
   docker restart "$APP_CONT" >/dev/null 2>&1 || { step "container restart FAILED"; exit 6; }
   for i in $(seq 1 120); do curl -sf -o /dev/null -u admin:changeme "http://127.0.0.1:$APP_PORT/api/" && break; sleep 3; done
   code="$(curl -s -o /dev/null -w '%{http_code}' -u admin:changeme "http://127.0.0.1:$APP_PORT/api/")"

@@ -94,13 +94,24 @@ function scripted(control: Control) {
   }
 }
 
+// Replay: re-grade a change an agent already made, by applying its saved patch as the scripted
+// change. Used when a trial's grade was decided by a bench fault that has since been fixed, so the
+// same fix is graded again under the corrected bench rather than replaced by a new sample.
+// REPLAY_APP=<app> REPLAY_PATCH=<abs path> [REPLAY_ARM=<arm id, default the bare arm>]
+if (process.env.REPLAY_APP && process.env.REPLAY_PATCH) {
+  const app = process.env.REPLAY_APP
+  CONTROLS[app] = [{ name: `replay-${path.basename(process.env.REPLAY_PATCH, '.patch')}`, script: `git apply --binary "${process.env.REPLAY_PATCH}"`, expect: {} }]
+  process.env.CONTROL_APPS = app
+  process.env.CONTROL_NAMES = ''
+}
+
 async function main() {
   const apps = (process.env.CONTROL_APPS ?? Object.keys(CONTROLS).join(',')).split(',').filter(Boolean)
   const only = (process.env.CONTROL_NAMES ?? '').split(',').filter(Boolean)
   const runsRoot = path.resolve(process.env.DRY_RUNS_ROOT ?? 'runs')
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
   // The bare arm: controls need no NEAT, and the grader is the same for every arm.
-  const arm = ARMS.find((a) => !a.neat)!
+  const arm = ARMS.find((a) => (process.env.REPLAY_ARM ? a.id === process.env.REPLAY_ARM : !a.neat))!
   const rows: string[] = []
   let mismatches = 0
   for (const app of apps) {
