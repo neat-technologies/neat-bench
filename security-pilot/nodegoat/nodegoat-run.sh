@@ -49,7 +49,7 @@ step "login page: $(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4102
 # Traffic: log in as a seeded user, walk the app (reads + writes), hit research (outbound).
 J=$T/cookies.txt; rm -f $J
 C="curl -s -o /dev/null -b $J -c $J -w %{http_code}"
-echo "login $($C -X POST -d 'userName=user1&password=<redacted>' http://127.0.0.1:4102/login)"
+echo "login $($C -X POST -d 'userName=user1&password=User1_123' http://127.0.0.1:4102/login)"
 for p in /dashboard /profile /contributions /allocations/2 /memos /learn /benefits; do echo "GET $p $($C http://127.0.0.1:4102$p)"; done
 echo "POST /contributions $($C -X POST -d 'preTax=2&afterTax=2&roth=2' http://127.0.0.1:4102/contributions)"
 echo "POST /memos $($C -X POST -d 'memo=hello' http://127.0.0.1:4102/memos)"

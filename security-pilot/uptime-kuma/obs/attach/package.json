@@ -1,0 +1,15 @@
+{
+  "name": "attach",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@neat.is/otel-node": "file:../../../otel-node-main-c30aafa.tgz"
+  }
+}

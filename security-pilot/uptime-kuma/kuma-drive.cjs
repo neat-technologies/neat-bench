@@ -16,8 +16,8 @@ s.on('connect', async () => {
   let need = 'TIMEOUT'
   for (let i = 0; i < 10 && need === 'TIMEOUT'; i++) need = await call('needSetup')
   log('needSetup', need)
-  if (need === true) log('setup', await call('setup', 'admin', 'changeme'))
-  log('login', await call('login', { username: 'admin', password: 'changeme', token: '' }))
+  if (need === true) log('setup', await call('setup', 'admin', 'Pilot-pass-1'))
+  log('login', await call('login', { username: 'admin', password: 'Pilot-pass-1', token: '' }))
   log('add', await call('add', {
     type: 'http', name: 'example', url: 'https://example.com', method: 'GET', interval: 20, retryInterval: 20,
     maxretries: 0, timeout: 10, accepted_statuscodes: ['200-299'], notificationIDList: {}, ignoreTls: false,
