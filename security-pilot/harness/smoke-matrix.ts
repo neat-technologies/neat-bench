@@ -58,16 +58,16 @@ function cannedArgs(tool: ToolDef): any {
 
 async function stubAgent(arm: Arm, tools: ToolDef[], ctx: TrialContext): Promise<AgentResult> {
   const toolCalls: Record<string, number> = {}
-  const report: { name: string; isError: boolean; preview: string }[] = []
+  const report: { name: string; isError: boolean; chars: number; preview: string }[] = []
   for (const t of tools) {
     const args = cannedArgs(t)
     if (t.name === 'write_file') args.path = `.bench-dry-${arm.id}.txt`
     toolCalls[t.name] = (toolCalls[t.name] ?? 0) + 1
     try {
       const r = await t.run(args)
-      report.push({ name: t.name, isError: !!r.isError, preview: r.content.slice(0, 160).replace(/\n/g, ' ') })
+      report.push({ name: t.name, isError: !!r.isError, chars: r.content.length, preview: r.content.slice(0, 160).replace(/\n/g, ' ') })
     } catch (e) {
-      report.push({ name: t.name, isError: true, preview: `THREW: ${String(e).slice(0, 160)}` })
+      report.push({ name: t.name, isError: true, chars: 0, preview: `THREW: ${String(e).slice(0, 160)}` })
     }
   }
   await fs.writeFile(path.join(ctx.artifactsDir, 'dry-tools.json'), JSON.stringify(report, null, 2), 'utf8').catch(() => {})

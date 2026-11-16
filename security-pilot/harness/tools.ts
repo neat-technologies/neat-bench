@@ -133,6 +133,14 @@ export function bareScannerTools(ctx: TrialContext): ToolDef[] {
   ]
 }
 
+// Which security tools the NEAT arms get: NEAT's MCP ones (default) or the harness's CLI wrappers.
+export function neatSecurityMode(): 'mcp' | 'wrappers' {
+  return process.env.BENCH_NEAT_SECURITY === 'wrappers' ? 'wrappers' : 'mcp'
+}
+
+// NEAT's security tools as its MCP server names them.
+export const MCP_SECURITY_TOOLS = ['get_reachable_cves', 'is_reachable', 'scan_diff', 'security_fix_plan']
+
 export interface BuildToolsOpts {
   testCmd: string
   neatToolDefs?: ToolDef[] // from connectNeatMcp(ctx)
@@ -145,7 +153,11 @@ export function buildTools(arm: Arm, ctx: TrialContext, opts: BuildToolsOpts): T
   if (!arm.neat) {
     tools.push(...bareScannerTools(ctx))
   } else {
-    tools.push(...buildSecurityToolDefs(ctx))
+    // NEAT's own MCP security tools are the default: they are what a user's agent calls, and their
+    // answers are the product's. BENCH_NEAT_SECURITY=wrappers restores the harness-defined wrappers
+    // over `neat security scan --json` that every run up to 2026-11-15 used; those printed the
+    // harness's own JSON, so they measured the harness's formatting, not NEAT's answers.
+    if (neatSecurityMode() === 'wrappers') tools.push(...buildSecurityToolDefs(ctx))
     if (opts.neatToolDefs) {
       // Lean dose: a CARD-FIRST graph surface. Keep the incident card (the in-your-face answer) plus
       // the directive's "switch heads" escalation (root cause, blast radius, dependencies); drop the
@@ -161,4 +173,10 @@ export function buildTools(arm: Arm, ctx: TrialContext, opts: BuildToolsOpts): T
 }
 
 // The card-first MCP graph tools the lean arm keeps (plus the security scan + recon, added above).
-export const LEAN_NEAT_TOOLS = new Set(['get_incident_card', 'get_root_cause', 'get_blast_radius', 'get_dependencies'])
+export const LEAN_NEAT_TOOLS = new Set([
+  'get_incident_card',
+  'get_root_cause',
+  'get_blast_radius',
+  'get_dependencies',
+  ...MCP_SECURITY_TOOLS,
+])

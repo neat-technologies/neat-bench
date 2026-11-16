@@ -22,6 +22,7 @@ import { fetchDivergences, type Divergence } from '../recon/verifier.js'
 import { runTests, runTestsDetailed, resolveInstalledVersion, osvAffected_, runScanner } from './grader-impl.js'
 import { standUp, BENCH_NEAT_SHA } from './standup.js'
 import { advisoryHomeFor } from './advisory-home.js'
+import { neatSecurityMode } from './tools.js'
 
 // The scope is third-party dependencies, said outright. Left unsaid, an arm whose scanner flags the
 // app's own advisories by commit hash (osv-scanner does, on gitea) sets out to fix those instead,
@@ -49,7 +50,7 @@ ask for confirmation; act.`
 const LEAN_DIRECTIVE = `
 Graph-first (lean):
 NEAT has already done the investigation; lead with the answer it hands you instead of re-deriving it.
-- The incident card (get_incident_card) and the security scan (security_scan, get_reachable_cves, is_reachable, scan_diff) ARE the distilled answer: the reachable vulnerability, its locus as file:line, and the fix to apply. Read those first.
+- The incident card (get_incident_card) and the security tools (get_reachable_cves, is_reachable, scan_diff, security_fix_plan) ARE the distilled answer: the reachable vulnerability, its locus as file:line, and the fix to apply. Read those first.
 - NEAT queries come before grep at all times. Do not sweep files to understand an obvious fix; the card already points at the locus, so open only that line.
 Default to the direct fix. A known-vulnerability fix is almost always a single dependency bump to the version named in the advisory: apply it, verify, stop.
 Switch heads only when the fix is not obvious (a dependency with no fixed version to remove or replace, a vulnerability reachable only transitively, or a bump that would break a reached caller). Only then escalate, with get_root_cause, get_blast_radius and get_dependencies. For a clean bump, skip the investigation.
@@ -140,11 +141,17 @@ export class FreshProvisioner implements Provisioner {
     let r = await sh('git checkout -q --detach FETCH_HEAD && git remote remove origin', treePath, 120_000)
     if (r.code !== 0) throw new Error(`git checkout ${item.commit} failed: ${r.stderr.slice(-400)}`)
     // Refuse to run a trial on a checkout that holds anything but the pinned commit.
-    r = await sh('git rev-parse HEAD && git rev-list --all | wc -l && git tag | wc -l && git remote | wc -l', treePath, 60_000)
-    const [head, commits, tags, remotes] = r.stdout.trim().split(/\s+/)
-    if (r.code !== 0 || head !== item.commit || commits !== '1' || tags !== '0' || remotes !== '0') {
+    // The pin may name an annotated tag object (paperless-ngx's does), so compare HEAD with the
+    // commit the pin peels to.
+    r = await sh(
+      `git rev-parse HEAD && git rev-parse '${item.commit}^{commit}' && git rev-list --all | wc -l && git tag | wc -l && git remote | wc -l`,
+      treePath,
+      60_000,
+    )
+    const [head, pinned, commits, tags, remotes] = r.stdout.trim().split(/\s+/)
+    if (r.code !== 0 || head !== pinned || commits !== '1' || tags !== '0' || remotes !== '0') {
       throw new Error(
-        `checkout is not the pinned commit alone (head=${head}, commits=${commits}, tags=${tags}, remotes=${remotes}); expected ${item.commit}, 1, 0, 0`,
+        `checkout is not the pinned commit alone (head=${head}, commits=${commits}, tags=${tags}, remotes=${remotes}); expected ${item.commit} (commit ${pinned}), 1, 0, 0`,
       )
     }
 
@@ -323,6 +330,7 @@ export async function runTrial(arm: Arm, item: BenchCorpusItem, provisioner: Pro
       phase.advisorySeedMs = Date.now() - at0
       rec.pins.advisorySeededAt = adv.seededAt
       rec.pins.advisorySeedMs = adv.seedMs
+      rec.pins.neatSecurityTools = neatSecurityMode()
       neat = await connectNeatMcp(ctx)
       neatToolDefs = neat.toolDefs
       reconToolDefs = buildReconToolDefs(ctx, reconState)

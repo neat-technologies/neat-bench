@@ -5,13 +5,15 @@
 // server-side mcp_tool_use blocks. Instead we spawn NEAT's OWN MCP server as a local stdio
 // subprocess pointed at this trial's daemon and proxy each graph tool through it as a
 // ToolDef. This reuses NEAT's real tool implementations (authentic schemas + answers)
-// rather than re-querying the graph by hand. Security tools (get_reachable_cves,
-// is_reachable, scan_diff) are not in this MCP build and come from the `neat security`
-// CLI (security-cli.ts).
+// rather than re-querying the graph by hand. The security tools (get_reachable_cves,
+// is_reachable, scan_diff, security_fix_plan) come from the same server by default; before
+// 2026-11-15 the harness defined its own wrappers over the `neat security` CLI instead
+// (security-cli.ts, still selectable with BENCH_NEAT_SECURITY=wrappers).
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import type { ToolDef } from './agent.js'
 import type { TrialContext } from './context.js'
+import { MCP_SECURITY_TOOLS, neatSecurityMode } from './tools.js'
 
 // The graph-query tools we expose to the NEAT arms, matching the README's NEAT suite.
 // We deliberately DO NOT expose the neat_* connect/extension/instrumentation mutators:
@@ -69,7 +71,14 @@ export async function connectNeatMcp(ctx: TrialContext): Promise<NeatMcp> {
   await client.connect(transport)
 
   const listed = await client.listTools()
-  const exposed = listed.tools.filter((t) => EXPOSED.has(t.name))
+  // In MCP mode the security tools come from the server too; in wrappers mode the harness defines
+  // tools with the same names, so the server's are left out.
+  const security = neatSecurityMode() === 'mcp' ? new Set(MCP_SECURITY_TOOLS) : new Set<string>()
+  const exposed = listed.tools.filter((t) => EXPOSED.has(t.name) || security.has(t.name))
+  if (neatSecurityMode() === 'mcp') {
+    const missing = ['get_reachable_cves', 'is_reachable', 'scan_diff'].filter((n) => !exposed.some((t) => t.name === n))
+    if (missing.length > 0) throw new Error(`NEAT MCP server does not offer ${missing.join(', ')}; this NEAT build is too old for BENCH_NEAT_SECURITY=mcp`)
+  }
 
   const toolDefs: ToolDef[] = exposed.map((t) => ({
     name: t.name,

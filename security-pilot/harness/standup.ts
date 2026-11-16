@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url'
 import { randomBytes } from 'node:crypto'
 import type { Arm } from './arms.js'
 import type { BenchCorpusItem } from './corpus.js'
+import { advisoryHomeFor } from './advisory-home.js'
 
 // The box's main-build NEAT CLI (packages/core/dist/cli.cjs). Built from BENCH_NEAT_SHA; the daemon
 // started for NEAT arms uses THIS, not the globally-installed `neat`. Bump BENCH_NEAT_SHA to the
@@ -180,6 +181,14 @@ export async function standUp(item: BenchCorpusItem, arm: Arm, treePath: string)
       const otelPort = await freePort()
       const neatHome = path.join(workDir, 'neat-home')
       await fs.mkdir(neatHome, { recursive: true })
+      // Start the daemon with the app's seeded advisory cache already in its NEAT_HOME. The MCP
+      // security tools answer from the daemon, so without this the first call (or the daemon's own
+      // dependency loop) does a cold advisory refresh inside the agent's clock, and the trials on an
+      // app would not all start from the same cache (advisory-home.ts).
+      const seeded = await advisoryHomeFor(path.join(SECURITY_PILOT_ROOT, 'runs'), item.app, treePath, workDir)
+      await fs.cp(path.join(seeded.home, 'advisories'), path.join(neatHome, 'advisories'), { recursive: true }).catch((e) => {
+        throw new Error(`could not seed the daemon's advisory cache from ${seeded.home}: ${(e as Error).message}`)
+      })
       const cli = neatCliPath()
       const daemonLog = path.join(logsDir, 'neatd.log')
       const daemonPid = path.join(workDir, 'neatd.pid')
@@ -196,6 +205,11 @@ export async function standUp(item: BenchCorpusItem, arm: Arm, treePath: string)
       // Large repos (e.g. gitea) take longer to extract before the daemon serves /health.
       await waitHttpOk(`http://127.0.0.1:${restPort}/health`, Number(process.env.BENCH_DAEMON_HEALTH_MS ?? 300_000))
       neatBase = `http://127.0.0.1:${restPort}`
+      // /health answers while the first extraction pass is still running, and the dependency
+      // phase is near the end of that pass. Until it has finished the graph holds no dependencies,
+      // so the security tools would answer "0 resolved packages". Wait for the pass to record its
+      // coverage, which is the daemon's own signal that the index is complete.
+      await waitFirstExtraction(neatBase, Number(process.env.BENCH_DAEMON_HEALTH_MS ?? 300_000))
       otlpTracesEndpoint = `http://127.0.0.1:${otelPort}/v1/traces`
       otlpBaseEndpoint = `http://127.0.0.1:${otelPort}`
     } else {
@@ -318,4 +332,25 @@ service:
 // Exposed for the hostname pin / diagnostics.
 export function box(): string {
   return os.hostname()
+}
+
+// Resolve once the daemon's first full extraction pass has recorded coverage on the per-project
+// /health (the same signal NEAT's MCP server reads to say "index still building").
+async function waitFirstExtraction(base: string, timeoutMs: number): Promise<void> {
+  const deadline = Date.now() + timeoutMs
+  let last = 'no answer'
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(`${base}/projects/default/health`)
+      if (res.ok) {
+        const body = (await res.json()) as { coverage?: { skippedFiles?: unknown } }
+        if (typeof body.coverage?.skippedFiles === 'number') return
+        last = 'no coverage recorded yet'
+      } else last = `HTTP ${res.status}`
+    } catch (e) {
+      last = (e as Error).message
+    }
+    await new Promise((r) => setTimeout(r, 2000))
+  }
+  throw new Error(`the daemon's first extraction pass did not finish within ${timeoutMs}ms (${last})`)
 }
