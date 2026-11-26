@@ -1,5 +1,10 @@
 # neat-bench
 
+> **Status (2026-11-26): no result in this repository is citable yet.** The security bench is being
+> reworked after the review in [#28](https://github.com/NEAT-Technologies/neat-bench/issues/28); older write-ups carry their own notices. Claims further
+> down this page about what NEAT wins are the bench's design intent, not measured results.
+
+
 **Agents that scale the coding bubble.** The benchmark for what NEAT adds to a coding agent: point the *same* model at a real system with and without NEAT's fused static+runtime graph, and measure the difference — accuracy, safety, efficiency, autonomy, concurrency, reach, and trust.
 
 It is **one rig, a dashboard of numbers** — not a single score. The rig: a same-model agent, run **±NEAT**, against **certified walls** (tasks whose answer is provably *not* in the source, only in runtime behaviour), scored by **objective oracles**. The keystone is model-free.

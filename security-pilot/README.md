@@ -4,6 +4,11 @@
 
 This directory is the full, raw pilot that asks that question. Harness, corpus, the independent grader, the Recon QA stack, every per-trial transcript and grade, the agent's own run reports, and the honest limitations — nothing held back.
 
+> ### Not citable (2026-11-26): see [#28](https://github.com/NEAT-Technologies/neat-bench/issues/28)
+> The review in #28 found problems that reach every result in this directory, the 2026-11-15 runs
+> included. The summary further down ("Hard work is where NEAT pays off", "Cheap-model + NEAT is the
+> robust win") is the k=1 pilot's reading and does not stand.
+>
 > ### Current state (2026-11-15): read [RESULTS-2026-11-15.md](RESULTS-2026-11-15.md) first
 > The k=3 runs of 2026-11-15 supersede the k=1 pilot written up below. They also found a fault that
 > reaches back into the pilot: the harness cloned each app's full git history, so on **gitea** the
