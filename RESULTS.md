@@ -1,5 +1,9 @@
 # ±NEAT bench — current results & honest read
 
+> **Superseded, not citable (2026-11-26).** The figures below predate the bench contracts in
+> `docs/contracts/` and the 15 October audit. Kept as the record of what ran.
+
+
 Last updated 2026-09-16. This is the candid state of the RCA bench: the two most recent runs, what
 the numbers are, where the test cut against NEAT, **where it quietly flattered NEAT**, and what we're
 building next to get a number worth posting. Nothing here is the launch number yet — see "What's next."

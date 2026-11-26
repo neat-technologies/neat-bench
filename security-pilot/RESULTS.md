@@ -1,5 +1,10 @@
 # Security-remediation bench — real k=1 results (4 apps, 3 arms)
 
+> **Superseded, not citable (2026-11-26).** These k=1 figures, including the gitea cost ratios, do not
+> stand. The review in [#28](https://github.com/NEAT-Technologies/neat-bench/issues/28) lists what has to change before the security bench is scored
+> again. Kept as the record of what ran.
+
+
 As of 2026-11-10. Real API spend: **$73.59 cumulative** across 10 agent trials (paperless-neat ×2 BLOCKED, not run). Every trial ran on the box against a MAIN-build NEAT daemon at commit **eb330c2f382f**. Numbers are pulled from the per-trial `run.json`/`grade.json`/`transcript.json` artifacts. **Gitea criteria are the RE-GRADED values** (the on-disk `grade.json` for gitea is the stale pre-fix grade; two grader-correctness bugs were fixed and gitea was re-graded deterministically from its saved `scanner-output.json` + recon-output).
 
 ## Arms
